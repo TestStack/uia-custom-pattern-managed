@@ -1,0 +1,9 @@
+_ReSharper*
+*.opensdf
+*.sdf
+*.DotSettings
+[Bb]in/
+[Oo]bj/
+*.suo
+Debug/
+*.user

@@ -7,3 +7,5 @@ _ReSharper*
 *.suo
 Debug/
 *.user
+UiaClientInterop/UIAutomationClient_i.c
+UiaCoreInterop/UIAutomationCore_i.c

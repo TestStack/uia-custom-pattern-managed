@@ -15,102 +15,52 @@
     <RootNamespace>UIACoreInterop</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup>
     <ConfigurationType>Utility</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Utility</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>11.0.60610.1</_ProjectFileVersion>
     <WindowsSdkDir>c:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\</WindowsSdkDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <PostBuildEvent>
-      <Command />
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemGroup>
-    <CustomBuild Include="$(IntDir)Custom.UIAutomationCore.il">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Assembling IL</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ilasm /dll /output=$(IntDir)Interop.UIAutomationCore.dll $(IntDir)Custom.UIAutomationCore.il
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Custom.UIAutomationCore.il;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Interop.UIAutomationCore.dll;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Assembling IL</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ilasm /dll /output=$(IntDir)Interop.UIAutomationCore.dll $(IntDir)Custom.UIAutomationCore.il
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Custom.UIAutomationCore.il;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Interop.UIAutomationCore.dll;%(Outputs)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="$(IntDir)Raw\Interop.UIAutomationCore.dll">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disassembling interop DLL</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ildasm $(IntDir)Raw\Interop.UIAutomationCore.dll /out=$(IntDir)UIAutomationCore.il /nobar
-</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)UIAutomationCore.il;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disassembling interop DLL</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ildasm $(IntDir)Raw\Interop.UIAutomationCore.dll /out=$(IntDir)UIAutomationCore.il /nobar
-</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)UIAutomationCore.il;%(Outputs)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="$(IntDir)UIAutomationCore.il">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Customizing UIA IL</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\CustomizeUiaInterop\bin\$(Configuration)\CustomizeUiaInterop $(IntDir)UIAutomationCore.il $(IntDir)Custom.UIAutomationCore.il
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)UIAutomationCore.il;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Custom.UIAutomationCore.il;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Customizing UIA IL</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\CustomizeUiaInterop\bin\$(Configuration)\CustomizeUiaInterop $(IntDir)UIAutomationCore.il $(IntDir)Custom.UIAutomationCore.il
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)UIAutomationCore.il;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Custom.UIAutomationCore.il;%(Outputs)</Outputs>
-    </CustomBuild>
-    <CustomBuild Include="$(IntDir)UIAutomationCore.tlb">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Importing TLB</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tlbimp /silent /out:$(IntDir)Raw\Interop.UIAutomationCore.dll /namespace:Interop.UIAutomationCore $(IntDir)UIAutomationCore.tlb
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)UIAutomationCore.tlb;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)Raw\Interop.UIAutomationCore.dll;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Importing TLB</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">tlbimp /silent /out:$(IntDir)Raw\Interop.UIAutomationCore.dll /namespace:Interop.UIAutomationCore $(IntDir)UIAutomationCore.tlb
-</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)UIAutomationCore.tlb;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)Raw\Interop.UIAutomationCore.dll;%(Outputs)</Outputs>
-    </CustomBuild>
-  </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="$(WindowsSdkDir)\include\UIAutomationCore.idl">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Running midl</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">midl /nologo /char signed /env win32  /tlb "$(IntDir)UIAutomationCore.tlb" /h "$(IntDir)UIAutomationCore_h.h" "$(WindowsSdkDir)\include\UIAutomationCore.idl"
-</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)UIAutomationCore.tlb;%(Outputs)</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Running midl</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">midl /nologo /char signed /env win32  /tlb "$(IntDir)UIAutomationCore.tlb" /h "$(IntDir)UIAutomationCore_h.h" "$(WindowsSdkDir)\include\UIAutomationCore.idl"
-</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)UIAutomationCore.tlb;%(Outputs)</Outputs>
+      <Message>Running midl</Message>
+      <Command>midl /nologo /char signed /env win32 /tlb "$(IntDir)UIAutomationCore.tlb" /h "$(IntDir)UIAutomationCore_h.h" "$(WindowsSdkDir)\include\UIAutomationCore.idl"</Command>
+      <Outputs>$(IntDir)UIAutomationCore.tlb;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="$(IntDir)UIAutomationCore.tlb">
+      <Message>Importing TLB</Message>
+      <Command>tlbimp /silent /out:$(IntDir)Raw\Interop.UIAutomationCore.dll /namespace:Interop.UIAutomationCore $(IntDir)UIAutomationCore.tlb</Command>
+      <AdditionalInputs>$(IntDir)UIAutomationCore.tlb;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs>$(IntDir)Raw\Interop.UIAutomationCore.dll;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="$(IntDir)Raw\Interop.UIAutomationCore.dll">
+      <Message>Disassembling interop DLL</Message>
+      <Command>ildasm $(IntDir)Raw\Interop.UIAutomationCore.dll /out=$(IntDir)UIAutomationCore.il /nobar</Command>
+      <Outputs>$(IntDir)UIAutomationCore.il;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="$(IntDir)UIAutomationCore.il">
+      <Message>Customizing UIA IL</Message>
+      <Command>$(SolutionDir)\CustomizeUiaInterop\bin\$(Configuration)\CustomizeUiaInterop $(IntDir)UIAutomationCore.il $(IntDir)Custom.UIAutomationCore.il</Command>
+      <AdditionalInputs>$(IntDir)UIAutomationCore.il;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs>$(IntDir)Custom.UIAutomationCore.il;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="$(IntDir)Custom.UIAutomationCore.il">
+      <Message>Assembling IL</Message>
+      <Command>ilasm /dll /output=$(IntDir)Interop.UIAutomationCore.dll $(IntDir)Custom.UIAutomationCore.il</Command>
+      <AdditionalInputs>$(IntDir)Custom.UIAutomationCore.il;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs>$(IntDir)Interop.UIAutomationCore.dll;%(Outputs)</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

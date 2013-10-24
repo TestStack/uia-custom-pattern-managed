@@ -41,7 +41,7 @@
     </CustomBuild>
     <CustomBuild Include="$(IntDir)UIAutomationCore.tlb">
       <Message>Importing TLB</Message>
-      <Command>tlbimp /silent /out:$(IntDir)Raw\Interop.UIAutomationCore.dll /namespace:Interop.UIAutomationCore $(IntDir)UIAutomationCore.tlb</Command>
+      <Command>tlbimp /machine:X86 /silent /out:$(IntDir)Raw\Interop.UIAutomationCore.dll /namespace:Interop.UIAutomationCore $(IntDir)UIAutomationCore.tlb</Command>
       <AdditionalInputs>$(IntDir)UIAutomationCore.tlb;%(AdditionalInputs)</AdditionalInputs>
       <Outputs>$(IntDir)Raw\Interop.UIAutomationCore.dll;%(Outputs)</Outputs>
     </CustomBuild>

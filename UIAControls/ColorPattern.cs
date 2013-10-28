@@ -2,15 +2,15 @@
 using System.Runtime.InteropServices;
 using Interop.UIAutomationCore;
 
-/// Color Pattern
-/// Schema and implementation for the custom pattern for setting/retrieving a controls
-/// value by RGB color.
+// Color Pattern
+// Schema and implementation for the custom pattern for setting/retrieving a controls
+// value by RGB color.
 
 namespace UIAControls
 {
     // Declaration of the provider-side interface, which the control will implement.
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [ComImport()]
+    [ComImport]
     [Guid("49F2F4CD-FFB7-4b21-9C4F-58090CDD8BCE")]
     public interface IColorProvider
     {
@@ -20,7 +20,7 @@ namespace UIAControls
 
     // Declaration of the client-side interface, for the client/test to use.
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [ComImport()]
+    [ComImport]
     [Guid("B98D615C-C7A2-4afd-AEC9-62FF4501AA30")]
     public interface IColorPattern
     {
@@ -35,39 +35,38 @@ namespace UIAControls
     /// </summary>
     public class ColorSchema : CustomPatternSchemaBase
     {
-        static readonly ColorSchema instance = new ColorSchema();
-        static public ColorSchema GetInstance()
+        private static readonly ColorSchema Instance = new ColorSchema();
+
+        public static ColorSchema GetInstance()
         {
-            return ColorSchema.instance;
+            return Instance;
         }
 
         public readonly UiaPropertyInfoHelper ValueAsColorProperty =
             new UiaPropertyInfoHelper(
-                new Guid("48F45D48-37A1-4480-B5A7-198315D2F2A0"), 
-                "ValueAsColor", 
+                new Guid("48F45D48-37A1-4480-B5A7-198315D2F2A0"),
+                "ValueAsColor",
                 UIAutomationType.UIAutomationType_Int);
 
         public readonly UiaMethodInfoHelper SetValueAsColorMethod =
             new UiaMethodInfoHelper(
                 "SetValueAsColor",
                 true /* doSetFocus */,
-                new UiaParameterDescription[] {
-                    new UiaParameterDescription("value", UIAutomationType.UIAutomationType_Int)
-                });
+                new[] {new UiaParameterDescription("value", UIAutomationType.UIAutomationType_Int)});
 
         public override UiaPropertyInfoHelper[] Properties
         {
-            get { return new UiaPropertyInfoHelper[] { ValueAsColorProperty }; }
+            get { return new[] {ValueAsColorProperty}; }
         }
 
         public override UiaMethodInfoHelper[] Methods
         {
-            get { return new UiaMethodInfoHelper[] { SetValueAsColorMethod }; }
+            get { return new[] {SetValueAsColorMethod}; }
         }
 
         public override UiaEventInfoHelper[] Events
         {
-            get { return new UiaEventInfoHelper[] { }; }
+            get { return new UiaEventInfoHelper[] {}; }
         }
 
         public override Guid PatternGuid
@@ -77,12 +76,12 @@ namespace UIAControls
 
         public override Guid PatternClientGuid
         {
-            get { return typeof(IColorPattern).GUID; }
+            get { return typeof (IColorPattern).GUID; }
         }
 
         public override Guid PatternProviderGuid
         {
-            get { return typeof(IColorProvider).GUID; }
+            get { return typeof (IColorProvider).GUID; }
         }
 
         public override string PatternName
@@ -94,51 +93,40 @@ namespace UIAControls
         {
             get { return new ColorProviderHandler(); }
         }
-    };
+    }
 
     // Pattern instance class: wrap up a IUIAutomationPatternInstance and implement the
     // custom pattern interface on top of it.    
     public class ColorProviderClientInstance : CustomClientInstanceBase, IColorPattern
     {
-        public ColorProviderClientInstance(IUIAutomationPatternInstance patternInstance) : base(patternInstance)
+        public ColorProviderClientInstance(IUIAutomationPatternInstance patternInstance) 
+            : base(patternInstance)
         {
         }
 
-        #region IColorPattern Members
-
         public int CurrentValueAsColor
         {
-            get
-            {
-                return (int)GetCurrentPropertyValue(ColorSchema.GetInstance().ValueAsColorProperty);
-            }
+            get { return (int) GetCurrentPropertyValue(ColorSchema.GetInstance().ValueAsColorProperty); }
         }
 
         public int CachedValueAsColor
         {
-            get
-            {
-                return (int)GetCachedPropertyValue(ColorSchema.GetInstance().ValueAsColorProperty);
-            }
+            get { return (int) GetCachedPropertyValue(ColorSchema.GetInstance().ValueAsColorProperty); }
         }
 
         public void SetValueAsColor(int value)
         {
             CallMethod(ColorSchema.GetInstance().SetValueAsColorMethod, value);
         }
-
-        #endregion
     }
 
     /// <summary>
     /// Pattern handler class: creates pattern instances on client side and dispatches
     /// calls on the provider side.
     /// </summary>
-    public class ColorProviderHandler : Interop.UIAutomationCore.IUIAutomationPatternHandler
+    public class ColorProviderHandler : IUIAutomationPatternHandler
     {
-        #region IUIAutomationPatternHandler Members
-
-        public void CreateClientWrapper(Interop.UIAutomationCore.IUIAutomationPatternInstance pPatternInstance, out object pClientWrapper)
+        public void CreateClientWrapper(IUIAutomationPatternInstance pPatternInstance, out object pClientWrapper)
         {
             pClientWrapper = new ColorProviderClientInstance(pPatternInstance);
         }
@@ -146,8 +134,8 @@ namespace UIAControls
         public void Dispatch(object pTarget, uint index, IntPtr pParams, uint cParams)
         {
             // Parse the provider and parameter list
-            IColorProvider provider = (IColorProvider)pTarget;
-            UiaParameterListHelper paramList = new UiaParameterListHelper(pParams, cParams);
+            var provider = (IColorProvider) pTarget;
+            var paramList = new UiaParameterListHelper(pParams, cParams);
 
             // Dispatch the method/property calls
             if (index == ColorSchema.GetInstance().ValueAsColorProperty.Index)
@@ -156,14 +144,12 @@ namespace UIAControls
             }
             else if (index == ColorSchema.GetInstance().SetValueAsColorMethod.Index)
             {
-                provider.SetValueAsColor((int)paramList[0]);
+                provider.SetValueAsColor((int) paramList[0]);
             }
             else
             {
                 throw new InvalidOperationException();
             }
         }
-
-        #endregion
     }
 }

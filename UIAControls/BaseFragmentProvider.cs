@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Runtime.InteropServices;
 using Interop.UIAutomationCore;
 
 
@@ -10,16 +10,17 @@ namespace UIAControls
     /// and so includes work to report element aspects that the system
     /// would usually get for free from a window handle, like position and runtime ID.
     /// </summary>
-    [System.Runtime.InteropServices.ComVisible(true)]
+    [ComVisible(true)]
     public abstract class BaseFragmentProvider : BaseSimpleProvider, IRawElementProviderFragment
     {
-        public BaseFragmentProvider(IRawElementProviderFragment parent, IRawElementProviderFragmentRoot fragmentRoot)
+        protected IRawElementProviderFragment parent;
+        protected IRawElementProviderFragmentRoot fragmentRoot;
+
+        protected BaseFragmentProvider(IRawElementProviderFragment parent, IRawElementProviderFragmentRoot fragmentRoot)
         {
             this.parent = parent;
             this.fragmentRoot = fragmentRoot;
         }
-
-        #region IRawElementProviderFragment Members
 
         // Return a unique runtime ID to distinguish this from other elements.
         // This is required to implement.  It is usually best to return an array
@@ -47,7 +48,7 @@ namespace UIAControls
         // Don't override, since the constructor requires the fragment root already.
         public IRawElementProviderFragmentRoot FragmentRoot
         {
-            get { return this.fragmentRoot; }
+            get { return fragmentRoot; }
         }
 
         // Routing function for going to neighboring elements.  We implemented
@@ -56,7 +57,7 @@ namespace UIAControls
         {
             switch (direction)
             {
-                case NavigateDirection.NavigateDirection_Parent: return this.parent;
+                case NavigateDirection.NavigateDirection_Parent: return parent;
                 case NavigateDirection.NavigateDirection_FirstChild: return GetFirstChild();
                 case NavigateDirection.NavigateDirection_LastChild: return GetLastChild();
                 case NavigateDirection.NavigateDirection_NextSibling: return GetNextSibling();
@@ -64,10 +65,6 @@ namespace UIAControls
             }
             return null;
         }
-
-        #endregion
-
-        #region Override points
 
         // Return the first child of this fragment.
         protected virtual IRawElementProviderFragment GetFirstChild()
@@ -92,13 +89,5 @@ namespace UIAControls
         {
             return null;
         }
-        #endregion
-
-        #region Protected fields
-
-        protected IRawElementProviderFragment parent;
-        protected IRawElementProviderFragmentRoot fragmentRoot;
-
-        #endregion
     }
 }

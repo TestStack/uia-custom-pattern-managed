@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Interop.UIAutomationClient;
 using Interop.UIAutomationCore;
+using IRawElementProviderSimple = Interop.UIAutomationCore.IRawElementProviderSimple;
 
 // CustomPatternHelpers: a set of classes to help implement UI Automation custom patterns
 // in managed code.
@@ -20,24 +22,24 @@ namespace UIAControls
     /// </summary>
     public class UiaParameterDescription
     {
+        private readonly string _name;
+        private readonly UIAutomationType _uiaType;
+
         public UiaParameterDescription(string name, UIAutomationType type)
         {
-            this.name = name;
-            this.uiaType = type;
+            _name = name;
+            _uiaType = type;
         }
 
         public string Name
         {
-            get { return this.name; }
+            get { return _name; }
         }
 
         public UIAutomationType UiaType
         {
-            get { return this.uiaType; }
+            get { return _uiaType; }
         }
-
-        private string name;
-        private UIAutomationType uiaType;
     }
 
     /// <summary>
@@ -46,36 +48,45 @@ namespace UIAControls
     /// </summary>
     public class UiaMethodInfoHelper
     {
+        private readonly string _programmaticName;
+        private readonly bool _doSetFocus;
+        private readonly List<IntPtr> _inParamNames = new List<IntPtr>();
+        private readonly List<UIAutomationType> _inParamTypes = new List<UIAutomationType>();
+        private readonly List<IntPtr> _outParamNames = new List<IntPtr>();
+        private readonly List<UIAutomationType> _outParamTypes = new List<UIAutomationType>();
+        private bool _built;
+        private UIAutomationMethodInfo _data;
+
         public UiaMethodInfoHelper(string programmaticName, bool doSetFocus)
         {
-            this.programmaticName = programmaticName;
-            this.doSetFocus = doSetFocus;
+            _programmaticName = programmaticName;
+            _doSetFocus = doSetFocus;
         }
 
-        public UiaMethodInfoHelper(string programmaticName, bool doSetFocus, UiaParameterDescription [] uiaParams)
+        public UiaMethodInfoHelper(string programmaticName, bool doSetFocus, UiaParameterDescription[] uiaParams)
         {
-            this.programmaticName = programmaticName;
-            this.doSetFocus = doSetFocus;
+            _programmaticName = programmaticName;
+            _doSetFocus = doSetFocus;
 
-            foreach (UiaParameterDescription param in uiaParams)
+            foreach (var param in uiaParams)
             {
-                this.AddParameter(param.Name, param.UiaType);
+                AddParameter(param.Name, param.UiaType);
             }
         }
 
         ~UiaMethodInfoHelper()
         {
-            foreach (IntPtr marshalledName in this.inParamNames)
+            foreach (var marshalledName in _inParamNames)
             {
                 Marshal.FreeCoTaskMem(marshalledName);
             }
-            foreach (IntPtr marshalledName in this.outParamNames)
+            foreach (var marshalledName in _outParamNames)
             {
                 Marshal.FreeCoTaskMem(marshalledName);
             }
 
-            Marshal.FreeCoTaskMem(this.data.pParameterNames);
-            Marshal.FreeCoTaskMem(this.data.pParameterTypes);
+            Marshal.FreeCoTaskMem(_data.pParameterNames);
+            Marshal.FreeCoTaskMem(_data.pParameterTypes);
         }
 
         /// <summary>
@@ -85,28 +96,28 @@ namespace UIAControls
         {
             get
             {
-                if (!this.built)
+                if (!_built)
                 {
                     Build();
                 }
-                return this.data;
+                return _data;
             }
         }
 
         /// <summary>
         /// The array of in-parameter types.
         /// </summary>
-        public UIAutomationType [] InParamTypes
+        public UIAutomationType[] InParamTypes
         {
-            get { return this.inParamTypes.ToArray(); }
+            get { return _inParamTypes.ToArray(); }
         }
 
         /// <summary>
         /// The array of out-parameter types.
         /// </summary>
-        public UIAutomationType [] OutParamTypes
+        public UIAutomationType[] OutParamTypes
         {
-            get { return this.outParamTypes.ToArray(); }
+            get { return _outParamTypes.ToArray(); }
         }
 
         /// <summary>
@@ -114,91 +125,73 @@ namespace UIAControls
         /// In a UIA custom pattern, every method (and pattern property)
         /// has an assigned index.
         /// </summary>
-        public uint Index
-        {
-            get
-            {
-                return this.index;
-            }
-            set
-            {
-                this.index = value;
-            }
-        }
+        public uint Index { get; set; }
 
         /// <summary>
         /// Add a parameter to the list of parameters for this method.
         /// </summary>
         public void AddParameter(string name, UIAutomationType type)
         {
-            IntPtr marshalledName = Marshal.StringToCoTaskMemUni(name);
+            var marshalledName = Marshal.StringToCoTaskMemUni(name);
             if ((type & UIAutomationType.UIAutomationType_Out) == 0)
             {
-                this.inParamNames.Add(marshalledName);
-                this.inParamTypes.Add(type);
+                _inParamNames.Add(marshalledName);
+                _inParamTypes.Add(type);
             }
             else
             {
-                this.outParamNames.Add(marshalledName);
-                this.outParamTypes.Add(type);
+                _outParamNames.Add(marshalledName);
+                _outParamTypes.Add(type);
             }
         }
 
         /// <summary>
         /// Marshal our data to the UIAutomationMethodInfo struct.
         /// </summary>
-        void Build()
+        private void Build()
         {
             // Copy basic data
-            this.data = new UIAutomationMethodInfo();
-            this.data.pProgrammaticName = this.programmaticName;
-            this.data.doSetFocus = this.doSetFocus ? 1 : 0;
-            this.data.cInParameters = (uint)this.inParamNames.Count;
-            this.data.cOutParameters = (uint)this.outParamNames.Count;
-            uint cTotalParameters = this.data.cInParameters + this.data.cOutParameters;
+            _data = new UIAutomationMethodInfo
+                    {
+                        pProgrammaticName = _programmaticName,
+                        doSetFocus = _doSetFocus ? 1 : 0,
+                        cInParameters = (uint) _inParamNames.Count,
+                        cOutParameters = (uint) _outParamNames.Count
+                    };
+            var cTotalParameters = _data.cInParameters + _data.cOutParameters;
 
             // Allocate parameter lists and populate them
             if (cTotalParameters > 0)
             {
-                this.data.pParameterNames = Marshal.AllocCoTaskMem((int)(cTotalParameters * Marshal.SizeOf(typeof(IntPtr))));
-                this.data.pParameterTypes = Marshal.AllocCoTaskMem((int)(cTotalParameters * Marshal.SizeOf(typeof(Int32))));
+                _data.pParameterNames = Marshal.AllocCoTaskMem((int) (cTotalParameters*Marshal.SizeOf(typeof (IntPtr))));
+                _data.pParameterTypes = Marshal.AllocCoTaskMem((int) (cTotalParameters*Marshal.SizeOf(typeof (Int32))));
 
-                IntPtr namePointer = this.data.pParameterNames;
-                IntPtr typePointer = this.data.pParameterTypes;
-                for (int i = 0; i < this.data.cInParameters; ++i)
+                var namePointer = _data.pParameterNames;
+                var typePointer = _data.pParameterTypes;
+                for (var i = 0; i < _data.cInParameters; ++i)
                 {
-                    Marshal.WriteIntPtr(namePointer, this.inParamNames[i]);
-                    namePointer = (IntPtr)(namePointer.ToInt64() + Marshal.SizeOf(typeof(IntPtr)));
-                    Marshal.WriteInt32(typePointer, (int)this.inParamTypes[i]);
-                    typePointer = (IntPtr)(typePointer.ToInt64() + Marshal.SizeOf(typeof(Int32)));
+                    Marshal.WriteIntPtr(namePointer, _inParamNames[i]);
+                    namePointer = (IntPtr) (namePointer.ToInt64() + Marshal.SizeOf(typeof (IntPtr)));
+                    Marshal.WriteInt32(typePointer, (int) _inParamTypes[i]);
+                    typePointer = (IntPtr) (typePointer.ToInt64() + Marshal.SizeOf(typeof (Int32)));
                 }
 
-                for (int i = 0; i < this.data.cOutParameters; ++i)
+                for (var i = 0; i < _data.cOutParameters; ++i)
                 {
-                    Marshal.WriteIntPtr(namePointer, this.outParamNames[i]);
-                    namePointer = (IntPtr)(namePointer.ToInt64() + Marshal.SizeOf(typeof(IntPtr)));
-                    Marshal.WriteInt32(typePointer, (int)this.outParamTypes[i]);
-                    typePointer = (IntPtr)(typePointer.ToInt64() + Marshal.SizeOf(typeof(Int32)));
+                    Marshal.WriteIntPtr(namePointer, _outParamNames[i]);
+                    namePointer = (IntPtr) (namePointer.ToInt64() + Marshal.SizeOf(typeof (IntPtr)));
+                    Marshal.WriteInt32(typePointer, (int) _outParamTypes[i]);
+                    typePointer = (IntPtr) (typePointer.ToInt64() + Marshal.SizeOf(typeof (Int32)));
                 }
             }
             else
             {
-                this.data.pParameterNames = IntPtr.Zero;
-                this.data.pParameterTypes = IntPtr.Zero;
+                _data.pParameterNames = IntPtr.Zero;
+                _data.pParameterTypes = IntPtr.Zero;
             }
 
-            this.built = true;
+            _built = true;
         }
-
-        private string programmaticName;
-        private bool doSetFocus;
-        private List<IntPtr> inParamNames = new List<IntPtr>();
-        private List<UIAutomationType> inParamTypes = new List<UIAutomationType>();
-        private List<IntPtr> outParamNames = new List<IntPtr>();
-        private List<UIAutomationType> outParamTypes = new List<UIAutomationType>();
-        private uint index;
-        private bool built;
-        private UIAutomationMethodInfo data;
     }
 
     /// <summary>
@@ -207,11 +200,17 @@ namespace UIAControls
     /// </summary>
     public class UiaPropertyInfoHelper
     {
+        private readonly Guid _propertyGuid;
+        private readonly string _programmaticName;
+        private readonly UIAutomationType _propertyType;
+        private bool _built;
+        private UIAutomationPropertyInfo _data;
+
         public UiaPropertyInfoHelper(Guid propertyGuid, string programmaticName, UIAutomationType propertyType)
         {
-            this.programmaticName = programmaticName;
-            this.propertyGuid = propertyGuid;
-            this.propertyType = propertyType;
+            _programmaticName = programmaticName;
+            _propertyGuid = propertyGuid;
+            _propertyType = propertyType;
         }
 
         /// <summary>
@@ -221,11 +220,9 @@ namespace UIAControls
         {
             get
             {
-                if (!this.built)
-                {
+                if (!_built)
                     Build();
-                }
-                return this.data;
+                return _data;
             }
         }
 
@@ -234,10 +231,7 @@ namespace UIAControls
         /// </summary>
         public UIAutomationType UiaType
         {
-            get
-            {
-                return this.propertyType;
-            }
+            get { return _propertyType; }
         }
 
         /// <summary>
@@ -245,58 +239,29 @@ namespace UIAControls
         /// </summary>
         public Guid Guid
         {
-            get
-            {
-                return this.propertyGuid;
-            }
+            get { return _propertyGuid; }
         }
 
         /// <summary>
         /// The index of this property, when it is used as part of a pattern
         /// </summary>
-        public uint Index
-        {
-            get
-            {
-                return this.index;
-            }
-            set
-            {
-                this.index = value;
-            }
-        }
+        public uint Index { get; set; }
 
         /// <summary>
         /// The property ID of this property, assigned after registration
         /// </summary>
-        public int PropertyId
-        {
-            get 
-            { 
-                return this.propertyId; 
-            }
-            set 
-            { 
-                this.propertyId = value; 
-            }
-        }
+        public int PropertyId { get; set; }
 
-        void Build()
+        private void Build()
         {
-            this.data = new UIAutomationPropertyInfo();
-            this.data.pProgrammaticName = this.programmaticName;
-            this.data.guid = this.propertyGuid;
-            this.data.type = this.propertyType;
-            this.built = true;
+            _data = new UIAutomationPropertyInfo
+                    {
+                        pProgrammaticName = _programmaticName,
+                        guid = _propertyGuid,
+                        type = _propertyType
+                    };
+            _built = true;
         }
-
-        private Guid propertyGuid;
-        private string programmaticName;
-        private UIAutomationType propertyType;
-        private uint index;
-        private int propertyId;
-        private bool built;
-        private UIAutomationPropertyInfo data;
     }
 
     /// <summary>
@@ -305,10 +270,15 @@ namespace UIAControls
     /// </summary>
     public class UiaEventInfoHelper
     {
+        private readonly Guid _eventGuid;
+        private readonly string _programmaticName;
+        private bool _built;
+        private UIAutomationEventInfo _data;
+
         public UiaEventInfoHelper(Guid eventGuid, string programmaticName)
         {
-            this.programmaticName = programmaticName;
-            this.eventGuid = eventGuid;
+            _programmaticName = programmaticName;
+            _eventGuid = eventGuid;
         }
 
         /// <summary>
@@ -318,11 +288,9 @@ namespace UIAControls
         {
             get
             {
-                if (!this.built)
-                {
+                if (!_built)
                     Build();
-                }
-                return this.data;
+                return _data;
             }
         }
 
@@ -331,40 +299,19 @@ namespace UIAControls
         /// </summary>
         public Guid Guid
         {
-            get
-            {
-                return this.eventGuid;
-            }
+            get { return _eventGuid; }
         }
 
         /// <summary>
         /// The event ID of this event, assigned after registration
         /// </summary>
-        public int EventId
-        {
-            get
-            {
-                return this.eventId;
-            }
-            set
-            {
-                this.eventId = value;
-            }
-        }
+        public int EventId { get; set; }
 
-        void Build()
+        private void Build()
         {
-            this.data = new UIAutomationEventInfo();
-            this.data.pProgrammaticName = this.programmaticName;
-            this.data.guid = this.eventGuid;
-            this.built = true;
+            _data = new UIAutomationEventInfo {pProgrammaticName = _programmaticName, guid = _eventGuid};
+            _built = true;
         }
-
-        private Guid eventGuid;
-        private string programmaticName;
-        private int eventId;
-        private bool built;
-        private UIAutomationEventInfo data;
     }
 
     /// <summary>
@@ -373,25 +320,36 @@ namespace UIAControls
     /// </summary>
     public class UiaPatternInfoHelper
     {
-        public UiaPatternInfoHelper(
-            Guid patternGuid, 
-            string programmaticName,
-            Guid clientInterfaceId,
-            Guid providerInterfaceId,
-            IUIAutomationPatternHandler patternHandler)
+        private readonly Guid _patternGuid;
+        private readonly Guid _clientInterfaceId;
+        private readonly Guid _providerInterfaceId;
+        private readonly string _programmaticName;
+        private readonly IUIAutomationPatternHandler _patternHandler;
+        private readonly List<UiaMethodInfoHelper> _methods = new List<UiaMethodInfoHelper>();
+        private readonly List<UiaPropertyInfoHelper> _properties = new List<UiaPropertyInfoHelper>();
+        private readonly List<UiaEventInfoHelper> _events = new List<UiaEventInfoHelper>();
+
+        private bool _built;
+        private UIAutomationPatternInfo _data;
+
+        public UiaPatternInfoHelper(Guid patternGuid,
+                                    string programmaticName,
+                                    Guid clientInterfaceId,
+                                    Guid providerInterfaceId,
+                                    IUIAutomationPatternHandler patternHandler)
         {
-            this.programmaticName = programmaticName;
-            this.patternGuid = patternGuid;
-            this.clientInterfaceId = clientInterfaceId;
-            this.providerInterfaceId = providerInterfaceId;
-            this.patternHandler = patternHandler;
+            _programmaticName = programmaticName;
+            _patternGuid = patternGuid;
+            _clientInterfaceId = clientInterfaceId;
+            _providerInterfaceId = providerInterfaceId;
+            _patternHandler = patternHandler;
         }
 
         ~UiaPatternInfoHelper()
         {
-            Marshal.FreeCoTaskMem(this.data.pMethods);
-            Marshal.FreeCoTaskMem(this.data.pEvents);
-            Marshal.FreeCoTaskMem(this.data.pProperties);
+            Marshal.FreeCoTaskMem(_data.pMethods);
+            Marshal.FreeCoTaskMem(_data.pEvents);
+            Marshal.FreeCoTaskMem(_data.pProperties);
         }
 
         /// <summary>
@@ -401,11 +359,11 @@ namespace UIAControls
         {
             get
             {
-                if (!this.built)
+                if (!_built)
                 {
                     Build();
                 }
-                return this.data;
+                return _data;
             }
         }
 
@@ -415,7 +373,7 @@ namespace UIAControls
         /// <param name="property"></param>
         public void AddProperty(UiaPropertyInfoHelper property)
         {
-            this.properties.Add(property);
+            _properties.Add(property);
         }
 
         /// <summary>
@@ -424,7 +382,7 @@ namespace UIAControls
         /// <param name="method"></param>
         public void AddMethod(UiaMethodInfoHelper method)
         {
-            this.methods.Add(method);
+            _methods.Add(method);
         }
 
         /// <summary>
@@ -433,95 +391,97 @@ namespace UIAControls
         /// <param name="eventHelper"></param>
         public void AddEvent(UiaEventInfoHelper eventHelper)
         {
-            this.events.Add(eventHelper);
+            _events.Add(eventHelper);
         }
 
         private void Build()
         {
             // Basic data
-            this.data = new UIAutomationPatternInfo();
-            this.data.pProgrammaticName = this.programmaticName;
-            this.data.guid = this.patternGuid;
-            this.data.clientInterfaceId = this.clientInterfaceId;
-            this.data.providerInterfaceId = this.providerInterfaceId;
-            this.data.pPatternHandler = this.patternHandler;
+            _data = new UIAutomationPatternInfo
+                    {
+                        pProgrammaticName = _programmaticName,
+                        guid = _patternGuid,
+                        clientInterfaceId = _clientInterfaceId,
+                        providerInterfaceId = _providerInterfaceId,
+                        pPatternHandler = _patternHandler,
+                        cMethods = (uint) _methods.Count
+                    };
 
             // Build the list of methods
-            this.data.cMethods = (uint)this.methods.Count;
-            if (this.data.cMethods > 0)
+            if (_data.cMethods > 0)
             {
-                this.data.pMethods = Marshal.AllocCoTaskMem((int)(this.data.cMethods * Marshal.SizeOf(typeof(UIAutomationMethodInfo))));
-                IntPtr methodPointer = this.data.pMethods;
-                for (int i = 0; i < this.data.cMethods; ++i)
+                _data.pMethods = Marshal.AllocCoTaskMem((int) (_data.cMethods*Marshal.SizeOf(typeof (UIAutomationMethodInfo))));
+                var methodPointer = _data.pMethods;
+                for (var i = 0; i < _data.cMethods; ++i)
                 {
-                    Marshal.StructureToPtr(this.methods[i].Data, methodPointer, false);
-                    methodPointer = (IntPtr)(methodPointer.ToInt64() + Marshal.SizeOf(typeof(UIAutomationMethodInfo)));
+                    Marshal.StructureToPtr(_methods[i].Data, methodPointer, false);
+                    methodPointer = (IntPtr) (methodPointer.ToInt64() + Marshal.SizeOf(typeof (UIAutomationMethodInfo)));
                 }
             }
             else
             {
-                this.data.pMethods = IntPtr.Zero;
+                _data.pMethods = IntPtr.Zero;
             }
 
             // Build the list of properties
-            this.data.cProperties = (uint)this.properties.Count;
-            if (this.data.cProperties > 0)
+            _data.cProperties = (uint) _properties.Count;
+            if (_data.cProperties > 0)
             {
-                this.data.pProperties = Marshal.AllocCoTaskMem((int)(this.data.cProperties * Marshal.SizeOf(typeof(UIAutomationPropertyInfo))));
-                IntPtr propertyPointer = this.data.pProperties;
-                for (int i = 0; i < this.data.cProperties; ++i)
+                _data.pProperties = Marshal.AllocCoTaskMem((int) (_data.cProperties*Marshal.SizeOf(typeof (UIAutomationPropertyInfo))));
+                var propertyPointer = _data.pProperties;
+                for (var i = 0; i < _data.cProperties; ++i)
                 {
-                    Marshal.StructureToPtr(this.properties[i].Data, propertyPointer, false);
-                    propertyPointer = (IntPtr)(propertyPointer.ToInt64() + Marshal.SizeOf(typeof(UIAutomationPropertyInfo)));
+                    Marshal.StructureToPtr(_properties[i].Data, propertyPointer, false);
+                    propertyPointer = (IntPtr) (propertyPointer.ToInt64() + Marshal.SizeOf(typeof (UIAutomationPropertyInfo)));
                 }
             }
             else
             {
-                this.data.pProperties = IntPtr.Zero;
+                _data.pProperties = IntPtr.Zero;
             }
 
             // Build the list of events
-            this.data.cEvents = (uint)this.events.Count;
-            if (this.data.cEvents > 0)
+            _data.cEvents = (uint) _events.Count;
+            if (_data.cEvents > 0)
             {
-                this.data.pEvents = Marshal.AllocCoTaskMem((int)(this.data.cEvents * Marshal.SizeOf(typeof(UIAutomationEventInfo))));
-                IntPtr eventPointer = this.data.pEvents;
-                for (int i = 0; i < this.data.cEvents; ++i)
+                _data.pEvents = Marshal.AllocCoTaskMem((int) (_data.cEvents*Marshal.SizeOf(typeof (UIAutomationEventInfo))));
+                var eventPointer = _data.pEvents;
+                for (var i = 0; i < _data.cEvents; ++i)
                 {
-                    Marshal.StructureToPtr(this.events[i].Data, eventPointer, false);
-                    eventPointer = (IntPtr)(eventPointer.ToInt64() + Marshal.SizeOf(typeof(UIAutomationEventInfo)));
+                    Marshal.StructureToPtr(_events[i].Data, eventPointer, false);
+                    eventPointer = (IntPtr) (eventPointer.ToInt64() + Marshal.SizeOf(typeof (UIAutomationEventInfo)));
                 }
             }
             else
             {
-                this.data.pEvents = IntPtr.Zero;
+                _data.pEvents = IntPtr.Zero;
             }
 
-            this.built = true;
+            _built = true;
         }
 
         // Helper for the Registrar's pattern registration method, which has tricky marshalling
-        public static void RegisterPattern(IUIAutomationRegistrar registrar, 
-                                          UiaPatternInfoHelper patternInfo,
-                                          out int patternId,
-                                          out int patternAvailableId,
-                                          out int [] propertyIds,
-                                          out int [] eventIds)
+        public static void RegisterPattern(IUIAutomationRegistrar registrar,
+                                           UiaPatternInfoHelper patternInfo,
+                                           out int patternId,
+                                           out int patternAvailableId,
+                                           out int[] propertyIds,
+                                           out int[] eventIds)
         {
-            Interop.UIAutomationCore.UIAutomationPatternInfo patternData = patternInfo.Data;
+            var patternData = patternInfo.Data;
 
-            IntPtr pEventIds = IntPtr.Zero;
-            IntPtr pPropertyIds = IntPtr.Zero;
+            var pEventIds = IntPtr.Zero;
+            var pPropertyIds = IntPtr.Zero;
             try
             {
                 // Allocate out-param lists
                 if (patternData.cProperties > 0)
                 {
-                    pPropertyIds = Marshal.AllocCoTaskMem((int)patternData.cProperties * Marshal.SizeOf(typeof(int)));
+                    pPropertyIds = Marshal.AllocCoTaskMem((int) patternData.cProperties*Marshal.SizeOf(typeof (int)));
                 }
                 if (patternData.cEvents > 0)
                 {
-                    pEventIds = Marshal.AllocCoTaskMem((int)patternData.cEvents * Marshal.SizeOf(typeof(int)));
+                    pEventIds = Marshal.AllocCoTaskMem((int) patternData.cEvents*Marshal.SizeOf(typeof (int)));
                 }
 
                 // Call register pattern
@@ -536,19 +496,19 @@ namespace UIAControls
 
                 // Convert the lists of property IDs and event IDs into managed arrays
                 propertyIds = new int[patternData.cProperties];
-                IntPtr propertyPointer = pPropertyIds;
-                for (int i = 0; i < patternData.cProperties; ++i)
+                var propertyPointer = pPropertyIds;
+                for (var i = 0; i < patternData.cProperties; ++i)
                 {
-                    propertyIds[i] = (int)Marshal.PtrToStructure(propertyPointer, typeof(int));
-                    propertyPointer = (IntPtr)(propertyPointer.ToInt64() + Marshal.SizeOf(typeof(int)));
+                    propertyIds[i] = (int) Marshal.PtrToStructure(propertyPointer, typeof (int));
+                    propertyPointer = (IntPtr) (propertyPointer.ToInt64() + Marshal.SizeOf(typeof (int)));
                 }
 
                 eventIds = new int[patternData.cEvents];
-                IntPtr eventPointer = pEventIds;
-                for (int i = 0; i < patternData.cEvents; ++i)
+                var eventPointer = pEventIds;
+                for (var i = 0; i < patternData.cEvents; ++i)
                 {
-                    eventIds[i] = (int)Marshal.PtrToStructure(eventPointer, typeof(int));
-                    eventPointer = (IntPtr)(eventPointer.ToInt64() + Marshal.SizeOf(typeof(int)));
+                    eventIds[i] = (int) Marshal.PtrToStructure(eventPointer, typeof (int));
+                    eventPointer = (IntPtr) (eventPointer.ToInt64() + Marshal.SizeOf(typeof (int)));
                 }
             }
             finally
@@ -556,20 +516,7 @@ namespace UIAControls
                 Marshal.FreeCoTaskMem(pPropertyIds);
                 Marshal.FreeCoTaskMem(pEventIds);
             }
-           
         }
-
-        private Guid patternGuid;
-        private Guid clientInterfaceId;
-        private Guid providerInterfaceId;
-        private string programmaticName;
-        private IUIAutomationPatternHandler patternHandler;
-        private List<UiaMethodInfoHelper> methods = new List<UiaMethodInfoHelper>();
-        private List<UiaPropertyInfoHelper> properties = new List<UiaPropertyInfoHelper>();
-        private List<UiaEventInfoHelper> events = new List<UiaEventInfoHelper>();
-
-        private bool built;
-        private UIAutomationPatternInfo data;
     }
 
     /// <summary>
@@ -578,28 +525,34 @@ namespace UIAControls
     /// </summary>
     public class UiaParameterHelper
     {
+        private readonly UIAutomationType _uiaType;
+        private readonly Type _clrType;
+        private readonly IntPtr _marshalledData;
+        private readonly bool _ownsData;
+        private readonly bool _onClientSide;
+
         public UiaParameterHelper(UIAutomationType type)
         {
-            this.uiaType = type;
-            this.clrType = ClrTypeFromUiaType(type);
-            this.marshalledData = Marshal.AllocCoTaskMem(GetSizeOfMarshalledData());
-            this.ownsData = true;
+            _uiaType = type;
+            _clrType = ClrTypeFromUiaType(type);
+            _marshalledData = Marshal.AllocCoTaskMem(GetSizeOfMarshalledData());
+            _ownsData = true;
 
             // It is a safe assumption that if we are initialized without incoming data,
             // we are on the client side.  If this changes, we can make this an explicit parameter.
-            this.onClientSide = true;
+            _onClientSide = true;
         }
 
         public UiaParameterHelper(UIAutomationType type, IntPtr marshalledData)
         {
-            this.uiaType = type;
-            this.clrType = ClrTypeFromUiaType(type);
-            this.marshalledData = marshalledData;
-            this.ownsData = false;
+            _uiaType = type;
+            _clrType = ClrTypeFromUiaType(type);
+            _marshalledData = marshalledData;
+            _ownsData = false;
 
             // It is a safe assumption that if we are initialized with incoming data,
             // we are on the provider side.  If this changes, we can make this an explicit parameter.
-            this.onClientSide = false;
+            _onClientSide = false;
         }
 
         /// <summary>
@@ -607,21 +560,21 @@ namespace UIAControls
         /// </summary>
         ~UiaParameterHelper()
         {
-            if (this.ownsData)
+            if (_ownsData)
             {
-                UIAutomationType basicType = this.uiaType & ~UIAutomationType.UIAutomationType_Out;
+                var basicType = _uiaType & ~UIAutomationType.UIAutomationType_Out;
                 if (basicType == UIAutomationType.UIAutomationType_String)
                 {
-                    IntPtr bstr = Marshal.ReadIntPtr(this.marshalledData);
+                    var bstr = Marshal.ReadIntPtr(_marshalledData);
                     Marshal.FreeBSTR(bstr);
                 }
                 else if (basicType == UIAutomationType.UIAutomationType_Element)
                 {
-                    IntPtr elementAsIntPtr = Marshal.ReadIntPtr(this.marshalledData);
+                    var elementAsIntPtr = Marshal.ReadIntPtr(_marshalledData);
                     Marshal.Release(elementAsIntPtr);
                 }
 
-                Marshal.FreeCoTaskMem(this.marshalledData);
+                Marshal.FreeCoTaskMem(_marshalledData);
             }
         }
 
@@ -633,34 +586,28 @@ namespace UIAControls
             get
             {
                 // Get the type without the Out flag
-                UIAutomationType basicType = this.uiaType & ~UIAutomationType.UIAutomationType_Out;
+                var basicType = _uiaType & ~UIAutomationType.UIAutomationType_Out;
 
-                if (basicType == UIAutomationType.UIAutomationType_String)
+                switch (basicType)
                 {
-                    // Strings are held as BSTRs
-                    IntPtr bstr = Marshal.ReadIntPtr(this.marshalledData);
-                    return Marshal.PtrToStringBSTR(bstr);
-                }
-                else if (basicType == UIAutomationType.UIAutomationType_Bool)
-                {
-                    // Bools are stored as integers in UIA custom parameters
-                    return 0 != (int)Marshal.PtrToStructure(this.marshalledData, typeof(int));
-                }
-                else if (basicType == UIAutomationType.UIAutomationType_Element)
-                {
-                    // Elements need to be copied as COM pointers
-                    IntPtr elementAsIntPtr = Marshal.ReadIntPtr(this.marshalledData);
-                    return Marshal.GetObjectForIUnknown(elementAsIntPtr);
-                }
-                else
-                {
-                    return Marshal.PtrToStructure(this.marshalledData, GetClrType());
+                    case UIAutomationType.UIAutomationType_String:
+                        // Strings are held as BSTRs
+                        var bstr = Marshal.ReadIntPtr(_marshalledData);
+                        return Marshal.PtrToStringBSTR(bstr);
+                    case UIAutomationType.UIAutomationType_Bool:
+                        return 0 != (int) Marshal.PtrToStructure(_marshalledData, typeof (int));
+                    case UIAutomationType.UIAutomationType_Element:
+                        // Elements need to be copied as COM pointers
+                        var elementAsIntPtr = Marshal.ReadIntPtr(_marshalledData);
+                        return Marshal.GetObjectForIUnknown(elementAsIntPtr);
+                    default:
+                        return Marshal.PtrToStructure(_marshalledData, GetClrType());
                 }
             }
             set
             {
                 // Get the type without the Out flag
-                UIAutomationType basicType = this.uiaType & ~UIAutomationType.UIAutomationType_Out;
+                var basicType = _uiaType & ~UIAutomationType.UIAutomationType_Out;
 
                 // Sanity check
                 if (value.GetType() != GetClrType() &&
@@ -670,30 +617,29 @@ namespace UIAControls
                     throw new ArgumentException("Value is the wrong type for this parameter");
                 }
 
-                if (basicType == UIAutomationType.UIAutomationType_String)
+                switch (basicType)
                 {
-                    // Strings are stored as BSTRs
-                    IntPtr bstr = Marshal.StringToBSTR((string)value);
-                    Marshal.WriteIntPtr(this.marshalledData, bstr);
-                }
-                else if (basicType == UIAutomationType.UIAutomationType_Bool)
-                {
-                    // Bools are stored as integers in UIA custom parameters
-                    int boolAsInt = ((bool)value) ? 1 : 0;
-                    Marshal.StructureToPtr(boolAsInt, this.marshalledData, true);
-                }
-                else if (basicType == UIAutomationType.UIAutomationType_Element)
-                {
-                    // Elements are stroed as COM pointers
-                    Type interfaceType = (this.onClientSide) ?
-                        typeof(Interop.UIAutomationClient.IUIAutomationElement) :
-                        typeof(IRawElementProviderSimple);
-                    IntPtr elementAsIntPtr = Marshal.GetComInterfaceForObject(value, interfaceType);
-                    Marshal.WriteIntPtr(this.marshalledData, elementAsIntPtr);
-                }
-                else
-                {
-                    Marshal.StructureToPtr(value, this.marshalledData, true);
+                    case UIAutomationType.UIAutomationType_String:
+                        // Strings are stored as BSTRs
+                        var bstr = Marshal.StringToBSTR((string) value);
+                        Marshal.WriteIntPtr(_marshalledData, bstr);
+                        break;
+                    case UIAutomationType.UIAutomationType_Bool:
+                        // Bools are stored as integers in UIA custom parameters
+                        var boolAsInt = ((bool) value) ? 1 : 0;
+                        Marshal.StructureToPtr(boolAsInt, _marshalledData, true);
+                        break;
+                    case UIAutomationType.UIAutomationType_Element:
+                        // Elements are stroed as COM pointers
+                        var interfaceType = (_onClientSide) ?
+                            typeof (IUIAutomationElement) :
+                            typeof (IRawElementProviderSimple);
+                        var elementAsIntPtr = Marshal.GetComInterfaceForObject(value, interfaceType);
+                        Marshal.WriteIntPtr(_marshalledData, elementAsIntPtr);
+                        break;
+                    default:
+                        Marshal.StructureToPtr(value, _marshalledData, true);
+                        break;
                 }
             }
         }
@@ -703,71 +649,62 @@ namespace UIAControls
         /// </summary>
         public IntPtr Data
         {
-            get
-            {
-                return this.marshalledData;
-            }
+            get { return _marshalledData; }
         }
 
         // Retrieve a UIAutomationParameter structure for this parameter
         public UIAutomationParameter ToUiaParam()
         {
             UIAutomationParameter uiaParam;
-            uiaParam.type = this.uiaType;
-            uiaParam.pData = this.marshalledData;
+            uiaParam.type = _uiaType;
+            uiaParam.pData = _marshalledData;
             return uiaParam;
         }
 
         // Get the UIA type for this parameter
         public UIAutomationType GetUiaType()
         {
-            return this.uiaType;
+            return _uiaType;
         }
 
         // Get the CLR type for this parameter
         public Type GetClrType()
         {
-            return this.clrType;
+            return _clrType;
         }
 
         // Calculate how much marshalled data we'll need for this
         private int GetSizeOfMarshalledData()
         {
-            UIAutomationType basicType = this.uiaType & ~UIAutomationType.UIAutomationType_Out;
+            var basicType = _uiaType & ~UIAutomationType.UIAutomationType_Out;
             if (basicType == UIAutomationType.UIAutomationType_String ||
                 basicType == UIAutomationType.UIAutomationType_Element)
-            {
                 return IntPtr.Size;
-            }
-            else
-            {
-                return Marshal.SizeOf(this.clrType);
-            }
+            return Marshal.SizeOf(_clrType);
         }
 
         // Compute a CLR type from its UIA type
         private Type ClrTypeFromUiaType(UIAutomationType uiaType)
         {
             // Mask off the out flag, which we don't care about.
-            uiaType = (UIAutomationType)((int)uiaType & (int)~UIAutomationType.UIAutomationType_Out);
+            uiaType = (UIAutomationType) ((int) uiaType & (int) ~UIAutomationType.UIAutomationType_Out);
 
             switch (uiaType)
             {
-                case UIAutomationType.UIAutomationType_Int: return typeof(int);
-                case UIAutomationType.UIAutomationType_Bool: return typeof(int); // These are BOOL, not bool
-                case UIAutomationType.UIAutomationType_String: return typeof(string);
-                case UIAutomationType.UIAutomationType_Double: return typeof(double);
-                case UIAutomationType.UIAutomationType_Element: 
-                    return (this.onClientSide) ? typeof(Interop.UIAutomationClient.IUIAutomationElement) : typeof(IRawElementProviderSimple);
-                default: throw new ArgumentException("Type not supported by UIAutomationType");
+                case UIAutomationType.UIAutomationType_Int:
+                    return typeof (int);
+                case UIAutomationType.UIAutomationType_Bool:
+                    return typeof (int); // These are BOOL, not bool
+                case UIAutomationType.UIAutomationType_String:
+                    return typeof (string);
+                case UIAutomationType.UIAutomationType_Double:
+                    return typeof (double);
+                case UIAutomationType.UIAutomationType_Element:
+                    return (_onClientSide) ? typeof (IUIAutomationElement) : typeof (IRawElementProviderSimple);
+                default:
+                    throw new ArgumentException("Type not supported by UIAutomationType");
             }
         }
-
-        private UIAutomationType uiaType;
-        private Type clrType;
-        private IntPtr marshalledData;
-        private bool ownsData;
-        private bool onClientSide;
     }
 
     /// <summary>
@@ -775,43 +712,48 @@ namespace UIAControls
     /// </summary>
     public class UiaParameterListHelper
     {
+        private readonly List<UiaParameterHelper> _uiaParams = new List<UiaParameterHelper>();
+
+        private IntPtr _marshalledData;
+        private bool _ownsData;
+
         // Construct a parameter list from a method info structure
         public UiaParameterListHelper(UiaMethodInfoHelper methodInfo)
         {
-            foreach (UIAutomationType inParamType in methodInfo.InParamTypes)
+            foreach (var inParamType in methodInfo.InParamTypes)
             {
-                this.uiaParams.Add(new UiaParameterHelper(inParamType));
+                _uiaParams.Add(new UiaParameterHelper(inParamType));
             }
-            foreach (UIAutomationType outParamType in methodInfo.OutParamTypes)
+            foreach (var outParamType in methodInfo.OutParamTypes)
             {
-                this.uiaParams.Add(new UiaParameterHelper(outParamType));
+                _uiaParams.Add(new UiaParameterHelper(outParamType));
             }
         }
 
         // Construct a parameter list from a given in-memory structure
         public UiaParameterListHelper(IntPtr marshalledData, uint paramCount)
         {
-            this.marshalledData = marshalledData;
-            this.ownsData = false;
+            _marshalledData = marshalledData;
+            _ownsData = false;
 
             // Construct the parameter list from the marshalled data
-            IntPtr paramPointer = this.marshalledData;
+            var paramPointer = _marshalledData;
             for (uint i = 0; i < paramCount; ++i)
             {
-                UIAutomationParameter uiaParam = (UIAutomationParameter)Marshal.PtrToStructure(
-                    paramPointer, typeof(UIAutomationParameter));
-                this.uiaParams.Add(new UiaParameterHelper(uiaParam.type, uiaParam.pData));
+                var uiaParam = (UIAutomationParameter) Marshal.PtrToStructure(
+                    paramPointer, typeof (UIAutomationParameter));
+                _uiaParams.Add(new UiaParameterHelper(uiaParam.type, uiaParam.pData));
 
-                paramPointer = (IntPtr)(paramPointer.ToInt64() + Marshal.SizeOf(typeof(UIAutomationParameter)));
+                paramPointer = (IntPtr) (paramPointer.ToInt64() + Marshal.SizeOf(typeof (UIAutomationParameter)));
             }
         }
 
         // Free any marshalled data associated with this structure
         ~UiaParameterListHelper()
         {
-            if (this.ownsData)
+            if (_ownsData)
             {
-                Marshal.FreeCoTaskMem(this.marshalledData);
+                Marshal.FreeCoTaskMem(_marshalledData);
             }
         }
 
@@ -820,11 +762,11 @@ namespace UIAControls
         {
             get
             {
-                if (this.marshalledData == IntPtr.Zero)
+                if (_marshalledData == IntPtr.Zero)
                 {
                     Build();
                 }
-                return this.marshalledData;
+                return _marshalledData;
             }
         }
 
@@ -833,16 +775,13 @@ namespace UIAControls
         /// </summary>
         public uint Count
         {
-            get
-            {
-                return (uint)this.uiaParams.Count;
-            }
+            get { return (uint) _uiaParams.Count; }
         }
 
         // Helper method to initialize the incoming parameters list.
         public void Initialize(params object[] inParams)
         {
-            for (int i = 0; i < inParams.Length; ++i)
+            for (var i = 0; i < inParams.Length; ++i)
             {
                 this[i] = inParams[i];
             }
@@ -855,29 +794,24 @@ namespace UIAControls
         /// <returns></returns>
         public object this[int i]
         {
-            get { return this.uiaParams[i].Value; }
-            set { this.uiaParams[i].Value = value; }
+            get { return _uiaParams[i].Value; }
+            set { _uiaParams[i].Value = value; }
         }
 
         private void Build()
         {
             // Allocate the parameter block
-            this.marshalledData = Marshal.AllocCoTaskMem((int)(this.uiaParams.Count * Marshal.SizeOf(typeof(UIAutomationParameter))));
+            _marshalledData = Marshal.AllocCoTaskMem(_uiaParams.Count*Marshal.SizeOf(typeof (UIAutomationParameter)));
 
             // Write the parameter data to the marshalled array
-            IntPtr paramPointer = this.marshalledData;
-            for (int i = 0; i < this.uiaParams.Count; ++i)
+            var paramPointer = _marshalledData;
+            foreach (UiaParameterHelper paramHelper in _uiaParams)
             {
-                Marshal.StructureToPtr(this.uiaParams[i].ToUiaParam(), paramPointer, true);
-                paramPointer = (IntPtr)(paramPointer.ToInt64() + Marshal.SizeOf(typeof(UIAutomationParameter)));
+                Marshal.StructureToPtr(paramHelper.ToUiaParam(), paramPointer, true);
+                paramPointer = (IntPtr) (paramPointer.ToInt64() + Marshal.SizeOf(typeof (UIAutomationParameter)));
             }
 
-            this.ownsData = true;
+            _ownsData = true;
         }
-
-        private List<UiaParameterHelper> uiaParams = new List<UiaParameterHelper>();
-
-        private IntPtr marshalledData;
-        private bool ownsData;
     }
 }

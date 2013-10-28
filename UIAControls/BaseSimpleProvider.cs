@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Interop.UIAutomationCore;
 
 namespace UIAControls
@@ -9,11 +10,11 @@ namespace UIAControls
     /// Many customizations can be done by overriding virtual methods of this class,
     /// rather than having to implement the whole interface.
     /// </summary>
-    [System.Runtime.InteropServices.ComVisible(true)]
+    [ComVisible(true)]
     public abstract class BaseSimpleProvider : IRawElementProviderSimple
     {
-        #region IRawElementProviderSimple Members
-
+        private readonly Dictionary<int, object> _staticProps = new Dictionary<int, object>();
+        
         public virtual object GetPatternProvider(int patternId)
         {
             return null;
@@ -22,9 +23,9 @@ namespace UIAControls
         public virtual object GetPropertyValue(int propertyId)
         {
             // Check the static props list first
-            if (this.staticProps.ContainsKey(propertyId))
+            if (_staticProps.ContainsKey(propertyId))
             {
-                return this.staticProps[propertyId];
+                return _staticProps[propertyId];
             }
 
             // Switching construct to go get the right property from a virtual method.
@@ -44,17 +45,11 @@ namespace UIAControls
         {
             get
             {
-                IntPtr hwnd = this.GetWindowHandle();
-                if (hwnd != IntPtr.Zero)
-                {
-                    IRawElementProviderSimple hostProvider = null;
-                    NativeMethods.UiaHostProviderFromHwnd(this.GetWindowHandle(), out hostProvider);
-                    return hostProvider;
-                }
-                else
-                {
-                    return null;
-                }
+                var hwnd = GetWindowHandle();
+                if (hwnd == IntPtr.Zero) return null;
+                IRawElementProviderSimple hostProvider;
+                NativeMethods.UiaHostProviderFromHwnd(GetWindowHandle(), out hostProvider);
+                return hostProvider;
             }
         }
 
@@ -62,10 +57,6 @@ namespace UIAControls
         {
             get { return ProviderOptions.ProviderOptions_ServerSideProvider; }
         }
-
-        #endregion
-
-        #region Protected overrides
 
         // Get the window handle for a provider that is a full HWND
         protected virtual IntPtr GetWindowHandle()
@@ -79,21 +70,9 @@ namespace UIAControls
             return null;
         }
 
-        #endregion
-
-        #region Other protected methods
-
         protected void AddStaticProperty(int propertyId, object value)
         {
-            this.staticProps.Add(propertyId, value);
+            _staticProps.Add(propertyId, value);
         }
-
-        #endregion
-
-        #region Fields
-
-        private Dictionary<int, object> staticProps = new Dictionary<int, object>();
-
-        #endregion
     }
 }

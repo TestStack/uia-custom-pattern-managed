@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Interop.UIAutomationCore;
 
-/// Ready State Property
-/// Declaration of a simple custom property to represent the readiness of a control.
+// Ready State Property
+// Declaration of a simple custom property to represent the readiness of a control.
 
 namespace UIAControls
 {
@@ -13,28 +12,31 @@ namespace UIAControls
     /// </summary>
     public class ReadyStateSchema
     {
-        static readonly ReadyStateSchema instance = new ReadyStateSchema();
-        static public ReadyStateSchema GetInstance()
+        private bool _registered;
+
+        private static readonly ReadyStateSchema Instance = new ReadyStateSchema();
+
+        public static ReadyStateSchema GetInstance()
         {
-            return ReadyStateSchema.instance;
+            return Instance;
         }
 
         public readonly UiaPropertyInfoHelper ReadyStateProperty =
             new UiaPropertyInfoHelper(
-                new Guid("6E3383FB-96CF-485E-A796-FB6DE483B3DA"), 
-                "ReadyState", 
+                new Guid("6E3383FB-96CF-485E-A796-FB6DE483B3DA"),
+                "ReadyState",
                 UIAutomationType.UIAutomationType_String);
 
         public void Register()
         {
-            if (!this.registered)
+            if (!_registered)
             {
                 // Get our pointer to the registrar
-                Interop.UIAutomationCore.IUIAutomationRegistrar registrar =
-                    new Interop.UIAutomationCore.CUIAutomationRegistrarClass();
+                IUIAutomationRegistrar registrar =
+                    new CUIAutomationRegistrarClass();
 
                 // Set up the property struct
-                UIAutomationPropertyInfo propertyInfo = ReadyStateProperty.Data;
+                var propertyInfo = ReadyStateProperty.Data;
 
                 // Register it
                 int propertyId;
@@ -45,10 +47,8 @@ namespace UIAControls
                 // Write the property ID back
                 ReadyStateProperty.PropertyId = propertyId;
 
-                this.registered = true;
+                _registered = true;
             }
         }
-
-        bool registered;
     }
 }

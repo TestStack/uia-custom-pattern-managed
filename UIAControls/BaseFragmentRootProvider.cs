@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Runtime.InteropServices;
 using Interop.UIAutomationCore;
 
 
@@ -9,16 +9,14 @@ namespace UIAControls
     /// the power to route certain queries to the sub-window elements in this tree,
     /// so it is usually implemented by the fragment that corresponds to the window handle.
     /// </summary>
-    [System.Runtime.InteropServices.ComVisible(true)]
+    [ComVisible(true)]
     public abstract class BaseFragmentRootProvider : BaseFragmentProvider, IRawElementProviderFragmentRoot
     {
-        public BaseFragmentRootProvider()
-            : base(null /* parent */, null /* fragmentRoot */)
+        protected BaseFragmentRootProvider()
+            : base(parent: null, fragmentRoot: null)
         {
-            this.fragmentRoot = this;
+            fragmentRoot = this;
         }
-
-        #region IRawElementProviderFragmentRoot Members
 
         // Perform hit testing and testing and return the element that contains this point.
         // Point is given in screen coordinates.  Return null is the hit is on the fragment
@@ -33,8 +31,6 @@ namespace UIAControls
         {
             return null;
         }
-
-        #endregion
 
         // The fragment root usually has an HWND, so returning an empty bounding rect is OK.
         public override UiaRect get_BoundingRectangle()

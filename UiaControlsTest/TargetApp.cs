@@ -9,24 +9,24 @@ namespace UiaControlsTest
 {
     // System.Diagnostic.Process's CloseMainWindow and MainWindowHandle are very slow,
     // this is faster for the simple single-main-window case.
-    internal class TargetApp: IDisposable
+    internal class TargetApp : IDisposable
     {
         private Process _p;
-        private string _cmdLine;
-        private string _args;
+        private readonly string _cmdLine;
+        private readonly string _args;
         private IntPtr _hwnd;
         private bool _closed;
 
-        private static bool _debug = false;
+        private static bool _debug;
 
-        public TargetApp( string cmdLine )
+        public TargetApp(string cmdLine)
         {
             _cmdLine = cmdLine;
             _args = null;
             _closed = false;
         }
 
-        public TargetApp( string cmdLine, string args )
+        public TargetApp(string cmdLine, string args)
         {
             _cmdLine = cmdLine;
             _args = args;
@@ -39,11 +39,11 @@ namespace UiaControlsTest
                 Console.WriteLine("Debug mode:");
                 Console.WriteLine("Start the following process manually, and enter the PID when done,");
                 Console.WriteLine("or hit Enter to start the process automatically");
-                Console.WriteLine( "  " + _cmdLine + " " + _args );
+                Console.WriteLine("  " + _cmdLine + " " + _args);
 
-                for( ; ; )
+                for (;;)
                 {
-                    string str = Console.ReadLine();
+                    var str = Console.ReadLine();
 
                     if (str == "")
                     {
@@ -52,23 +52,20 @@ namespace UiaControlsTest
                         Console.ReadLine();
                         break;
                     }
-                    else
+                    try
                     {
-                        try
-                        {
-                            int id = Int32.Parse(str);
+                        var id = Int32.Parse(str);
 
-                            _p = Process.GetProcessById(id);
-                            break;
-                        }
-                        catch (FormatException)
-                        {
-                            Console.WriteLine("Invalid int - try again");
-                        }
-                        catch (ArgumentException)
-                        {
-                            Console.WriteLine("Bad Process ID - try again");
-                        }
+                        _p = Process.GetProcessById(id);
+                        break;
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("Invalid int - try again");
+                    }
+                    catch (ArgumentException)
+                    {
+                        Console.WriteLine("Bad Process ID - try again");
                     }
                 }
             }
@@ -81,141 +78,123 @@ namespace UiaControlsTest
 
             _hwnd = IntPtr.Zero;
 
-            int pid = _p.Id;
+            var pid = _p.Id;
 
-            _hwnd = WaitForWindow( pid, null, null );
+            _hwnd = WaitForWindow(pid, null, null);
 
-            if( _hwnd == IntPtr.Zero )
+            if (_hwnd == IntPtr.Zero)
             {
-                throw new Exception( "Couldn't start or find window of " + _cmdLine );
+                throw new Exception("Couldn't start or find window of " + _cmdLine);
             }
         }
 
         public IntPtr MainWindow
         {
-            get
-            {
-                return _hwnd;
-            }
+            get { return _hwnd; }
         }
 
         public int ProcessId
         {
-            get
-            {
-                return _p.Id;
-            }
+            get { return _p.Id; }
         }
 
         public static bool Debug
         {
-            get
-            {
-                return _debug;
-            }
+            get { return _debug; }
 
-            set
-            {
-                _debug = value;
-            }
+            set { _debug = value; }
         }
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetDesktopWindow();
 
         [DllImport("user32.dll")]
-        private static extern IntPtr GetWindow( IntPtr hwnd, int dir );
+        private static extern IntPtr GetWindow(IntPtr hwnd, int dir);
 
         [DllImport("user32.dll")]
-        private static extern int GetWindowThreadProcessId( IntPtr hwnd, out int pid );
+        private static extern int GetWindowThreadProcessId(IntPtr hwnd, out int pid);
 
         [DllImport("user32.dll")]
-        private static extern IntPtr PostMessage( IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam );
+        private static extern IntPtr PostMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
-        private static extern IntPtr SendMessage( IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam );
+        private static extern int GetClassName(IntPtr hwnd, StringBuilder str, int nMaxCount);
 
         [DllImport("user32.dll")]
-        private static extern int GetClassName( IntPtr hwnd, StringBuilder str, int nMaxCount );
+        private static extern int GetWindowText(IntPtr hwnd, StringBuilder str, int nMaxCount);
 
         [DllImport("user32.dll")]
-        private static extern int WaitForInputIdle( IntPtr hProcess, int dwMilliseconds );
-
-        [DllImport("user32.dll")]
-        private static extern int GetWindowText( IntPtr hwnd, StringBuilder str, int nMaxCount );
-
-        [DllImport("user32.dll")]
-        private static extern bool IsWindowVisible( IntPtr hwnd );
+        private static extern bool IsWindowVisible(IntPtr hwnd);
 
 
-        const int GW_HWNDNEXT = 2;
-        const int GW_CHILD = 5;
-        const int WM_CLOSE = 0x0010;
+        private const int GW_HWNDNEXT = 2;
+        private const int GW_CHILD = 5;
+        private const int WM_CLOSE = 0x0010;
 
-        public static IntPtr WaitForWindow( int pid, string className, string windowTitle )
+        public static IntPtr WaitForWindow(int pid, string className, string windowTitle)
         {
             // Try up to 80 times, 1/2 sec apart (40 secs max)
             // Extended this from 8 secs, since sometimes WCP can take ~35 secs to start
             // cold on a slow machine or on ia64.
             // Bump this again because ia64 machine is doing software acceleration so it takes a very 
             // long time to come up.   Try 240 times for ~2 minutes.
-            for( int attempt = 0 ; attempt < 240 ; attempt++ )
+            for (var attempt = 0; attempt < 240; attempt++)
             {
-                IntPtr hwnd = TryFindWindowNow( pid, className, windowTitle );
-                if( hwnd != IntPtr.Zero )
+                var hwnd = TryFindWindowNow(pid, className, windowTitle);
+                if (hwnd != IntPtr.Zero)
                 {
                     return hwnd;
                 }
-                Thread.Sleep( 500 );
+                Thread.Sleep(500);
             }
             return IntPtr.Zero;
         }
 
-        private static IntPtr TryFindWindowNow( int pid, string className, string windowTitle )
+        private static IntPtr TryFindWindowNow(int pid, string className, string windowTitle)
         {
-            IntPtr hwnd = GetDesktopWindow();
-            IntPtr hwndChild = GetWindow( hwnd, GW_CHILD );
-            for( ; hwndChild != IntPtr.Zero ; hwndChild = GetWindow( hwndChild, GW_HWNDNEXT ) )
+            var hwnd = GetDesktopWindow();
+            var hwndChild = GetWindow(hwnd, GW_CHILD);
+            for (; hwndChild != IntPtr.Zero; hwndChild = GetWindow(hwndChild, GW_HWNDNEXT))
             {
                 // Check for PID, if specfied (do first because it's quick)...
-                if( pid != 0 )
+                if (pid != 0)
                 {
                     int id;
-                    GetWindowThreadProcessId( hwndChild, out id );
-                    if( id != pid )
+                    GetWindowThreadProcessId(hwndChild, out id);
+                    if (id != pid)
                     {
                         continue;
                     }
                 }
 
                 // ignore invisible worker windows...
-                if( ! IsWindowVisible( hwndChild ) )
+                if (! IsWindowVisible(hwndChild))
                 {
                     continue;
                 }
 
                 // ignore console windows...
-                StringBuilder testClassName = new StringBuilder( 64 );
-                GetClassName( hwndChild, testClassName, 64 );
-                if( String.Compare( testClassName.ToString(), "ConsoleWindowClass", true ) == 0 )
+                var testClassName = new StringBuilder(64);
+                GetClassName(hwndChild, testClassName, 64);
+                if (String.Compare(testClassName.ToString(), "ConsoleWindowClass", true) == 0)
                 {
                     // It's a console window - ignore it
                     continue;
                 }
 
                 // Check classname, if specified...
-                if( className != null )
+                if (className != null)
                 {
-                    if( String.Compare( className, testClassName.ToString(), true, CultureInfo.InvariantCulture ) != 0 )
+                    if (String.Compare(className, testClassName.ToString(), true, CultureInfo.InvariantCulture) != 0)
                         continue;
                 }
 
                 // Check title, if specified...
-                if( windowTitle != null )
+                if (windowTitle != null)
                 {
-                    StringBuilder testWindowTitle = new StringBuilder( 64 );
-                    GetWindowText( hwndChild, testWindowTitle, 64 );
-                    if( String.Compare( windowTitle, testWindowTitle.ToString(), true, CultureInfo.InvariantCulture ) != 0 )
+                    var testWindowTitle = new StringBuilder(64);
+                    GetWindowText(hwndChild, testWindowTitle, 64);
+                    if (String.Compare(windowTitle, testWindowTitle.ToString(), true, CultureInfo.InvariantCulture) != 0)
                         continue;
                 }
 
@@ -228,25 +207,25 @@ namespace UiaControlsTest
 
         public void Close()
         {
-            if( _closed )
+            if (_closed)
                 return;
 
             if (_debug)
             {
                 Console.WriteLine("Debug mode: Closing app " + _cmdLine + " - hit Enter to continue");
-		Console.ReadLine();
+                Console.ReadLine();
             }
 
             // Process.CloseMainWindow is too slow
-            PostMessage( _hwnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero );
+            PostMessage(_hwnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
 
-            if( ! _p.WaitForExit(2000) && !_debug)
+            if (! _p.WaitForExit(2000) && !_debug)
             {
                 try
                 {
                     _p.Kill();
                 }
-                catch( InvalidOperationException )
+                catch (InvalidOperationException)
                 {
                     // process may have already died in the meantime
                 }
@@ -260,4 +239,3 @@ namespace UiaControlsTest
         }
     }
 }
-

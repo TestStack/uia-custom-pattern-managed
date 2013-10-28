@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Interop.UIAutomationCore;
 using Interop.UIAutomationClient;
 using NUnit.Framework;
+using UIAControls;
 
 namespace UiaControlsTest
 {
@@ -14,72 +11,56 @@ namespace UiaControlsTest
     [TestFixture]
     public class CustomPatternUnitTest
     {
-        private TargetApp app;
-        private IUIAutomation factory;
-        private IUIAutomationElement customElement;
-
-        public CustomPatternUnitTest()
-        {
-        }
-
-        private TestContext testContextInstance;
+        private TargetApp _app;
+        private IUIAutomation _factory;
+        private IUIAutomationElement _customElement;
 
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        public TestContext TestContext { get; set; }
 
         [SetUp]
         public void MyTestInitialize()
         {
             // Create the factory and register schemas
-            this.factory = new CUIAutomationClass();
-            UIAControls.ReadyStateSchema.GetInstance().Register();
-            UIAControls.TestSchema.GetInstance().Register();
-            UIAControls.ColorSchema.GetInstance().Register();
+            _factory = new CUIAutomationClass();
+            ReadyStateSchema.GetInstance().Register();
+            TestSchema.GetInstance().Register();
+            ColorSchema.GetInstance().Register();
 
             // Start the app
-            string curDir = Environment.CurrentDirectory;
-            this.app = new TargetApp(curDir + "\\UiaControls.exe");
-            this.app.Start();
+            var curDir = Environment.CurrentDirectory;
+            _app = new TargetApp(curDir + "\\UiaControls.exe");
+            _app.Start();
 
             // Find the main control
-            IUIAutomationElement appElement = this.factory.ElementFromHandle(app.MainWindow);
-            IUIAutomationCondition condition = this.factory.CreatePropertyCondition(
-                 UIA_PropertyIds.UIA_AutomationIdPropertyId,
-                 "triColorControl1");
-            this.customElement = appElement.FindFirst(TreeScope.TreeScope_Children,
-                 condition);
-            Assert.IsNotNull(this.customElement);
+            var appElement = _factory.ElementFromHandle(_app.MainWindow);
+            var condition = _factory.CreatePropertyCondition(
+                UIA_PropertyIds.UIA_AutomationIdPropertyId,
+                "triColorControl1");
+            _customElement = appElement.FindFirst(TreeScope.TreeScope_Children,
+                                                  condition);
+            Assert.IsNotNull(_customElement);
         }
 
         [TearDown]
         public void MyTestCleanup()
         {
-            app.Dispose();
-            app = null;
+            _app.Dispose();
+            _app = null;
         }
 
         [Test]
         public void TestReadyStateProperty()
         {
             // Query our custom property
-            object readyStateValue = this.customElement.GetCurrentPropertyValue(UIAControls.ReadyStateSchema.GetInstance().ReadyStateProperty.PropertyId);
+            var readyStateValue = _customElement.GetCurrentPropertyValue(ReadyStateSchema.GetInstance().ReadyStateProperty.PropertyId);
             Assert.IsInstanceOf<string>(readyStateValue);
 
             // By default, UIAControls.exe launches in not-ready state
-            Assert.AreEqual("Not Ready", (string)readyStateValue);
+            Assert.AreEqual("Not Ready", readyStateValue);
         }
 
         /// <summary>
@@ -88,23 +69,22 @@ namespace UiaControlsTest
         [Test]
         public void TestColorPattern()
         {
-            UIAControls.ColorSchema schema = UIAControls.ColorSchema.GetInstance();
+            var schema = ColorSchema.GetInstance();
 
             // Ask for the custom pattern
-            UIAControls.IColorPattern colorPattern = (UIAControls.IColorPattern)
-                this.customElement.GetCurrentPattern(schema.PatternId);
+            var colorPattern = (IColorPattern) _customElement.GetCurrentPattern(schema.PatternId);
             Assert.IsNotNull(colorPattern);
 
             // Call through a pattern getter
-            int colorAsValue = colorPattern.CurrentValueAsColor;
-            Assert.AreEqual(0xFFFF0000, (uint)colorAsValue);
+            var colorAsValue = colorPattern.CurrentValueAsColor;
+            Assert.AreEqual(0xFFFF0000, (uint) colorAsValue);
 
             // Call a pattern setter
-            colorPattern.SetValueAsColor(System.Convert.ToInt32(0x008000));
+            colorPattern.SetValueAsColor(Convert.ToInt32(0x008000));
 
             // Call for a custom property
-            int colorAsValue2 = (int)this.customElement.GetCurrentPropertyValue(schema.ValueAsColorProperty.PropertyId);
-            Assert.AreEqual(0xFF008000, (uint)colorAsValue2);
+            var colorAsValue2 = (int) _customElement.GetCurrentPropertyValue(schema.ValueAsColorProperty.PropertyId);
+            Assert.AreEqual(0xFF008000, (uint) colorAsValue2);
         }
 
         /// <summary>
@@ -113,19 +93,18 @@ namespace UiaControlsTest
         [Test]
         public void TestIntSupport()
         {
-            UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();
+            var schema = TestSchema.GetInstance();
 
             // Ask for the custom pattern
-            UIAControls.ITestPattern testPattern = (UIAControls.ITestPattern)
-                this.customElement.GetCurrentPattern(schema.PatternId);
+            var testPattern = (ITestPattern) _customElement.GetCurrentPattern(schema.PatternId);
             Assert.IsNotNull(testPattern);
 
             // Call through a pattern getter
-            int testPropertyValue = testPattern.CurrentIntValue;
+            var testPropertyValue = testPattern.CurrentIntValue;
             Assert.AreEqual(42, testPropertyValue);
 
             // Call for the custom property directly
-            int testPropertyValue2 = (int)this.customElement.GetCurrentPropertyValue(schema.IntValueProperty.PropertyId);
+            var testPropertyValue2 = (int) _customElement.GetCurrentPropertyValue(schema.IntValueProperty.PropertyId);
             Assert.AreEqual(42, testPropertyValue2);
 
             // Call a pattern passer
@@ -140,19 +119,18 @@ namespace UiaControlsTest
         [Test]
         public void TestStringSupport()
         {
-            UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();
-            
+            var schema = TestSchema.GetInstance();
+
             // Ask for the custom pattern
-            UIAControls.ITestPattern testPattern = (UIAControls.ITestPattern)
-                this.customElement.GetCurrentPattern(schema.PatternId);
+            var testPattern = (ITestPattern) _customElement.GetCurrentPattern(schema.PatternId);
             Assert.IsNotNull(testPattern);
 
             // Call through a pattern getter
-            string testPropertyValue = testPattern.CurrentStringValue;
+            var testPropertyValue = testPattern.CurrentStringValue;
             Assert.AreEqual("TestString", testPropertyValue);
 
             // Call for the custom property directly
-            string testPropertyValue2 = (string)this.customElement.GetCurrentPropertyValue(schema.StringValueProperty.PropertyId);
+            var testPropertyValue2 = (string) _customElement.GetCurrentPropertyValue(schema.StringValueProperty.PropertyId);
             Assert.AreEqual("TestString", testPropertyValue2);
 
             // Call a pattern passer
@@ -167,15 +145,15 @@ namespace UiaControlsTest
         [Test]
         public void TestBoolSupport()
         {
-            UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();
+            var schema = TestSchema.GetInstance();
 
             // Ask for the custom pattern
-            UIAControls.ITestPattern testPattern = (UIAControls.ITestPattern)
-                this.customElement.GetCurrentPattern(schema.PatternId);
+            var testPattern = (ITestPattern)
+                _customElement.GetCurrentPattern(schema.PatternId);
             Assert.IsNotNull(testPattern);
 
             // Call through a pattern getter
-            bool testPropertyValue = testPattern.CurrentBoolValue;
+            var testPropertyValue = testPattern.CurrentBoolValue;
             Assert.AreEqual(true, testPropertyValue);
 
             // We cannot request the property directly,
@@ -195,15 +173,14 @@ namespace UiaControlsTest
         [Test]
         public void TestDoubleSupport()
         {
-            UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();
+            var schema = TestSchema.GetInstance();
 
             // Ask for the custom pattern
-            UIAControls.ITestPattern testPattern = (UIAControls.ITestPattern)
-                this.customElement.GetCurrentPattern(schema.PatternId);
+            var testPattern = (ITestPattern) _customElement.GetCurrentPattern(schema.PatternId);
             Assert.IsNotNull(testPattern);
 
             // Call through a pattern getter
-            double testPropertyValue = testPattern.CurrentDoubleValue;
+            var testPropertyValue = testPattern.CurrentDoubleValue;
             Assert.AreEqual(3.1415, testPropertyValue);
 
             // We cannot request the property directly,
@@ -223,17 +200,16 @@ namespace UiaControlsTest
         [Test]
         public void TestElementSupport()
         {
-            UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();
+            var schema = TestSchema.GetInstance();
 
             // Ask for the custom pattern
-            UIAControls.ITestPattern testPattern = (UIAControls.ITestPattern)
-                this.customElement.GetCurrentPattern(schema.PatternId);
+            var testPattern = (ITestPattern) _customElement.GetCurrentPattern(schema.PatternId);
             Assert.IsNotNull(testPattern);
 
             // Call through a pattern getter
             // We expect to get the custom element
-            Interop.UIAutomationClient.IUIAutomationElement testPropertyValue = testPattern.CurrentElementValue;
-            int compareResult = this.factory.CompareElements(this.customElement, testPropertyValue);
+            var testPropertyValue = testPattern.CurrentElementValue;
+            var compareResult = _factory.CompareElements(_customElement, testPropertyValue);
             Assert.AreNotEqual(0, compareResult);
 
             // Call for the custom property directly

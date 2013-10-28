@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Interop.UIAutomationCore;
 
 namespace UIAControls
@@ -9,21 +8,24 @@ namespace UIAControls
     /// </summary>
     public class TriColorFragmentProvider : BaseFragmentProvider, ISelectionItemProvider
     {
+        private readonly TriColorControl _control;
+        private readonly TriColorValue _value;
+
         public TriColorFragmentProvider(TriColorControl control, IRawElementProviderFragmentRoot root, TriColorValue value)
-            : base((IRawElementProviderFragment)root /* parent */, root /* fragmentRoot */)
+            : base((IRawElementProviderFragment) root /* parent */, root /* fragmentRoot */)
         {
-            this.control = control;
-            this.value = value;
+            _control = control;
+            _value = value;
 
             // Populate static properties
             //
             // In a production app, Name should be localized
-            AddStaticProperty(UiaConstants.UIA_NamePropertyId, this.value.ToString());
+            AddStaticProperty(UiaConstants.UIA_NamePropertyId, _value.ToString());
             AddStaticProperty(UiaConstants.UIA_ControlTypePropertyId, UiaConstants.UIA_CustomControlTypeId);
             // In a production app, LocalizedControlType should be localized
             AddStaticProperty(UiaConstants.UIA_LocalizedControlTypePropertyId, "tri-color item");
             AddStaticProperty(UiaConstants.UIA_ProviderDescriptionPropertyId, "UIASamples: Tri-Color Fragment Provider");
-            AddStaticProperty(UiaConstants.UIA_AutomationIdPropertyId, this.value.ToString());
+            AddStaticProperty(UiaConstants.UIA_AutomationIdPropertyId, _value.ToString());
             AddStaticProperty(UiaConstants.UIA_IsKeyboardFocusablePropertyId, false);
             AddStaticProperty(UiaConstants.UIA_IsControlElementPropertyId, true);
             AddStaticProperty(UiaConstants.UIA_IsContentElementPropertyId, false);
@@ -34,8 +36,8 @@ namespace UIAControls
             // Request COM threading style - all calls on main thread
             get
             {
-                return (ProviderOptions)((int)(ProviderOptions.ProviderOptions_ServerSideProvider |
-                    ProviderOptions.ProviderOptions_UseComThreading));
+                return (ProviderOptions) ((int) (ProviderOptions.ProviderOptions_ServerSideProvider |
+                                                 ProviderOptions.ProviderOptions_UseComThreading));
             }
         }
 
@@ -54,9 +56,9 @@ namespace UIAControls
         // can use as the runtime ID.
         public override int[] GetRuntimeId()
         {
-            int[] runtimeId = new int[2];
+            var runtimeId = new int[2];
             runtimeId[0] = UiaConstants.AppendRuntimeId;
-            runtimeId[1] = (int)this.value;
+            runtimeId[1] = (int) _value;
             return runtimeId;
         }
 
@@ -64,25 +66,27 @@ namespace UIAControls
         public override UiaRect get_BoundingRectangle()
         {
             // Bounding rects must be in screen coordinates
-            System.Drawing.Rectangle screenRect = this.control.RectangleToScreen(
-                this.control.RectFromValue(this.value));
-            UiaRect result = new UiaRect();
-            result.left = screenRect.Left;
-            result.top = screenRect.Top;
-            result.width = screenRect.Width;
-            result.height = screenRect.Height;
+            var screenRect = _control.RectangleToScreen(
+                _control.RectFromValue(_value));
+            var result = new UiaRect
+                         {
+                             left = screenRect.Left,
+                             top = screenRect.Top,
+                             width = screenRect.Width,
+                             height = screenRect.Height
+                         };
             return result;
         }
 
         // Return the fragment for the next value
         protected override IRawElementProviderFragment GetNextSibling()
         {
-            if (!TriColorValueHelper.IsLast(this.value))
+            if (!TriColorValueHelper.IsLast(_value))
             {
                 return new TriColorFragmentProvider(
-                   this.control,
-                   this.fragmentRoot,
-                   TriColorValueHelper.NextValue(this.value));
+                    _control,
+                    fragmentRoot,
+                    TriColorValueHelper.NextValue(_value));
             }
             return null;
         }
@@ -90,23 +94,21 @@ namespace UIAControls
         // Return the fragment for the previous value
         protected override IRawElementProviderFragment GetPreviousSibling()
         {
-            if (!TriColorValueHelper.IsFirst(this.value))
+            if (!TriColorValueHelper.IsFirst(_value))
             {
                 return new TriColorFragmentProvider(
-                   this.control,
-                   this.fragmentRoot,
-                   TriColorValueHelper.PreviousValue(this.value));
+                    _control,
+                    fragmentRoot,
+                    TriColorValueHelper.PreviousValue(_value));
             }
             return null;
         }
-
-        #region ISelectionItemProvider Members
 
         // Select this item
         public void Select()
         {
             // Set the control's value to be the value of this fragment
-            this.control.Value = this.value;
+            _control.Value = _value;
         }
 
         // Is this item selected?
@@ -115,7 +117,7 @@ namespace UIAControls
             get
             {
                 // This item is selected iff the control's value is the fragment's value
-                return (this.control.Value == this.value) ? 1 : 0;
+                return (_control.Value == _value) ? 1 : 0;
             }
         }
 
@@ -134,15 +136,7 @@ namespace UIAControls
         // The selection container is simply our fragment root
         public IRawElementProviderSimple SelectionContainer
         {
-            get
-            {
-                return (IRawElementProviderSimple)this.fragmentRoot;
-            }
+            get { return (IRawElementProviderSimple) fragmentRoot; }
         }
-
-        #endregion
-
-        private TriColorControl control;
-        private TriColorValue value;
     }
 }

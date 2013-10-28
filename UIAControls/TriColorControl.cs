@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Text;
 using System.Windows.Forms;
-using Interop.UIAutomationCore;
 
 
 namespace UIAControls
@@ -32,17 +27,17 @@ namespace UIAControls
         {
             get
             {
-                return this.value;
+                return value;
             }
             set
             {
                 if (this.value != value)
                 {
-                    TriColorValue oldValue = this.value;
+                    var oldValue = this.value;
                     this.value = value;
-                    this.Invalidate();
+                    Invalidate();
 
-                    this.Provider.RaiseEventsForNewValue(oldValue, value);
+                    Provider.RaiseEventsForNewValue(oldValue, value);
                 }
             }
         }
@@ -56,18 +51,18 @@ namespace UIAControls
         public bool ValueFromPoint(Point ptClient, out TriColorValue value)
         {
             value = TriColorValue.Red;
-            bool found = false;
-            if (this.RedRect.Contains(ptClient))
+            var found = false;
+            if (RedRect.Contains(ptClient))
             {
                 value = TriColorValue.Red;
                 found = true;
             }
-            else if (this.YellowRect.Contains(ptClient))
+            else if (YellowRect.Contains(ptClient))
             {
                 value = TriColorValue.Yellow;
                 found = true;
             }
-            else if (this.GreenRect.Contains(ptClient))
+            else if (GreenRect.Contains(ptClient))
             {
                 value = TriColorValue.Green;
                 found = true;
@@ -84,9 +79,9 @@ namespace UIAControls
         {
             switch (value)
             {
-                case TriColorValue.Red: return this.RedRect;
-                case TriColorValue.Yellow: return this.YellowRect;
-                case TriColorValue.Green: return this.GreenRect;
+                case TriColorValue.Red: return RedRect;
+                case TriColorValue.Yellow: return YellowRect;
+                case TriColorValue.Green: return GreenRect;
             }
             return Rectangle.Empty;
         }
@@ -99,7 +94,7 @@ namespace UIAControls
         {
             base.OnSizeChanged(e);
 
-            this.Invalidate();
+            Invalidate();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -107,37 +102,37 @@ namespace UIAControls
             base.OnPaint(e);
             
             // Bars            
-            e.Graphics.FillRectangle(Brushes.Red, this.RedRect);
-            e.Graphics.FillRectangle(Brushes.Yellow, this.YellowRect);
-            e.Graphics.FillRectangle(Brushes.Green, this.GreenRect);
+            e.Graphics.FillRectangle(Brushes.Red, RedRect);
+            e.Graphics.FillRectangle(Brushes.Yellow, YellowRect);
+            e.Graphics.FillRectangle(Brushes.Green, GreenRect);
 
             // Labels
-            e.Graphics.DrawString("Red", this.Font, Brushes.White, 
-                RectFFromRect(Rectangle.Inflate(this.RedRect, -4, -4)));
-            e.Graphics.DrawString("Yellow", this.Font, Brushes.Black,
-                RectFFromRect(Rectangle.Inflate(this.YellowRect, -4, -4)));
-            e.Graphics.DrawString("Green", this.Font, Brushes.White,
-                RectFFromRect(Rectangle.Inflate(this.GreenRect, -4, -4)));
+            e.Graphics.DrawString("Red", Font, Brushes.White, 
+                RectFFromRect(Rectangle.Inflate(RedRect, -4, -4)));
+            e.Graphics.DrawString("Yellow", Font, Brushes.Black,
+                RectFFromRect(Rectangle.Inflate(YellowRect, -4, -4)));
+            e.Graphics.DrawString("Green", Font, Brushes.White,
+                RectFFromRect(Rectangle.Inflate(GreenRect, -4, -4)));
 
             // Selection: draw a small circle in the selected value area
-            Brush contentBrush = this.value == TriColorValue.Yellow ? Brushes.Black : Brushes.White;
-            Rectangle selRect = RectForValue(this.value);
-            Point selCenterPoint = new Point(selRect.Left + selRect.Width / 2,
+            var contentBrush = value == TriColorValue.Yellow ? Brushes.Black : Brushes.White;
+            var selRect = RectForValue(value);
+            var selCenterPoint = new Point(selRect.Left + selRect.Width / 2,
                                              selRect.Top + selRect.Height / 2);
-            Rectangle rectMarker = new Rectangle(selCenterPoint, new Size(0, 0));
+            var rectMarker = new Rectangle(selCenterPoint, new Size(0, 0));
             rectMarker.Inflate(10, 10);
             e.Graphics.FillEllipse(contentBrush, rectMarker);
 
             // Border
-            Rectangle border = this.ClientRectangle;
+            var border = ClientRectangle;
             border.Height -= 1;
             border.Width -= 1;
             e.Graphics.DrawRectangle(Pens.Black, border);
 
             // Focus rect
-            if (this.Focused)
+            if (Focused)
             {
-                Rectangle focusRect = this.ClientRectangle;
+                var focusRect = ClientRectangle;
                 focusRect.Inflate(-2, -2);
                 ControlPaint.DrawFocusRectangle(e.Graphics, focusRect);
             }
@@ -150,7 +145,7 @@ namespace UIAControls
             TriColorValue newValue; ;
             if (ValueFromPoint(e.Location, out newValue))
             {
-                this.Value = newValue;
+                Value = newValue;
             }
         }
 
@@ -158,7 +153,7 @@ namespace UIAControls
         {
             base.OnKeyUp(e);
 
-            TriColorValue newValue = this.value;
+            var newValue = value;
             if (!(e.Alt || e.Control || e.Shift))
             {
                 if (e.KeyCode == Keys.Up)
@@ -178,21 +173,21 @@ namespace UIAControls
                     }
                 }
             }
-            this.Value = newValue;
+            Value = newValue;
         }
 
         protected override void OnGotFocus(EventArgs e)
         {
             base.OnGotFocus(e);
 
-            this.Invalidate();
+            Invalidate();
         }
 
         protected override void OnLostFocus(EventArgs e)
         {
             base.OnLostFocus(e);
 
-            this.Invalidate();
+            Invalidate();
         }
 
         protected override void WndProc(ref Message m)
@@ -201,7 +196,7 @@ namespace UIAControls
             if (m.Msg == 0x3D /* WM_GETOBJECT */)
             {
                 m.Result = NativeMethods.UiaReturnRawElementProvider(
-                    m.HWnd, m.WParam, m.LParam, this.Provider);
+                    m.HWnd, m.WParam, m.LParam, Provider);
             }
             else
             {
@@ -226,9 +221,9 @@ namespace UIAControls
             Rectangle rect;
             switch (value)
             {
-                case TriColorValue.Red: rect = this.RedRect; break;
-                case TriColorValue.Yellow: rect = this.YellowRect; break;
-                case TriColorValue.Green: rect = this.GreenRect; break;
+                case TriColorValue.Red: rect = RedRect; break;
+                case TriColorValue.Yellow: rect = YellowRect; break;
+                case TriColorValue.Green: rect = GreenRect; break;
                 default: rect = new Rectangle(); break;
             }
             return rect;
@@ -241,8 +236,8 @@ namespace UIAControls
                 return new Rectangle(
                     0,
                     0,
-                    this.Width,
-                    this.Height / 3);
+                    Width,
+                    Height / 3);
             }
         }
 
@@ -252,9 +247,9 @@ namespace UIAControls
             {
                 return new Rectangle(
                     0,
-                    this.RedRect.Bottom,
-                    this.Width,
-                    this.Height / 3);
+                    RedRect.Bottom,
+                    Width,
+                    Height / 3);
             }
         }
 
@@ -264,9 +259,9 @@ namespace UIAControls
             {
                 return new Rectangle(
                     0,
-                    this.YellowRect.Bottom,
-                    this.Width,
-                    this.Height - this.YellowRect.Bottom);
+                    YellowRect.Bottom,
+                    Width,
+                    Height - YellowRect.Bottom);
             }
         }
 
@@ -274,11 +269,11 @@ namespace UIAControls
         {
             get
             {
-                if (this.provider == null)
+                if (provider == null)
                 {
-                    this.provider = new TriColorProvider(this);
+                    provider = new TriColorProvider(this);
                 }
-                return this.provider;
+                return provider;
             }
         }
 

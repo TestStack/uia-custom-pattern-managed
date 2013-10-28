@@ -5,9 +5,17 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -29,19 +37,28 @@
   </ImportGroup>
   <PropertyGroup>
     <_ProjectFileVersion>11.0.60610.1</_ProjectFileVersion>
-    <WindowsSdkDir>c:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\</WindowsSdkDir>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='Win32'">
+    <TlbImpMachine>X86</TlbImpMachine>
+    <MidlEnv>win32</MidlEnv>
+    <WindowsSdkDir>c:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\</WindowsSdkDir>
+  </PropertyGroup>  
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <MidlEnv>x64</MidlEnv>
+    <TlbImpMachine>X64</TlbImpMachine>
+    <WindowsSdkDir>c:\Program Files\Microsoft SDKs\Windows\v7.1\</WindowsSdkDir>
+  </PropertyGroup>  
   <ItemGroup>
     <CustomBuild Include="$(WindowsSdkDir)\include\UIAutomationClient.idl">
       <Message>Running midl</Message>
-      <Command>midl /nologo /char signed /env win32  /tlb "$(IntDir)UIAutomationClient.tlb" /h "$(IntDir)UIAutomationClient_h.h" "$(WindowsSdkDir)\include\UIAutomationClient.idl"</Command>
+      <Command>midl /nologo /char signed /env $(MidlEnv) /tlb "$(IntDir)UIAutomationClient.tlb" /h "$(IntDir)UIAutomationClient_h.h" "$(WindowsSdkDir)\include\UIAutomationClient.idl"</Command>
       <Outputs>$(IntDir)UIAutomationClient.tlb;%(Outputs)</Outputs>
     </CustomBuild>
     <CustomBuild Include="$(IntDir)UIAutomationClient.tlb">
       <Message>Importing TLB</Message>
-      <Command>tlbimp /machine:X86 /silent /out:$(IntDir)Interop.UIAutomationClient.dll /namespace:Interop.UIAutomationClient $(IntDir)UIAutomationClient.tlb</Command>
+      <Command>tlbimp /machine:$(TlbImpMachine) /silent /out:$(IntDir)Interop.UIAutomationClient.dll /namespace:Interop.UIAutomationClient $(IntDir)UIAutomationClient.tlb</Command>
       <AdditionalInputs>$(IntDir)UIAutomationClient.tlb;%(AdditionalInputs)</AdditionalInputs>
       <Outputs>$(IntDir)Raw\Interop.UIAutomationClient.dll;%(Outputs)</Outputs>
     </CustomBuild>

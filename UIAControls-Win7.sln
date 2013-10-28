@@ -1,12 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF0CC894-1CFB-4FCA-8122-F8D4CF180496}"
-	ProjectSection(SolutionItems) = preProject
-		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
-		UIAControls-Win7.vsmdi = UIAControls-Win7.vsmdi
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAControls", "UIAControls\UIAControls.csproj", "{3663F841-CE46-42F6-82A3-FF60E17C0593}"
 	ProjectSection(ProjectDependencies) = postProject
 		{17670024-CEAE-4B5A-969C-AA0FC4A4CBA7} = {17670024-CEAE-4B5A-969C-AA0FC4A4CBA7}
@@ -26,9 +20,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIAClientInterop", "UiaClientInterop\UIAClientInterop.vcxproj", "{17670024-CEAE-4B5A-969C-AA0FC4A4CBA7}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = UIAControls-Win7.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|X86 = Debug|X86

@@ -2,16 +2,16 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Interop.UIAutomationCore;
 using Interop.UIAutomationClient;
+using NUnit.Framework;
 
 namespace UiaControlsTest
 {
     /// <summary>
     /// A set of unit tests for the UIA Custom Patterns demo
     /// </summary>
-    [TestClass]
+    [TestFixture]
     public class CustomPatternUnitTest
     {
         private TargetApp app;
@@ -40,7 +40,7 @@ namespace UiaControlsTest
             }
         }
 
-        [TestInitialize()]
+        [SetUp]
         public void MyTestInitialize()
         {
             // Create the factory and register schemas
@@ -64,19 +64,19 @@ namespace UiaControlsTest
             Assert.IsNotNull(this.customElement);
         }
 
-        [TestCleanup()]
+        [TearDown]
         public void MyTestCleanup()
         {
             app.Dispose();
             app = null;
         }
 
-        [TestMethod]
+        [Test]
         public void TestReadyStateProperty()
         {
             // Query our custom property
             object readyStateValue = this.customElement.GetCurrentPropertyValue(UIAControls.ReadyStateSchema.GetInstance().ReadyStateProperty.PropertyId);
-            Assert.IsInstanceOfType(readyStateValue, typeof(string));
+            Assert.IsInstanceOf<string>(readyStateValue);
 
             // By default, UIAControls.exe launches in not-ready state
             Assert.AreEqual("Not Ready", (string)readyStateValue);
@@ -85,7 +85,7 @@ namespace UiaControlsTest
         /// <summary>
         /// Validate that the Color pattern is working for the main control
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestColorPattern()
         {
             UIAControls.ColorSchema schema = UIAControls.ColorSchema.GetInstance();
@@ -110,7 +110,7 @@ namespace UiaControlsTest
         /// <summary>
         /// Test support for Int values using Test pattern
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestIntSupport()
         {
             UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();
@@ -137,7 +137,7 @@ namespace UiaControlsTest
         // <summary>
         // Test support for String values using Test pattern
         // </summary>
-        [TestMethod]
+        [Test]
         public void TestStringSupport()
         {
             UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();
@@ -164,7 +164,7 @@ namespace UiaControlsTest
         /// <summary>
         /// Test support for Bool values using Test pattern
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestBoolSupport()
         {
             UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();
@@ -192,7 +192,7 @@ namespace UiaControlsTest
         /// <summary>
         /// Test support for Double values using Test pattern
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestDoubleSupport()
         {
             UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();
@@ -220,7 +220,7 @@ namespace UiaControlsTest
         /// <summary>
         /// Test support for Element values using Test pattern
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestElementSupport()
         {
             UIAControls.TestSchema schema = UIAControls.TestSchema.GetInstance();

@@ -41,11 +41,13 @@
     <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='Win32'">
+    <NetPlatformTarget>x86</NetPlatformTarget>
     <TlbImpMachine>X86</TlbImpMachine>
     <MidlEnv>win32</MidlEnv>
     <WindowsSdkDir>c:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\</WindowsSdkDir>
   </PropertyGroup>  
   <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <NetPlatformTarget>x64</NetPlatformTarget>
     <TlbImpMachine>X64</TlbImpMachine>
     <MidlEnv>x64</MidlEnv>
     <WindowsSdkDir>c:\Program Files\Microsoft SDKs\Windows\v7.1\</WindowsSdkDir>
@@ -69,7 +71,7 @@
     </CustomBuild>
     <CustomBuild Include="$(IntDir)UIAutomationCore.il">
       <Message>Customizing UIA IL</Message>
-      <Command>$(SolutionDir)\CustomizeUiaInterop\bin\$(Configuration)\CustomizeUiaInterop $(IntDir)UIAutomationCore.il $(IntDir)Custom.UIAutomationCore.il</Command>
+      <Command>$(SolutionDir)\CustomizeUiaInterop\bin\$(NetPlatformTarget)\$(Configuration)\CustomizeUiaInterop $(IntDir)UIAutomationCore.il $(IntDir)Custom.UIAutomationCore.il</Command>
       <AdditionalInputs>$(IntDir)UIAutomationCore.il;%(AdditionalInputs)</AdditionalInputs>
       <Outputs>$(IntDir)Custom.UIAutomationCore.il;%(Outputs)</Outputs>
     </CustomBuild>

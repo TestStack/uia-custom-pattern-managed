@@ -7,6 +7,7 @@ namespace WpfAppWithAdvTextControl
         public AdvTextBoxAutomationPeer(AdvTextBox owner)
             : base(owner)
         {
+            CaretPositionSchema.Instance.Register();
         }
 
         private new AdvTextBox Owner

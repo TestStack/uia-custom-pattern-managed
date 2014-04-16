@@ -50,6 +50,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.UIAutomationCore">
+      <HintPath>..\UIACoreInterop\Debug\Interop.UIAutomationCore.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -80,6 +84,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CaretPositionProviderClientInstance.cs" />
+    <Compile Include="CaretPositionProviderHandler.cs" />
+    <Compile Include="CaretPositionSchema.cs" />
+    <Compile Include="ICaretPositionPattern.cs" />
     <Compile Include="ICaretPositionProvider.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -112,6 +120,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UiaManagedCustomPatternCore\UiaManagedCustomPatternCore.csproj">
+      <Project>{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}</Project>
+      <Name>UiaManagedCustomPatternCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

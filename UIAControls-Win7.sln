@@ -19,6 +19,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIACoreInterop", "UiaCoreIn
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UIAClientInterop", "UiaClientInterop\UIAClientInterop.vcxproj", "{17670024-CEAE-4B5A-969C-AA0FC4A4CBA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UiaManagedCustomPatternCore", "UiaManagedCustomPatternCore\UiaManagedCustomPatternCore.csproj", "{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}"
+	ProjectSection(ProjectDependencies) = postProject
+		{17670024-CEAE-4B5A-969C-AA0FC4A4CBA7} = {17670024-CEAE-4B5A-969C-AA0FC4A4CBA7}
+		{5766F7EE-37C6-41FF-8144-BB9532339D7D} = {5766F7EE-37C6-41FF-8144-BB9532339D7D}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -67,6 +73,12 @@ Global
 		{17670024-CEAE-4B5A-969C-AA0FC4A4CBA7}.Release|x64.Build.0 = Release|x64
 		{17670024-CEAE-4B5A-969C-AA0FC4A4CBA7}.Release|X86.ActiveCfg = Release|Win32
 		{17670024-CEAE-4B5A-969C-AA0FC4A4CBA7}.Release|X86.Build.0 = Release|Win32
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Debug|x64.ActiveCfg = Debug|x64
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Debug|x64.Build.0 = Debug|x64
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Debug|X86.ActiveCfg = Debug|x86
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Debug|X86.Build.0 = Debug|x86
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|x64.ActiveCfg = Release|Any CPU
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|X86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

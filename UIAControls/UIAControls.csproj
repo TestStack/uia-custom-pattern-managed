@@ -77,8 +77,6 @@
     <Compile Include="BaseFragmentRootProvider.cs" />
     <Compile Include="BaseSimpleProvider.cs" />
     <Compile Include="ColorPattern.cs" />
-    <Compile Include="CustomPatternHelpers.cs" />
-    <Compile Include="CustomPatternSchemaBase.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,6 +124,12 @@
     <Compile Include="TriColorFragmentProvider.cs" />
     <Compile Include="TriColorProvider.cs" />
     <Compile Include="TriColorValue.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\UiaManagedCustomPatternCore\UiaManagedCustomPatternCore.csproj">
+      <Project>{21db168c-e0ef-4e07-b24a-1e5bb64d2a17}</Project>
+      <Name>UiaManagedCustomPatternCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

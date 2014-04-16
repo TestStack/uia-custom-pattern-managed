@@ -15,12 +15,6 @@ namespace UiaControlsTest
         private IUIAutomation _factory;
         private IUIAutomationElement _customElement;
 
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext { get; set; }
-
         [SetUp]
         public void MyTestInitialize()
         {

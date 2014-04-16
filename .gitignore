@@ -10,3 +10,4 @@ Debug/
 UiaClientInterop/UIAutomationClient_i.c
 UiaCoreInterop/UIAutomationCore_i.c
 packages/
+Release/

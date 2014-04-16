@@ -1,0 +1,9 @@
+﻿<Window x:Class="WpfAppWithAdvTextControl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wpfAppWithAdvTextControl="clr-namespace:WpfAppWithAdvTextControl"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <wpfAppWithAdvTextControl:AdvTextBox />
+    </Grid>
+</Window>

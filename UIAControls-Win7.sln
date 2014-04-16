@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UiaManagedCustomPatternCore
 		{5766F7EE-37C6-41FF-8144-BB9532339D7D} = {5766F7EE-37C6-41FF-8144-BB9532339D7D}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfAppWithAdvTextControl", "WpfAppWithAdvTextControl\WpfAppWithAdvTextControl.csproj", "{B010A379-D2B1-474A-89F8-5A381D99183D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -79,8 +81,18 @@ Global
 		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Debug|x64.Build.0 = Debug|x64
 		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Debug|X86.ActiveCfg = Debug|x86
 		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Debug|X86.Build.0 = Debug|x86
-		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|x64.ActiveCfg = Release|Any CPU
-		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|X86.ActiveCfg = Release|Any CPU
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|x64.ActiveCfg = Release|x64
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|x64.Build.0 = Release|x64
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|X86.ActiveCfg = Release|x86
+		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|X86.Build.0 = Release|x86
+		{B010A379-D2B1-474A-89F8-5A381D99183D}.Debug|x64.ActiveCfg = Debug|x64
+		{B010A379-D2B1-474A-89F8-5A381D99183D}.Debug|x64.Build.0 = Debug|x64
+		{B010A379-D2B1-474A-89F8-5A381D99183D}.Debug|X86.ActiveCfg = Debug|x86
+		{B010A379-D2B1-474A-89F8-5A381D99183D}.Debug|X86.Build.0 = Debug|x86
+		{B010A379-D2B1-474A-89F8-5A381D99183D}.Release|x64.ActiveCfg = Release|x64
+		{B010A379-D2B1-474A-89F8-5A381D99183D}.Release|x64.Build.0 = Release|x64
+		{B010A379-D2B1-474A-89F8-5A381D99183D}.Release|X86.ActiveCfg = Release|x86
+		{B010A379-D2B1-474A-89F8-5A381D99183D}.Release|X86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

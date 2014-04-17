@@ -82,7 +82,7 @@ namespace UIAControls
         /// <summary>
         /// Helper method to register this pattern.
         /// </summary>
-        public void Register(bool makeAugmentationForWpfPeers)
+        public void Register(bool makeAugmentationForWpfPeers = false)
         {
             if (!_registered)
             {

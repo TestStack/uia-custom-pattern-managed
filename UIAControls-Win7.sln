@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UiaManagedCustomPatternCore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfAppWithAdvTextControl", "WpfAppWithAdvTextControl\WpfAppWithAdvTextControl.csproj", "{B010A379-D2B1-474A-89F8-5A381D99183D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfControlTest", "WpfControlTest\WpfControlTest.csproj", "{D0911F36-4E46-4588-BDB1-500F80368D69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -93,6 +95,14 @@ Global
 		{B010A379-D2B1-474A-89F8-5A381D99183D}.Release|x64.Build.0 = Release|x64
 		{B010A379-D2B1-474A-89F8-5A381D99183D}.Release|X86.ActiveCfg = Release|x86
 		{B010A379-D2B1-474A-89F8-5A381D99183D}.Release|X86.Build.0 = Release|x86
+		{D0911F36-4E46-4588-BDB1-500F80368D69}.Debug|x64.ActiveCfg = Debug|x64
+		{D0911F36-4E46-4588-BDB1-500F80368D69}.Debug|x64.Build.0 = Debug|x64
+		{D0911F36-4E46-4588-BDB1-500F80368D69}.Debug|X86.ActiveCfg = Debug|x86
+		{D0911F36-4E46-4588-BDB1-500F80368D69}.Debug|X86.Build.0 = Debug|x86
+		{D0911F36-4E46-4588-BDB1-500F80368D69}.Release|x64.ActiveCfg = Release|x64
+		{D0911F36-4E46-4588-BDB1-500F80368D69}.Release|x64.Build.0 = Release|x64
+		{D0911F36-4E46-4588-BDB1-500F80368D69}.Release|X86.ActiveCfg = Release|x86
+		{D0911F36-4E46-4588-BDB1-500F80368D69}.Release|X86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

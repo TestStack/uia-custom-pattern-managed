@@ -4,6 +4,6 @@
         xmlns:wpfAppWithAdvTextControl="clr-namespace:WpfAppWithAdvTextControl"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <wpfAppWithAdvTextControl:AdvTextBox />
+        <wpfAppWithAdvTextControl:AdvTextBox AutomationProperties.AutomationId="advTextBox1" />
     </Grid>
 </Window>

@@ -82,7 +82,7 @@ namespace UIAControls
         /// <summary>
         /// Helper method to register this pattern.
         /// </summary>
-        public void Register()
+        public void Register(bool makeAugmentationForWpfPeers)
         {
             if (!_registered)
             {
@@ -137,6 +137,9 @@ namespace UIAControls
                 {
                     Events[i].EventId = eventIds[i];
                 }
+
+                if (makeAugmentationForWpfPeers)
+                    AutomationPeerAugmentationHelper.Register(this);
 
                 _registered = true;
             }

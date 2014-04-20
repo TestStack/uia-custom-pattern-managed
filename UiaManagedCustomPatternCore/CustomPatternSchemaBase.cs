@@ -119,14 +119,19 @@ namespace UIAControls
                 }
 
                 // Register the pattern
-                int[] propertyIds;
-                int[] eventIds;
-                UiaPatternInfoHelper.RegisterPattern(registrar,
-                                                     patternInfo,
-                                                     out _patternId,
-                                                     out _patternAvailablePropertyId,
-                                                     out propertyIds,
-                                                     out eventIds);
+                var patternData = patternInfo.Data;
+
+                // Call register pattern
+                int[] propertyIds = new int[patternData.cProperties];
+                int[] eventIds = new int[patternData.cEvents];
+                registrar.RegisterPattern(
+                    ref patternData,
+                    out _patternId,
+                    out _patternAvailablePropertyId,
+                    patternData.cProperties,
+                    propertyIds,
+                    patternData.cEvents,
+                    eventIds);
 
                 // Write the property IDs back
                 for (var i = 0; i < propertyIds.Length; ++i)

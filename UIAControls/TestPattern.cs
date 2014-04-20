@@ -382,7 +382,7 @@ namespace UIAControls
             pClientWrapper = new TestProviderClientInstance(pPatternInstance);
         }
 
-        public void Dispatch(object pTarget, uint index, IntPtr pParams, uint cParams)
+        public void Dispatch(object pTarget, uint index, UIAutomationParameter[] pParams, uint cParams)
         {
             // Parse the provider and parameter list
             var provider = (ITestProvider) pTarget;

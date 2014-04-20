@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Interop.UIAutomationClient;
 using Interop.UIAutomationCore;
@@ -459,64 +460,6 @@ namespace UIAControls
 
             _built = true;
         }
-
-        // Helper for the Registrar's pattern registration method, which has tricky marshalling
-        public static void RegisterPattern(IUIAutomationRegistrar registrar,
-                                           UiaPatternInfoHelper patternInfo,
-                                           out int patternId,
-                                           out int patternAvailableId,
-                                           out int[] propertyIds,
-                                           out int[] eventIds)
-        {
-            var patternData = patternInfo.Data;
-
-            var pEventIds = IntPtr.Zero;
-            var pPropertyIds = IntPtr.Zero;
-            try
-            {
-                // Allocate out-param lists
-                if (patternData.cProperties > 0)
-                {
-                    pPropertyIds = Marshal.AllocCoTaskMem((int) patternData.cProperties*Marshal.SizeOf(typeof (int)));
-                }
-                if (patternData.cEvents > 0)
-                {
-                    pEventIds = Marshal.AllocCoTaskMem((int) patternData.cEvents*Marshal.SizeOf(typeof (int)));
-                }
-
-                // Call register pattern
-                registrar.RegisterPattern(
-                    ref patternData,
-                    out patternId,
-                    out patternAvailableId,
-                    patternData.cProperties,
-                    pPropertyIds,
-                    patternData.cEvents,
-                    pEventIds);
-
-                // Convert the lists of property IDs and event IDs into managed arrays
-                propertyIds = new int[patternData.cProperties];
-                var propertyPointer = pPropertyIds;
-                for (var i = 0; i < patternData.cProperties; ++i)
-                {
-                    propertyIds[i] = (int) Marshal.PtrToStructure(propertyPointer, typeof (int));
-                    propertyPointer = (IntPtr) (propertyPointer.ToInt64() + Marshal.SizeOf(typeof (int)));
-                }
-
-                eventIds = new int[patternData.cEvents];
-                var eventPointer = pEventIds;
-                for (var i = 0; i < patternData.cEvents; ++i)
-                {
-                    eventIds[i] = (int) Marshal.PtrToStructure(eventPointer, typeof (int));
-                    eventPointer = (IntPtr) (eventPointer.ToInt64() + Marshal.SizeOf(typeof (int)));
-                }
-            }
-            finally
-            {
-                Marshal.FreeCoTaskMem(pPropertyIds);
-                Marshal.FreeCoTaskMem(pEventIds);
-            }
-        }
     }
 
     /// <summary>
@@ -714,9 +657,6 @@ namespace UIAControls
     {
         private readonly List<UiaParameterHelper> _uiaParams = new List<UiaParameterHelper>();
 
-        private IntPtr _marshalledData;
-        private bool _ownsData;
-
         // Construct a parameter list from a method info structure
         public UiaParameterListHelper(UiaMethodInfoHelper methodInfo)
         {
@@ -731,42 +671,21 @@ namespace UIAControls
         }
 
         // Construct a parameter list from a given in-memory structure
-        public UiaParameterListHelper(IntPtr marshalledData, uint paramCount)
+        public UiaParameterListHelper(UIAutomationParameter[] pParams, uint paramCount)
         {
-            _marshalledData = marshalledData;
-            _ownsData = false;
-
             // Construct the parameter list from the marshalled data
-            var paramPointer = _marshalledData;
             for (uint i = 0; i < paramCount; ++i)
             {
-                var uiaParam = (UIAutomationParameter) Marshal.PtrToStructure(
-                    paramPointer, typeof (UIAutomationParameter));
-                _uiaParams.Add(new UiaParameterHelper(uiaParam.type, uiaParam.pData));
-
-                paramPointer = (IntPtr) (paramPointer.ToInt64() + Marshal.SizeOf(typeof (UIAutomationParameter)));
-            }
-        }
-
-        // Free any marshalled data associated with this structure
-        ~UiaParameterListHelper()
-        {
-            if (_ownsData)
-            {
-                Marshal.FreeCoTaskMem(_marshalledData);
+                _uiaParams.Add(new UiaParameterHelper(pParams[i].type, pParams[i].pData));
             }
         }
 
         // Get a pointer to the whole parameter list marshalled into a block of memory
-        public IntPtr Data
+        public UIAutomationParameter[] Data
         {
             get
             {
-                if (_marshalledData == IntPtr.Zero)
-                {
-                    Build();
-                }
-                return _marshalledData;
+                return _uiaParams.Select(p => p.ToUiaParam()).ToArray();
             }
         }
 
@@ -796,22 +715,6 @@ namespace UIAControls
         {
             get { return _uiaParams[i].Value; }
             set { _uiaParams[i].Value = value; }
-        }
-
-        private void Build()
-        {
-            // Allocate the parameter block
-            _marshalledData = Marshal.AllocCoTaskMem(_uiaParams.Count*Marshal.SizeOf(typeof (UIAutomationParameter)));
-
-            // Write the parameter data to the marshalled array
-            var paramPointer = _marshalledData;
-            foreach (UiaParameterHelper paramHelper in _uiaParams)
-            {
-                Marshal.StructureToPtr(paramHelper.ToUiaParam(), paramPointer, true);
-                paramPointer = (IntPtr) (paramPointer.ToInt64() + Marshal.SizeOf(typeof (UIAutomationParameter)));
-            }
-
-            _ownsData = true;
         }
     }
 }

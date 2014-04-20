@@ -11,7 +11,7 @@ namespace WpfAppWithAdvTextControl
             pClientWrapper = new CaretPositionProviderClientInstance(pPatternInstance);
         }
 
-        public void Dispatch(object pTarget, uint index, IntPtr pParams, uint cParams)
+        public void Dispatch(object pTarget, uint index, UIAutomationParameter[] pParams, uint cParams)
         {
             var provider = (ICaretPositionProvider)pTarget;
             var paramList = new UiaParameterListHelper(pParams, cParams);

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -39,18 +39,17 @@
     <_ProjectFileVersion>11.0.60610.1</_ProjectFileVersion>
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <WindowsSdkDir>c:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\</WindowsSdkDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='Win32'">
     <NetPlatformTarget>x86</NetPlatformTarget>
     <TlbImpMachine>X86</TlbImpMachine>
     <MidlEnv>win32</MidlEnv>
-    <WindowsSdkDir>c:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\</WindowsSdkDir>
   </PropertyGroup>  
   <PropertyGroup Condition="'$(Platform)'=='x64'">
     <NetPlatformTarget>x64</NetPlatformTarget>
     <TlbImpMachine>X64</TlbImpMachine>
     <MidlEnv>x64</MidlEnv>
-    <WindowsSdkDir>c:\Program Files\Microsoft SDKs\Windows\v7.1\</WindowsSdkDir>
   </PropertyGroup>  
   <ItemGroup>
     <CustomBuild Include="$(WindowsSdkDir)\include\UIAutomationCore.idl">

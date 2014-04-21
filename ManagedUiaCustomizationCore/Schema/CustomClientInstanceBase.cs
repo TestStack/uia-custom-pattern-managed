@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Interop.UIAutomationCore;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     /// <summary>
     ///     Base class for a custom pattern's client instance.

@@ -1,5 +1,12 @@
 ﻿using System;
+using System.Windows.Automation.Providers;
 using Interop.UIAutomationCore;
+using UIAutomationClient;
+using IRawElementProviderFragment = Interop.UIAutomationCore.IRawElementProviderFragment;
+using IRawElementProviderFragmentRoot = Interop.UIAutomationCore.IRawElementProviderFragmentRoot;
+using IRawElementProviderSimple = Interop.UIAutomationCore.IRawElementProviderSimple;
+using ISelectionItemProvider = Interop.UIAutomationCore.ISelectionItemProvider;
+using ProviderOptions = Interop.UIAutomationCore.ProviderOptions;
 
 namespace UIAControls
 {
@@ -20,15 +27,15 @@ namespace UIAControls
             // Populate static properties
             //
             // In a production app, Name should be localized
-            AddStaticProperty(UiaConstants.UIA_NamePropertyId, _value.ToString());
-            AddStaticProperty(UiaConstants.UIA_ControlTypePropertyId, UiaConstants.UIA_CustomControlTypeId);
+            AddStaticProperty(UIA_PropertyIds.UIA_NamePropertyId, _value.ToString());
+            AddStaticProperty(UIA_PropertyIds.UIA_ControlTypePropertyId, UIA_ControlTypeIds.UIA_CustomControlTypeId);
             // In a production app, LocalizedControlType should be localized
-            AddStaticProperty(UiaConstants.UIA_LocalizedControlTypePropertyId, "tri-color item");
-            AddStaticProperty(UiaConstants.UIA_ProviderDescriptionPropertyId, "UIASamples: Tri-Color Fragment Provider");
-            AddStaticProperty(UiaConstants.UIA_AutomationIdPropertyId, _value.ToString());
-            AddStaticProperty(UiaConstants.UIA_IsKeyboardFocusablePropertyId, false);
-            AddStaticProperty(UiaConstants.UIA_IsControlElementPropertyId, true);
-            AddStaticProperty(UiaConstants.UIA_IsContentElementPropertyId, false);
+            AddStaticProperty(UIA_PropertyIds.UIA_LocalizedControlTypePropertyId, "tri-color item");
+            AddStaticProperty(UIA_PropertyIds.UIA_ProviderDescriptionPropertyId, "UIASamples: Tri-Color Fragment Provider");
+            AddStaticProperty(UIA_PropertyIds.UIA_AutomationIdPropertyId, _value.ToString());
+            AddStaticProperty(UIA_PropertyIds.UIA_IsKeyboardFocusablePropertyId, false);
+            AddStaticProperty(UIA_PropertyIds.UIA_IsControlElementPropertyId, true);
+            AddStaticProperty(UIA_PropertyIds.UIA_IsContentElementPropertyId, false);
         }
 
         public override ProviderOptions ProviderOptions
@@ -43,7 +50,7 @@ namespace UIAControls
 
         public override object GetPatternProvider(int patternId)
         {
-            if (patternId == UiaConstants.UIA_SelectionItemPatternId)
+            if (patternId == UIA_PatternIds.UIA_SelectionItemPatternId)
             {
                 return this;
             }
@@ -57,7 +64,7 @@ namespace UIAControls
         public override int[] GetRuntimeId()
         {
             var runtimeId = new int[2];
-            runtimeId[0] = UiaConstants.AppendRuntimeId;
+            runtimeId[0] = AutomationInteropProvider.AppendRuntimeId;
             runtimeId[1] = (int) _value;
             return runtimeId;
         }

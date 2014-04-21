@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class PatternMethodAttribute : Attribute

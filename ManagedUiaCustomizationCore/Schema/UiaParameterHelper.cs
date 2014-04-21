@@ -4,7 +4,7 @@ using Interop.UIAutomationCore;
 using UIAutomationClient;
 using IRawElementProviderSimple = Interop.UIAutomationCore.IRawElementProviderSimple;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     /// <summary>
     /// Helper class to marshal parameters for UIA custom method calls

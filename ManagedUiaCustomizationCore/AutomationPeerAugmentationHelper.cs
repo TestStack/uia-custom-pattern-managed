@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Windows.Automation.Peers;
 using System.Windows.Threading;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     public class AutomationPeerAugmentationHelper
     {

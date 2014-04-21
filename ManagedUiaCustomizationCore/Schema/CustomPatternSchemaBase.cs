@@ -1,7 +1,7 @@
 ﻿using System;
 using Interop.UIAutomationCore;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     /// <summary>
     ///     Base class for defining a custom schema.
@@ -85,8 +85,7 @@ namespace UIAControls
             if (!_registered)
             {
                 // Get our pointer to the registrar
-                IUIAutomationRegistrar registrar =
-                    new CUIAutomationRegistrarClass();
+                IUIAutomationRegistrar registrar = new CUIAutomationRegistrarClass();
 
                 // Set up the pattern struct
                 var patternInfo = new UiaPatternInfoHelper(

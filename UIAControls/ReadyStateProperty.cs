@@ -1,5 +1,6 @@
 ﻿using System;
 using Interop.UIAutomationCore;
+using ManagedUiaCustomizationCore;
 
 // Ready State Property
 // Declaration of a simple custom property to represent the readiness of a control.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class PatternGuidAttribute : Attribute

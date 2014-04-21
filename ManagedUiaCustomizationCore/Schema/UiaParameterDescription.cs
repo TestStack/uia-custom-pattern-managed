@@ -1,6 +1,6 @@
 using Interop.UIAutomationCore;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     /// <summary>
     /// A description of a single parameter

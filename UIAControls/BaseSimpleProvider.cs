@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Interop.UIAutomationCore;
+using UIAutomationClient;
+using IRawElementProviderSimple = Interop.UIAutomationCore.IRawElementProviderSimple;
+using ProviderOptions = Interop.UIAutomationCore.ProviderOptions;
 
 namespace UIAControls
 {
@@ -29,7 +31,7 @@ namespace UIAControls
             }
 
             // Switching construct to go get the right property from a virtual method.
-            if (propertyId == UiaConstants.UIA_NamePropertyId)
+            if (propertyId == UIA_PropertyIds.UIA_NamePropertyId)
             {
                 return GetName();
             }

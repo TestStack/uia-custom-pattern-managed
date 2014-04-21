@@ -1,6 +1,6 @@
 ﻿using System;
 using Interop.UIAutomationCore;
-using UIAControls;
+using ManagedUiaCustomizationCore;
 
 namespace WpfAppWithAdvTextControl
 {

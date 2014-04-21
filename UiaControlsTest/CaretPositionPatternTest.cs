@@ -1,10 +1,9 @@
 ﻿using System;
 using NUnit.Framework;
-using UiaControlsTest;
 using UIAutomationClient;
 using WpfAppWithAdvTextControl;
 
-namespace WpfControlTest
+namespace UiaControlsTest
 {
     [TestFixture]
     public class CaretPositionPatternTest

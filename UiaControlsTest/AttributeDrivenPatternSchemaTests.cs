@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Interop.UIAutomationCore;
+using ManagedUiaCustomizationCore;
 using NUnit.Framework;
-using UIAControls;
 
-namespace WpfControlTest
+namespace UiaControlsTest
 {
     [TestFixture]
     public class AttributeDrivenPatternSchemaTests

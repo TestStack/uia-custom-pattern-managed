@@ -2,7 +2,7 @@
 using System.Linq;
 using Interop.UIAutomationCore;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     /// <summary>
     /// Helper class to assemble information about a parameter list

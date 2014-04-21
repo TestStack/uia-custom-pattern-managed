@@ -5,7 +5,7 @@ using System.Reflection;
 using Interop.UIAutomationCore;
 using UIAutomationClient;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     public class AttributeDrivenPatternSchema : CustomPatternSchemaBase
     {

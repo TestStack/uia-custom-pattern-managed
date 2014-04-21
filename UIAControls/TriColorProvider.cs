@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using Interop.UIAutomationCore;
+using UIAutomationClient;
+using IRawElementProviderSimple = Interop.UIAutomationCore.IRawElementProviderSimple;
+using ProviderOptions = Interop.UIAutomationCore.ProviderOptions;
 
 namespace UIAControls
 {
@@ -17,16 +20,16 @@ namespace UIAControls
 
             // Populate static properties
             //
-            AddStaticProperty(UiaConstants.UIA_ControlTypePropertyId, UiaConstants.UIA_CustomControlTypeId);
-            AddStaticProperty(UiaConstants.UIA_LocalizedControlTypePropertyId, "tri-color picker");
-            AddStaticProperty(UiaConstants.UIA_ProviderDescriptionPropertyId, "UIASamples: Tri-Color Provider");
-            AddStaticProperty(UiaConstants.UIA_HelpTextPropertyId,
+            AddStaticProperty(UIA_PropertyIds.UIA_ControlTypePropertyId, UIA_ControlTypeIds.UIA_CustomControlTypeId);
+            AddStaticProperty(UIA_PropertyIds.UIA_LocalizedControlTypePropertyId, "tri-color picker");
+            AddStaticProperty(UIA_PropertyIds.UIA_ProviderDescriptionPropertyId, "UIASamples: Tri-Color Provider");
+            AddStaticProperty(UIA_PropertyIds.UIA_HelpTextPropertyId,
                               "This is a color picker for a choice of three colors.  Use Up and Down arrows to move the selection between the colors.");
             // The WinForm name for this control makes a good Automation ID.
-            AddStaticProperty(UiaConstants.UIA_AutomationIdPropertyId, _control.Name);
-            AddStaticProperty(UiaConstants.UIA_IsKeyboardFocusablePropertyId, true);
-            AddStaticProperty(UiaConstants.UIA_IsControlElementPropertyId, true);
-            AddStaticProperty(UiaConstants.UIA_IsContentElementPropertyId, true);
+            AddStaticProperty(UIA_PropertyIds.UIA_AutomationIdPropertyId, _control.Name);
+            AddStaticProperty(UIA_PropertyIds.UIA_IsKeyboardFocusablePropertyId, true);
+            AddStaticProperty(UIA_PropertyIds.UIA_IsControlElementPropertyId, true);
+            AddStaticProperty(UIA_PropertyIds.UIA_IsContentElementPropertyId, true);
 
             // Some properties are provided for me already by HWND provider
             // NativeWindowHandle, ProcessId, FrameworkId, IsEnabled, HasKeyboardFocus
@@ -47,7 +50,7 @@ namespace UIAControls
             // Since we support Value pattern, raise a PropertyChanged(Value) event
             // Values are represented as strings.
             NativeMethods.UiaRaiseAutomationPropertyChangedEvent(this,
-                                                                 UiaConstants.UIA_ValueValuePropertyId,
+                                                                 UIA_PropertyIds.UIA_ValueValuePropertyId,
                                                                  oldValue.ToString(),
                                                                  newValue.ToString());
 
@@ -56,7 +59,7 @@ namespace UIAControls
             // rather than raising PropertyChanged(Selection)
             NativeMethods.UiaRaiseAutomationEvent(
                 this,
-                UiaConstants.UIA_SelectionItem_ElementSelectedEventId);
+                UIA_EventIds.UIA_SelectionItem_ElementSelectedEventId);
         }
 
         public override ProviderOptions ProviderOptions
@@ -82,8 +85,8 @@ namespace UIAControls
         public override object GetPatternProvider(int patternId)
         {
             // We just respond with ourself for the patterns we support.
-            if (patternId == UiaConstants.UIA_ValuePatternId ||
-                patternId == UiaConstants.UIA_SelectionPatternId ||
+            if (patternId == UIA_PatternIds.UIA_ValuePatternId ||
+                patternId == UIA_PatternIds.UIA_SelectionPatternId ||
                 patternId == ColorSchema.GetInstance().PatternId)
                 return this;
 

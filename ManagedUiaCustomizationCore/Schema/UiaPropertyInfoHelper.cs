@@ -1,7 +1,7 @@
 using System;
 using Interop.UIAutomationCore;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     /// <summary>
     /// Helper class to gather data about a custom property

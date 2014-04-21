@@ -68,6 +68,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributeDrivenPatternSchemaTests.cs" />
+    <Compile Include="CaretPositionPatternTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TargetApp.cs" />
     <Compile Include="CustomPatternUnitTest.cs" />
@@ -80,6 +82,10 @@
     <ProjectReference Include="..\UIAControls\UIAControls.csproj">
       <Project>{3663F841-CE46-42F6-82A3-FF60E17C0593}</Project>
       <Name>UIAControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfAppWithAdvTextControl\WpfAppWithAdvTextControl.csproj">
+      <Project>{b010a379-d2b1-474a-89f8-5a381d99183d}</Project>
+      <Name>WpfAppWithAdvTextControl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

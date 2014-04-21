@@ -1,6 +1,7 @@
 ﻿using System;
 using Interop.UIAutomationClient;
 using NUnit.Framework;
+using UiaControlsTest;
 using WpfAppWithAdvTextControl;
 
 namespace WpfControlTest

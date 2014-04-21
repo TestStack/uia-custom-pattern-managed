@@ -73,13 +73,13 @@
     <Compile Include="CustomPatternUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ManagedUiaCustomizationCore\ManagedUiaCustomizationCore.csproj">
+      <Project>{21db168c-e0ef-4e07-b24a-1e5bb64d2a17}</Project>
+      <Name>ManagedUiaCustomizationCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UIAControls\UIAControls.csproj">
       <Project>{3663F841-CE46-42F6-82A3-FF60E17C0593}</Project>
       <Name>UIAControls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UiaManagedCustomPatternCore\UiaManagedCustomPatternCore.csproj">
-      <Project>{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}</Project>
-      <Name>UiaManagedCustomPatternCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

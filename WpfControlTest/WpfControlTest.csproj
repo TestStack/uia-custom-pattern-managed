@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -78,9 +78,9 @@
     <Compile Include="TargetApp.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UiaManagedCustomPatternCore\UiaManagedCustomPatternCore.csproj">
+    <ProjectReference Include="..\ManagedUiaCustomizationCore\ManagedUiaCustomizationCore.csproj">
       <Project>{21db168c-e0ef-4e07-b24a-1e5bb64d2a17}</Project>
-      <Name>UiaManagedCustomPatternCore</Name>
+      <Name>ManagedUiaCustomizationCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\WpfAppWithAdvTextControl\WpfAppWithAdvTextControl.csproj">
       <Project>{b010a379-d2b1-474a-89f8-5a381d99183d}</Project>

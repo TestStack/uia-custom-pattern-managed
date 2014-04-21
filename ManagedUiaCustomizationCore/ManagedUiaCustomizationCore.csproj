@@ -6,8 +6,8 @@
     <ProjectGuid>{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UiaManagedCustomPatternCore</RootNamespace>
-    <AssemblyName>UiaManagedCustomPatternCore</AssemblyName>
+    <RootNamespace>ManagedUiaCustomizationCore</RootNamespace>
+    <AssemblyName>ManagedUiaCustomizationCore</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -76,9 +76,16 @@
     <Compile Include="AttributeDrivenPatternHelpers\PatternPropertyAttribute.cs" />
     <Compile Include="AttributeDrivenPatternSchema.cs" />
     <Compile Include="AutomationPeerAugmentationHelper.cs" />
-    <Compile Include="CustomPatternHelpers.cs" />
-    <Compile Include="CustomPatternSchemaBase.cs" />
+    <Compile Include="Schema\CustomClientInstanceBase.cs" />
+    <Compile Include="Schema\UiaParameterListHelper.cs" />
+    <Compile Include="Schema\CustomPatternSchemaBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Schema\UiaEventInfoHelper.cs" />
+    <Compile Include="Schema\UiaMethodInfoHelper.cs" />
+    <Compile Include="Schema\UiaParameterDescription.cs" />
+    <Compile Include="Schema\UiaParameterHelper.cs" />
+    <Compile Include="Schema\UiaPatternInfoHelper.cs" />
+    <Compile Include="Schema\UiaPropertyInfoHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

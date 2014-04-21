@@ -126,9 +126,9 @@
     <Compile Include="TriColorValue.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UiaManagedCustomPatternCore\UiaManagedCustomPatternCore.csproj">
+    <ProjectReference Include="..\ManagedUiaCustomizationCore\ManagedUiaCustomizationCore.csproj">
       <Project>{21db168c-e0ef-4e07-b24a-1e5bb64d2a17}</Project>
-      <Name>UiaManagedCustomPatternCore</Name>
+      <Name>ManagedUiaCustomizationCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

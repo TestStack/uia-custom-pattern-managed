@@ -1,7 +1,7 @@
 ﻿using System;
-using Interop.UIAutomationClient;
 using NUnit.Framework;
 using UIAControls;
+using UIAutomationClient;
 
 namespace UiaControlsTest
 {

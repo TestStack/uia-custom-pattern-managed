@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Interop.UIAutomationClient;
 using Interop.UIAutomationCore;
+using UIAutomationClient;
 
 namespace UIAControls
 {

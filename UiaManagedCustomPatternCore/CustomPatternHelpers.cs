@@ -64,7 +64,7 @@ namespace UIAControls
             _doSetFocus = doSetFocus;
         }
 
-        public UiaMethodInfoHelper(string programmaticName, bool doSetFocus, UiaParameterDescription[] uiaParams)
+        public UiaMethodInfoHelper(string programmaticName, bool doSetFocus, IEnumerable<UiaParameterDescription> uiaParams)
         {
             _programmaticName = programmaticName;
             _doSetFocus = doSetFocus;

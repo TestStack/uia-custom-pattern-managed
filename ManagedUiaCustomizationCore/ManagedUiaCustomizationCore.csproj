@@ -74,7 +74,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttributeDrivenPatternHelpers\AttributeExtensions.cs" />
+    <Compile Include="AttributeDrivenPatternHelpers\ReflectionExtensions.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\PatternGuidAttribute.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\PatternMethodAttribute.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\PatternPropertyAttribute.cs" />

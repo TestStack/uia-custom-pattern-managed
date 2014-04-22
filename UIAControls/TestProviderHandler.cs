@@ -19,7 +19,7 @@ namespace UIAControls
         {
             // Parse the provider and parameter list
             var provider = (ITestProvider) pTarget;
-            var paramList = new UiaParameterListHelper(pParams, cParams);
+            var paramList = new UiaParameterListHelper(pParams);
 
             // Dispatch the method/property calls
             if (index == TestSchema.GetInstance().IntValueProperty.Index)

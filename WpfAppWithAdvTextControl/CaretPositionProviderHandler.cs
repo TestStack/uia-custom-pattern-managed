@@ -14,7 +14,7 @@ namespace WpfAppWithAdvTextControl
         public void Dispatch(object pTarget, uint index, UIAutomationParameter[] pParams, uint cParams)
         {
             var provider = (ICaretPositionProvider)pTarget;
-            var paramList = new UiaParameterListHelper(pParams, cParams);
+            var paramList = new UiaParameterListHelper(pParams);
 
             if (index == CaretPositionSchema.Instance.SelectionStartProperty.Index)
             {

@@ -25,10 +25,10 @@ namespace ManagedUiaCustomizationCore
         }
 
         // Construct a parameter list from a given in-memory structure
-        public UiaParameterListHelper(UIAutomationParameter[] pParams, uint paramCount)
+        public UiaParameterListHelper(UIAutomationParameter[] pParams)
         {
             // Construct the parameter list from the marshalled data
-            for (uint i = 0; i < paramCount; ++i)
+            for (uint i = 0; i < pParams.Length; ++i)
             {
                 _uiaParams.Add(new UiaParameterHelper(pParams[i].type, pParams[i].pData));
             }

@@ -10,6 +10,33 @@ namespace ManagedUiaCustomizationCore
     {
         public static void Register(CustomPatternSchemaBase schema)
         {
+            // The only purpose of this method is to construct and correctly execute these lines of code:
+            //
+            //   var wrapObject = new AutomationPeer.WrapObject(WrapObjectReplacer);
+            //   AutomationPeer.s_patternInfo[schema.PatternId] 
+            //      = new AutomationPeer.PatternInfo(schema.PatternId, 
+            //                                       wrapObject, 
+            //                                       (PatternInterface)schema.PatternId);
+            //
+            //   The problem here is that AutomationPeer.WrapObject, AutomationPeer.s_patternInfo and 
+            // AutomationPeer.PatternInfo are not public, so we need some hardcore reflection.
+            //   Now, to be very clear, casting patternId to PatternInterface is not totally correct, 
+            // but customly registered patterns get IDs near 50000 and max PatternInterface value is 
+            // something about 20, so they won't intersect ever. On the other hand, after several hours
+            // studying AutomationPeer sources it seems unfeasible to get what we need in other way 
+            // because AutomationPeer wasn't written with extensibility in mind.
+            //
+            // TODO: If we want to support standalone properties - we have to make very similar trick for AutomationPeer.s_propertyInfo.
+            //
+            //   For events AutomationPeers goes other way and list of events it can raise through 
+            // AutomationPeer.RaiseAutomationEvent() is very strictly hardcoded with switch()
+            // operator in the EventMap internal class. But it is possible to get IRawElementProviderSimple
+            // from the protected AutomationPeer.ProviderFromPeer method and use it directly via
+            // NativeMethods.UiaRaiseAutomationEvent. Basically it is the same AutomationPeer does, 
+            // so the only inconvenience would be non-standard method of raising.
+            //
+            // TODO: Add support for raising custom UIA events
+
             var automationPeerType = typeof (AutomationPeer);
             var patternInfoHashtableField = automationPeerType.GetField("s_patternInfo", BindingFlags.NonPublic | BindingFlags.Static);
 

@@ -82,6 +82,7 @@
     <Compile Include="AttributeDrivenPatternHelpers\TypeMember.cs" />
     <Compile Include="AttributeDrivenPatternSchema.cs" />
     <Compile Include="AutomationPeerAugmentationHelper.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Schema\CustomClientInstanceBase.cs" />
     <Compile Include="Schema\ISchemaMember.cs" />
     <Compile Include="Schema\UiaParameterListHelper.cs" />

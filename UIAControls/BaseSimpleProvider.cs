@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using ManagedUiaCustomizationCore;
 using UIAutomationClient;
 using IRawElementProviderSimple = Interop.UIAutomationCore.IRawElementProviderSimple;
 using ProviderOptions = Interop.UIAutomationCore.ProviderOptions;

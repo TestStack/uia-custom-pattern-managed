@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using Interop.UIAutomationCore;
+using ManagedUiaCustomizationCore;
 using UIAutomationClient;
 using IRawElementProviderSimple = Interop.UIAutomationCore.IRawElementProviderSimple;
 using ProviderOptions = Interop.UIAutomationCore.ProviderOptions;

@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Interop.UIAutomationCore;
 
-namespace UIAControls
+namespace ManagedUiaCustomizationCore
 {
     // P/Invoke declarations
     public class NativeMethods

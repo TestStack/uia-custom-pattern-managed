@@ -13,7 +13,6 @@ namespace UiaControlsTest
         private const string TestPatternClientComGuid = "267D23B7-6B12-4679-ACF0-E8FA0FB3BDD7";
         private const string TestPatternGuid = "E69F099B-7519-4CE7-9D61-77146DCB1B4A";
         private const string TestPatternBoolPropertyGuid = "DD339FFB-E244-41A2-A8A2-787F722C582B";
-        private const string TestPatternBoolArrayPropertyGuid = "7CF1ED11-C631-4B90-8F77-742F86E13E89";
 
         [Guid(TestPatternProviderComGuid)]
         [PatternGuid(TestPatternGuid)]
@@ -22,10 +21,7 @@ namespace UiaControlsTest
         public interface ITestProvider
         {
             [PatternProperty(TestPatternBoolPropertyGuid)]
-            bool BoolProperty { get; } 
-
-            [PatternProperty(TestPatternBoolArrayPropertyGuid)]
-            bool[] BoolArrayProperty { get; }
+            bool BoolProperty { get; }
 
             [PatternMethod]
             void VoidParameterlessMethod();
@@ -43,9 +39,7 @@ namespace UiaControlsTest
         public interface ITestPattern
         {
             bool CurrentBoolProperty { get; }
-            bool[] CurrentBoolArrayProperty { get; }
             bool CachedBoolProperty { get; }
-            bool[] CachedBoolArrayProperty { get; }
 
             void VoidParameterlessMethod();
             bool BoolParameterlessMethodWithDoSetFocus();
@@ -53,17 +47,29 @@ namespace UiaControlsTest
         }
 
         [Test]
-        public void PropertiesAndMethodsAreMappedCorrectly()
+        public void AssertGuidsAreReflectedCorrectly()
         {
-            var schema = new AttributeDrivenPatternSchema(typeof (ITestProvider), typeof (ITestPattern));
+            var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
             Assert.AreEqual(new Guid(TestPatternProviderComGuid), schema.PatternProviderGuid);
             Assert.AreEqual(new Guid(TestPatternClientComGuid), schema.PatternClientGuid);
             Assert.AreEqual(new Guid(TestPatternGuid), schema.PatternGuid);
+        }
+
+        [Test]
+        public void AssertRegistrationGoesSmoothly()
+        {
+            var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
+            schema.Register();
+        }
+
+        [Test]
+        public void PropertiesAndMethodsAreMappedCorrectly()
+        {
+            var schema = new AttributeDrivenPatternSchema(typeof (IAttrDrivenTestProvider), typeof (IAttrDrivenTestPattern));
 
             var props = schema.Properties;
-            Assert.AreEqual(2, props.Length);
+            Assert.AreEqual(1, props.Length);
             AssertPropertyInfo("BoolProperty", UIAutomationType.UIAutomationType_Bool, TestPatternBoolPropertyGuid, props[0]);
-            AssertPropertyInfo("BoolArrayProperty", UIAutomationType.UIAutomationType_BoolArray, TestPatternBoolArrayPropertyGuid, props[1]);
 
             Assert.AreEqual(3, schema.Methods.Length);
             

@@ -13,30 +13,20 @@ namespace ManagedUiaCustomizationCore
             = new Dictionary<Type, UIAutomationType>
               {
                   {typeof (int), UIAutomationType.UIAutomationType_Int},
-                  {typeof (int[]), UIAutomationType.UIAutomationType_IntArray},
                   {typeof (bool), UIAutomationType.UIAutomationType_Bool},
-                  {typeof (bool[]), UIAutomationType.UIAutomationType_BoolArray},
                   {typeof (string), UIAutomationType.UIAutomationType_String},
-                  {typeof (string[]), UIAutomationType.UIAutomationType_StringArray},
                   {typeof (double), UIAutomationType.UIAutomationType_Double},
-                  {typeof (double[]), UIAutomationType.UIAutomationType_DoubleArray},
                   {typeof (IUIAutomationElement), UIAutomationType.UIAutomationType_Element},
-                  {typeof (IUIAutomationElement[]), UIAutomationType.UIAutomationType_ElementArray},
               };
 
         private static readonly Dictionary<Type, UIAutomationType> _outTypeMapping
             = new Dictionary<Type, UIAutomationType>
               {
                   {typeof (int), UIAutomationType.UIAutomationType_OutInt},
-                  {typeof (int[]), UIAutomationType.UIAutomationType_OutIntArray},
                   {typeof (bool), UIAutomationType.UIAutomationType_OutBool},
-                  {typeof (bool[]), UIAutomationType.UIAutomationType_OutBoolArray},
                   {typeof (string), UIAutomationType.UIAutomationType_OutString},
-                  {typeof (string[]), UIAutomationType.UIAutomationType_OutStringArray},
                   {typeof (double), UIAutomationType.UIAutomationType_OutDouble},
-                  {typeof (double[]), UIAutomationType.UIAutomationType_OutDoubleArray},
                   {typeof (IUIAutomationElement), UIAutomationType.UIAutomationType_OutElement},
-                  {typeof (IUIAutomationElement[]), UIAutomationType.UIAutomationType_OutElementArray},
               };
 
         private readonly Guid _patternGuid;

@@ -104,6 +104,7 @@ namespace ManagedUiaCustomizationCore
                 {
                     patternInfo.AddProperty(propertyInfo);
                     propertyInfo.Index = index++;
+                    _members[propertyInfo.Index] = propertyInfo;
                 }
                 foreach (var methodInfo in Methods)
                 {
@@ -136,7 +137,6 @@ namespace ManagedUiaCustomizationCore
                 for (uint i = 0; i < propertyIds.Length; ++i)
                 {
                     Properties[i].PropertyId = propertyIds[i];
-                    _members[i] = Properties[i];
                 }
                 for (var i = 0; i < eventIds.Length; ++i)
                 {

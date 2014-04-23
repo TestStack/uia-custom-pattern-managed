@@ -6,7 +6,7 @@ using System.Windows.Threading;
 
 namespace ManagedUiaCustomizationCore
 {
-    public class AutomationPeerAugmentationHelper
+    public static class AutomationPeerAugmentationHelper
     {
         public static void Register(CustomPatternSchemaBase schema)
         {
@@ -34,6 +34,8 @@ namespace ManagedUiaCustomizationCore
             // from the protected AutomationPeer.ProviderFromPeer method and use it directly via
             // NativeMethods.UiaRaiseAutomationEvent. Basically it is the same AutomationPeer does, 
             // so the only inconvenience would be non-standard method of raising.
+            //   Another piece required here is to replicate for AutomationPeer.ListenersExist(). Seems to
+            // fully support custom events we would have to rewrite EventsMap class. Fortunately it is small :)
             //
             // TODO: Add support for raising custom UIA events
 

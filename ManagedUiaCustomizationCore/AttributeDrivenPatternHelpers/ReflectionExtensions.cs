@@ -31,5 +31,20 @@ namespace ManagedUiaCustomizationCore
                 where m.GetAttributes<TAttribute>().Any()
                 select m;
         }
+
+        public static Func<object, object> GetPropertyGetter(this PropertyInfo propInfo)
+        {
+            if (propInfo.GetGetMethod(false) == null)
+                throw new InvalidOperationException("Given property has no public getter");
+            var param = Expression.Parameter(typeof(object), "t");
+            var expression = Expression.Lambda<Func<object, object>>(
+                Expression.Convert(
+                    Expression.MakeMemberAccess(
+                        Expression.Convert(param, propInfo.DeclaringType),
+                        propInfo),
+                    typeof(object)),
+                param);
+            return expression.Compile();
+        }
     }
 }

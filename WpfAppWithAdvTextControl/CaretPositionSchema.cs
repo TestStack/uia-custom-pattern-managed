@@ -20,12 +20,14 @@ namespace WpfAppWithAdvTextControl
         public readonly UiaPropertyInfoHelper SelectionStartProperty
             = new UiaPropertyInfoHelper(new Guid("6B55247F-6BAF-460C-9C3E-388E7161A7E9"),
                 "SelectionStart",
-                UIAutomationType.UIAutomationType_Int);
+                UIAutomationType.UIAutomationType_Int,
+                TypeMember<ICaretPositionProvider>.GetPropertyGetter(p => p.SelectionStart));
 
         public readonly UiaPropertyInfoHelper SelectionLengthProperty
             = new UiaPropertyInfoHelper(new Guid("F0CD6926-AA86-4EBF-BDCC-7345C5D98EC6"),
                 "SelectionLength",
-                UIAutomationType.UIAutomationType_Int);
+                UIAutomationType.UIAutomationType_Int,
+                TypeMember<ICaretPositionProvider>.GetPropertyGetter(p => p.SelectionLength));
 
         public readonly UiaMethodInfoHelper SetSelectionStartMethod
             = new UiaMethodInfoHelper("SetSelectionStart",

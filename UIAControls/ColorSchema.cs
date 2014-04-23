@@ -28,7 +28,8 @@ namespace UIAControls
             new UiaPropertyInfoHelper(
                 new Guid("48F45D48-37A1-4480-B5A7-198315D2F2A0"),
                 "ValueAsColor",
-                UIAutomationType.UIAutomationType_Int);
+                UIAutomationType.UIAutomationType_Int,
+                provider => ((IColorProvider)provider).ValueAsColor);
 
         public readonly UiaMethodInfoHelper SetValueAsColorMethod =
             new UiaMethodInfoHelper(

@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Interop.UIAutomationCore;
 using ManagedUiaCustomizationCore;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace UiaControlsTest
@@ -97,6 +98,25 @@ namespace UiaControlsTest
             Assert.AreEqual(programmaticName, data.pProgrammaticName);
             Assert.AreEqual(uiaType, data.type);
             Assert.AreEqual(new Guid(guid), data.guid);
+        }
+
+        [Test]
+        public void PatternHandlerDispatchesPropertiesCorrectly()
+        {
+            var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
+            schema.Register();
+
+            var p = Substitute.For<IAttrDrivenTestProvider>();
+            var paramHelper = new UiaParameterHelper(UIAutomationType.UIAutomationType_OutBool);
+            var pParams = new[] {paramHelper.ToUiaParam()};
+
+            p.BoolProperty.Returns(true);
+            schema.Handler.Dispatch(p, schema.Properties[0].Index, pParams, 1);
+            Assert.AreEqual(true, paramHelper.Value);
+
+            p.BoolProperty.Returns(false);
+            schema.Handler.Dispatch(p, schema.Properties[0].Index, pParams, 1);
+            Assert.AreEqual(false, paramHelper.Value);
         }
     }
 }

@@ -75,12 +75,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributeDrivenPatternHelpers\ReflectionExtensions.cs" />
+    <Compile Include="AttributeDrivenPatternHelpers\AttributeDrivenPatternHandler.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\PatternGuidAttribute.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\PatternMethodAttribute.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\PatternPropertyAttribute.cs" />
+    <Compile Include="AttributeDrivenPatternHelpers\TypeMember.cs" />
     <Compile Include="AttributeDrivenPatternSchema.cs" />
     <Compile Include="AutomationPeerAugmentationHelper.cs" />
     <Compile Include="Schema\CustomClientInstanceBase.cs" />
+    <Compile Include="Schema\ISchemaMember.cs" />
     <Compile Include="Schema\UiaParameterListHelper.cs" />
     <Compile Include="Schema\CustomPatternSchemaBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

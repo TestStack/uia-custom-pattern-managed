@@ -35,6 +35,7 @@ namespace ManagedUiaCustomizationCore
         private readonly string _patternName;
         private readonly UiaMethodInfoHelper[] _methods;
         private readonly UiaPropertyInfoHelper[] _properties;
+        private readonly AttributeDrivenPatternHandler _handler;
 
         public AttributeDrivenPatternSchema(Type patternProviderInterface, Type patternClientInterface)
         {
@@ -59,6 +60,7 @@ namespace ManagedUiaCustomizationCore
 
             _methods = patternProviderInterface.GetMethodsMarkedWith<PatternMethodAttribute>().Select(GetMethodHelper).ToArray();
             _properties = patternProviderInterface.GetPropertiesMarkedWith<PatternPropertyAttribute>().Select(GetPropertyHelper).ToArray();
+            _handler = new AttributeDrivenPatternHandler(this);
         }
 
         private UiaPropertyInfoHelper GetPropertyHelper(PropertyInfo pInfo)
@@ -67,7 +69,7 @@ namespace ManagedUiaCustomizationCore
             var guid = propertyAttr.Guid;
             var programmaticName = pInfo.Name;
             var uiaType = TypeToAutomationType(pInfo.PropertyType);
-            return new UiaPropertyInfoHelper(guid, programmaticName, uiaType);
+            return new UiaPropertyInfoHelper(guid, programmaticName, uiaType, pInfo.GetPropertyGetter());
         }
 
         private UiaMethodInfoHelper GetMethodHelper(MethodInfo mInfo)
@@ -140,7 +142,7 @@ namespace ManagedUiaCustomizationCore
 
         public override IUIAutomationPatternHandler Handler
         {
-            get { throw new NotImplementedException(); }
+            get { return _handler; }
         }
     }
 }

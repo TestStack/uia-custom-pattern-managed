@@ -21,16 +21,15 @@ namespace UIAControls
             var provider = (ITestProvider) pTarget;
             var paramList = new UiaParameterListHelper(pParams);
 
+            var member = TestSchema.GetInstance().GetMemberByIndex(index);
+            if (member != null)
+            {
+                member.DispatchCallToProvider(provider, paramList);
+                return;
+            }
+
             // Dispatch the method/property calls
-            if (index == TestSchema.GetInstance().IntValueProperty.Index)
-            {
-                paramList[0] = provider.IntValue;
-            }
-            else if (index == TestSchema.GetInstance().StringValueProperty.Index)
-            {
-                paramList[0] = provider.StringValue;
-            }
-            else if (index == TestSchema.GetInstance().GetBoolValueMethod.Index)
+            if (index == TestSchema.GetInstance().GetBoolValueMethod.Index)
             {
                 paramList[0] = provider.BoolValue;
             }

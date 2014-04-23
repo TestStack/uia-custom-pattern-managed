@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Interop.UIAutomationCore;
 
 namespace ManagedUiaCustomizationCore
@@ -13,6 +14,7 @@ namespace ManagedUiaCustomizationCore
     /// </summary>
     public abstract class CustomPatternSchemaBase
     {
+        private readonly Dictionary<uint, ISchemaMember> _members = new Dictionary<uint, ISchemaMember>();
         private int _patternId;
         private int _patternAvailablePropertyId;
         private bool _registered;
@@ -131,9 +133,10 @@ namespace ManagedUiaCustomizationCore
                     eventIds);
 
                 // Write the property IDs back
-                for (var i = 0; i < propertyIds.Length; ++i)
+                for (uint i = 0; i < propertyIds.Length; ++i)
                 {
                     Properties[i].PropertyId = propertyIds[i];
+                    _members[i] = Properties[i];
                 }
                 for (var i = 0; i < eventIds.Length; ++i)
                 {
@@ -145,6 +148,17 @@ namespace ManagedUiaCustomizationCore
 
                 _registered = true;
             }
+        }
+
+        public ISchemaMember GetMemberByIndex(uint index)
+        {
+            if (!_registered)
+                throw new InvalidOperationException("Pattern schema should be registered first");
+
+            ISchemaMember result;
+            if (_members.TryGetValue(index, out result))
+                return result;
+            return null;
         }
     }
 }

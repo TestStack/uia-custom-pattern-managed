@@ -29,13 +29,15 @@ namespace UIAControls
             new UiaPropertyInfoHelper(
                 new Guid("1898A775-726D-44AF-8F7B-A52814E46AC8"),
                 "IntValue",
-                UIAutomationType.UIAutomationType_Int);
+                UIAutomationType.UIAutomationType_Int,
+                TypeMember<ITestProvider>.GetPropertyGetter(p => p.IntValue));
 
         public readonly UiaPropertyInfoHelper StringValueProperty =
             new UiaPropertyInfoHelper(
                 new Guid("83454F57-97C3-4740-B2CD-A5AA4FA40EA2"),
                 "StringValue",
-                UIAutomationType.UIAutomationType_String);
+                UIAutomationType.UIAutomationType_String,
+                TypeMember<ITestProvider>.GetPropertyGetter(p => p.StringValue));
 
         // These function like properties, but are declared as methods
         // to work around the two-property limitation in Win7 UIA.

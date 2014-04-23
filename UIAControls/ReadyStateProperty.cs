@@ -26,7 +26,8 @@ namespace UIAControls
             new UiaPropertyInfoHelper(
                 new Guid("6E3383FB-96CF-485E-A796-FB6DE483B3DA"),
                 "ReadyState",
-                UIAutomationType.UIAutomationType_String);
+                UIAutomationType.UIAutomationType_String,
+                getterFromProvider: null /* it is standalone property, so we don't have to provide getter */); 
 
         public void Register()
         {

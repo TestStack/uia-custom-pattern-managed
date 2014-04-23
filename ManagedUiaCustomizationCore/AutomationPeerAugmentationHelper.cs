@@ -15,13 +15,7 @@ namespace ManagedUiaCustomizationCore
 
             // from AutomationPeer.cs: private delegate object WrapObject(AutomationPeer peer, object iface);
             var wrapObjectDelegateType = automationPeerType.GetNestedType("WrapObject", BindingFlags.NonPublic);
-            var wrapObjectReplacerMethodInfo = typeof (AutomationPeerAugmentationHelper)
-                .GetMethod(
-                    name: "WrapObjectReplacer",
-                    bindingAttr: BindingFlags.NonPublic | BindingFlags.Static,
-                    binder: null,
-                    types: new[] {typeof (AutomationPeer), typeof (object)},
-                    modifiers: null);
+            var wrapObjectReplacerMethodInfo = ReflectionExtensions.GetMethodInfo(() => WrapObjectReplacer(null, null));
             var wrapObject = Delegate.CreateDelegate(wrapObjectDelegateType, wrapObjectReplacerMethodInfo);
 
             // from AutomationPeer.cs:  

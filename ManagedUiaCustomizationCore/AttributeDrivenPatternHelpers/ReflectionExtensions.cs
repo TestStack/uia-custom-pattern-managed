@@ -46,5 +46,11 @@ namespace ManagedUiaCustomizationCore
                 param);
             return expression.Compile();
         }
+
+        public static MethodInfo GetMethodInfo(Expression<Action> methodCallExpression)
+        {
+            var methodCall = methodCallExpression.Body as MethodCallExpression;
+            return methodCall.Method;
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace UiaControlsTest
         [PatternGuid(TestPatternGuid)]
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        public interface ITestProvider
+        public interface IAttrDrivenTestProvider
         {
             [PatternProperty(TestPatternBoolPropertyGuid)]
             bool BoolProperty { get; }
@@ -36,7 +36,7 @@ namespace UiaControlsTest
         [Guid(TestPatternClientComGuid)]
         [ComImport]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        public interface ITestPattern
+        public interface IAttrDrivenTestPattern
         {
             bool CurrentBoolProperty { get; }
             bool CachedBoolProperty { get; }

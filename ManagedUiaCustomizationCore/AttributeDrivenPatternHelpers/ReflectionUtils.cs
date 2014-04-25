@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace ManagedUiaCustomizationCore
 {
-    internal static class ReflectionExtensions
+    internal static class ReflectionUtils
     {
         internal static IEnumerable<TA> GetAttributes<TA>(this MemberInfo memberInfo)
         {

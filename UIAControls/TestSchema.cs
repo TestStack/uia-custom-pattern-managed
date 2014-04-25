@@ -20,6 +20,12 @@ namespace UIAControls
     {
         private static readonly TestSchema Instance = new TestSchema();
 
+        private static readonly ITestProvider _dummyProvider = null;
+        private static int _dummyInt = 0;
+        private static string _dummyString = null;
+        private static bool _dummyBool = false;
+        private static double _dummyDouble = 0;
+
         public static TestSchema GetInstance()
         {
             return Instance;
@@ -75,43 +81,23 @@ namespace UIAControls
 
         public readonly UiaMethodInfoHelper PassIntParamMethod =
             new UiaMethodInfoHelper(
-                "PassIntParam",
-                true /* doSetFocus */,
-                new[]
-                {
-                    new UiaParameterDescription("value", UIAutomationType.UIAutomationType_Int),
-                    new UiaParameterDescription("retVal", UIAutomationType.UIAutomationType_OutInt)
-                });
+                ReflectionUtils.GetMethodInfo(() => _dummyProvider.PassIntParam(0, out _dummyInt)),
+                true /* doSetFocus */);
 
         public readonly UiaMethodInfoHelper PassStringParamMethod =
             new UiaMethodInfoHelper(
-                "PassStringParam",
-                true /* doSetFocus */,
-                new[]
-                {
-                    new UiaParameterDescription("value", UIAutomationType.UIAutomationType_String),
-                    new UiaParameterDescription("retVal", UIAutomationType.UIAutomationType_OutString)
-                });
+                ReflectionUtils.GetMethodInfo(() => _dummyProvider.PassStringParam(null, out _dummyString)),
+                true /* doSetFocus */);
 
         public readonly UiaMethodInfoHelper PassBoolParamMethod =
             new UiaMethodInfoHelper(
-                "PassBoolParam",
-                true /* doSetFocus */,
-                new[]
-                {
-                    new UiaParameterDescription("value", UIAutomationType.UIAutomationType_Bool),
-                    new UiaParameterDescription("retVal", UIAutomationType.UIAutomationType_OutBool)
-                });
+                ReflectionUtils.GetMethodInfo(() => _dummyProvider.PassBoolParam(true, out _dummyBool)),
+                true /* doSetFocus */);
 
         public readonly UiaMethodInfoHelper PassDoubleParamMethod =
             new UiaMethodInfoHelper(
-                "PassDoubleParam",
-                true /* doSetFocus */,
-                new[]
-                {
-                    new UiaParameterDescription("value", UIAutomationType.UIAutomationType_Double),
-                    new UiaParameterDescription("retVal", UIAutomationType.UIAutomationType_OutDouble)
-                });
+                ReflectionUtils.GetMethodInfo(() => _dummyProvider.PassDoubleParam(0, out _dummyDouble)),
+                true /* doSetFocus */);
 
         public readonly UiaEventInfoHelper Test1Event =
             new UiaEventInfoHelper(

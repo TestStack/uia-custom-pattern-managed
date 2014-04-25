@@ -41,30 +41,6 @@ namespace UIAControls
             {
                 paramList[0] = provider.ElementValue;
             }
-            else if (index == TestSchema.GetInstance().PassIntParamMethod.Index)
-            {
-                int retVal;
-                provider.PassIntParam((int) paramList[0], out retVal);
-                paramList[1] = retVal;
-            }
-            else if (index == TestSchema.GetInstance().PassStringParamMethod.Index)
-            {
-                string retVal;
-                provider.PassStringParam((string) paramList[0], out retVal);
-                paramList[1] = retVal;
-            }
-            else if (index == TestSchema.GetInstance().PassBoolParamMethod.Index)
-            {
-                bool retVal;
-                provider.PassBoolParam((bool) paramList[0], out retVal);
-                paramList[1] = retVal;
-            }
-            else if (index == TestSchema.GetInstance().PassDoubleParamMethod.Index)
-            {
-                double retVal;
-                provider.PassDoubleParam((double) paramList[0], out retVal);
-                paramList[1] = retVal;
-            }
             else
             {
                 throw new InvalidOperationException();

@@ -104,7 +104,8 @@ namespace ManagedUiaCustomizationCore
                 {
                     patternInfo.AddProperty(propertyInfo);
                     propertyInfo.Index = index++;
-                    _members[propertyInfo.Index] = propertyInfo;
+                    if (propertyInfo.SupportsDispatch)
+                        _members[propertyInfo.Index] = propertyInfo;
                 }
                 foreach (var methodInfo in Methods)
                 {

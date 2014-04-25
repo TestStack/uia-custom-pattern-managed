@@ -97,5 +97,10 @@ namespace ManagedUiaCustomizationCore
                 throw new ArgumentException("For a property param list should contain only one out param");
             paramList[0] = _getterFromProvider(provider);
         }
+
+        public bool SupportsDispatch
+        {
+            get { return _getterFromProvider != null; }
+        }
     }
 }

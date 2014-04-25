@@ -111,6 +111,8 @@ namespace ManagedUiaCustomizationCore
                 {
                     patternInfo.AddMethod(methodInfo);
                     methodInfo.Index = index++;
+                    if (methodInfo.SupportsDispatch)
+                        _members[methodInfo.Index] = methodInfo;
                 }
 
                 // Add the events, too, although they are not indexed

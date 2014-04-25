@@ -9,6 +9,8 @@ namespace ManagedUiaCustomizationCore
 {
     public class AttributeDrivenPatternSchema : CustomPatternSchemaBase
     {
+        public const string RetParamUnspeakableName = "<>retValue";
+
         private static readonly Dictionary<Type, UIAutomationType> _typeMapping
             = new Dictionary<Type, UIAutomationType>
               {
@@ -75,17 +77,26 @@ namespace ManagedUiaCustomizationCore
         private UiaMethodInfoHelper GetMethodHelper(MethodInfo mInfo)
         {
             var methodAttr = mInfo.GetAttribute<PatternMethodAttribute>(); // can'be null as otherwise it wouldn't get into this method
-            var programmaticName = mInfo.Name;
             var doSetFocus = methodAttr.DoSetFocus;
             var args = new List<UiaParameterDescription>();
-            if (mInfo.ReturnType != typeof (void))
-                args.Add(new UiaParameterDescription("_retValue", TypeToOutAutomationType(mInfo.ReturnType)));
+
+            // Accordingly to UIA docs, In params should go before any Out params
+            // add In params
             args.AddRange(from parameterInfo in mInfo.GetParameters()
-                          let uiaType = parameterInfo.IsOut
-                              ? TypeToOutAutomationType(parameterInfo.ParameterType.GetElementType())
-                              : TypeToAutomationType(parameterInfo.ParameterType)
+                          where !parameterInfo.IsOut
+                          let uiaType = TypeToAutomationType(parameterInfo.ParameterType)
                           select new UiaParameterDescription(parameterInfo.Name, uiaType));
-            return new UiaMethodInfoHelper(programmaticName, doSetFocus, args);
+
+            // add Out params
+            args.AddRange(from parameterInfo in mInfo.GetParameters()
+                          where parameterInfo.IsOut
+                          let uiaType = TypeToOutAutomationType(parameterInfo.ParameterType.GetElementType())
+                          select new UiaParameterDescription(parameterInfo.Name, uiaType));
+
+            if (mInfo.ReturnType != typeof(void))
+                args.Add(new UiaParameterDescription(RetParamUnspeakableName, TypeToOutAutomationType(mInfo.ReturnType)));
+
+            return new UiaMethodInfoHelper(mInfo, doSetFocus, args);
         }
 
         private UIAutomationType TypeToAutomationType(Type propertyType)

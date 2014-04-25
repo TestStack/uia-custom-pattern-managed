@@ -104,8 +104,8 @@ namespace UiaControlsTest
             Assert.AreEqual(1, boolMethodWithInOutParams.Data.cInParameters);
             Assert.AreEqual(2, boolMethodWithInOutParams.Data.cOutParameters);
             Assert.AreEqual(UIAutomationType.UIAutomationType_Int, boolMethodWithInOutParams.InParamTypes[0]);
-            Assert.AreEqual(UIAutomationType.UIAutomationType_OutBool, boolMethodWithInOutParams.OutParamTypes[0]);
-            Assert.AreEqual(UIAutomationType.UIAutomationType_OutString, boolMethodWithInOutParams.OutParamTypes[1]);
+            Assert.AreEqual(UIAutomationType.UIAutomationType_OutString, boolMethodWithInOutParams.OutParamTypes[0]);
+            Assert.AreEqual(UIAutomationType.UIAutomationType_OutBool, boolMethodWithInOutParams.OutParamTypes[1]);
 
             var intMethodWithDoubleParam = schema.Methods.Single(m => m.Data.pProgrammaticName == Provider.IntMethodWithDoubleParam.Name);
             Assert.AreEqual(1, intMethodWithDoubleParam.Data.cInParameters);
@@ -139,6 +139,42 @@ namespace UiaControlsTest
             p.BoolProperty.Returns(false);
             schema.Handler.Dispatch(p, schema.Properties[0].Index, pParams, 1);
             Assert.AreEqual(false, paramHelper.Value);
+        }
+
+        [Test]
+        public void UiaMethodInfoHelper_AddingInputParamAfterOutputOne_ThrowsAnException()
+        {
+            var inParam = new UiaParameterDescription("inInt", UIAutomationType.UIAutomationType_Int);
+            var outParam = new UiaParameterDescription("outString", UIAutomationType.UIAutomationType_OutString);
+            Assert.Throws<ArgumentException>(() => new UiaMethodInfoHelper(Provider.BoolMethodWithInAndOutParams, false, new[] {outParam, inParam}));
+        }
+
+        [Test]
+        public void UiaMethodInfoHelper_AddingTwoParamWithSameName_ThrowsAnException()
+        {
+            var first = new UiaParameterDescription("name", UIAutomationType.UIAutomationType_Double);
+            var second = new UiaParameterDescription("name", UIAutomationType.UIAutomationType_Double);
+            Assert.Throws<ArgumentException>(() => new UiaMethodInfoHelper(Provider.IntMethodWithDoubleParam, false, new[] { first, second }));
+        }
+
+        [Test]
+        public void UiaMethodInfoHelper_AddingParameterWithNameNotPresentInProviderMethod_Throws()
+        {
+            var p = new UiaParameterDescription("incorrect", UIAutomationType.UIAutomationType_Double);
+            Assert.Throws<ArgumentException>(() => new UiaMethodInfoHelper(Provider.IntMethodWithDoubleParam, false, new[] {p}));
+        }
+
+        [Test]
+        public void VoidParameterlessMethodCalledCorrectly()
+        {
+            var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
+            schema.Register();
+
+            var pParams = new UIAutomationParameter[0];
+
+            var p = Substitute.For<IAttrDrivenTestProvider>();
+            schema.Handler.Dispatch(p, schema.Methods[0].Index, pParams, 0);
+            p.Received().VoidParameterlessMethod();
         }
     }
 }

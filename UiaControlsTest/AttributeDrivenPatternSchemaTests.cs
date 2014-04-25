@@ -146,22 +146,7 @@ namespace UiaControlsTest
         {
             var inParam = new UiaParameterDescription("inInt", UIAutomationType.UIAutomationType_Int);
             var outParam = new UiaParameterDescription("outString", UIAutomationType.UIAutomationType_OutString);
-            Assert.Throws<ArgumentException>(() => new UiaMethodInfoHelper(Provider.BoolMethodWithInAndOutParams, false, new[] {outParam, inParam}));
-        }
-
-        [Test]
-        public void UiaMethodInfoHelper_AddingTwoParamWithSameName_ThrowsAnException()
-        {
-            var first = new UiaParameterDescription("name", UIAutomationType.UIAutomationType_Double);
-            var second = new UiaParameterDescription("name", UIAutomationType.UIAutomationType_Double);
-            Assert.Throws<ArgumentException>(() => new UiaMethodInfoHelper(Provider.IntMethodWithDoubleParam, false, new[] { first, second }));
-        }
-
-        [Test]
-        public void UiaMethodInfoHelper_AddingParameterWithNameNotPresentInProviderMethod_Throws()
-        {
-            var p = new UiaParameterDescription("incorrect", UIAutomationType.UIAutomationType_Double);
-            Assert.Throws<ArgumentException>(() => new UiaMethodInfoHelper(Provider.IntMethodWithDoubleParam, false, new[] {p}));
+            Assert.Throws<ArgumentException>(() => new UiaMethodInfoHelper("name", false, new[] {outParam, inParam}));
         }
 
         [Test]

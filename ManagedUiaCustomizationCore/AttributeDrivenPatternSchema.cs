@@ -1,36 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Interop.UIAutomationCore;
-using UIAutomationClient;
 
 namespace ManagedUiaCustomizationCore
 {
     public class AttributeDrivenPatternSchema : CustomPatternSchemaBase
     {
-        public const string RetParamUnspeakableName = "<>retValue";
-
-        private static readonly Dictionary<Type, UIAutomationType> _typeMapping
-            = new Dictionary<Type, UIAutomationType>
-              {
-                  {typeof (int), UIAutomationType.UIAutomationType_Int},
-                  {typeof (bool), UIAutomationType.UIAutomationType_Bool},
-                  {typeof (string), UIAutomationType.UIAutomationType_String},
-                  {typeof (double), UIAutomationType.UIAutomationType_Double},
-                  {typeof (IUIAutomationElement), UIAutomationType.UIAutomationType_Element},
-              };
-
-        private static readonly Dictionary<Type, UIAutomationType> _outTypeMapping
-            = new Dictionary<Type, UIAutomationType>
-              {
-                  {typeof (int), UIAutomationType.UIAutomationType_OutInt},
-                  {typeof (bool), UIAutomationType.UIAutomationType_OutBool},
-                  {typeof (string), UIAutomationType.UIAutomationType_OutString},
-                  {typeof (double), UIAutomationType.UIAutomationType_OutDouble},
-                  {typeof (IUIAutomationElement), UIAutomationType.UIAutomationType_OutElement},
-              };
-
         private readonly Guid _patternGuid;
         private readonly Guid _patternClientGuid;
         private readonly Guid _patternProviderGuid;
@@ -70,7 +46,7 @@ namespace ManagedUiaCustomizationCore
             var propertyAttr = pInfo.GetAttribute<PatternPropertyAttribute>(); // can'be null as otherwise it wouldn't get into this method
             var guid = propertyAttr.Guid;
             var programmaticName = pInfo.Name;
-            var uiaType = TypeToAutomationType(pInfo.PropertyType);
+            var uiaType = UiaTypesHelper.TypeToAutomationType(pInfo.PropertyType);
             return new UiaPropertyInfoHelper(guid, programmaticName, uiaType, pInfo.GetPropertyGetter());
         }
 
@@ -78,41 +54,7 @@ namespace ManagedUiaCustomizationCore
         {
             var methodAttr = mInfo.GetAttribute<PatternMethodAttribute>(); // can'be null as otherwise it wouldn't get into this method
             var doSetFocus = methodAttr.DoSetFocus;
-            var args = new List<UiaParameterDescription>();
-
-            // Accordingly to UIA docs, In params should go before any Out params
-            // add In params
-            args.AddRange(from parameterInfo in mInfo.GetParameters()
-                          where !parameterInfo.IsOut
-                          let uiaType = TypeToAutomationType(parameterInfo.ParameterType)
-                          select new UiaParameterDescription(parameterInfo.Name, uiaType));
-
-            // add Out params
-            args.AddRange(from parameterInfo in mInfo.GetParameters()
-                          where parameterInfo.IsOut
-                          let uiaType = TypeToOutAutomationType(parameterInfo.ParameterType.GetElementType())
-                          select new UiaParameterDescription(parameterInfo.Name, uiaType));
-
-            if (mInfo.ReturnType != typeof(void))
-                args.Add(new UiaParameterDescription(RetParamUnspeakableName, TypeToOutAutomationType(mInfo.ReturnType)));
-
-            return new UiaMethodInfoHelper(mInfo, doSetFocus, args);
-        }
-
-        private UIAutomationType TypeToAutomationType(Type propertyType)
-        {
-            UIAutomationType res;
-            if (_typeMapping.TryGetValue(propertyType, out res))
-                return res;
-            throw new NotSupportedException("Provided type is not supported");
-        }
-
-        private UIAutomationType TypeToOutAutomationType(Type propertyType)
-        {
-            UIAutomationType res;
-            if (_outTypeMapping.TryGetValue(propertyType, out res))
-                return res;
-            throw new NotSupportedException("Provided type is not supported");
+            return new UiaMethodInfoHelper(mInfo, doSetFocus);
         }
 
         public override string PatternName

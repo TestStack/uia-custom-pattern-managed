@@ -94,6 +94,7 @@
     <Compile Include="Schema\UiaParameterHelper.cs" />
     <Compile Include="Schema\UiaPatternInfoHelper.cs" />
     <Compile Include="Schema\UiaPropertyInfoHelper.cs" />
+    <Compile Include="AttributeDrivenPatternHelpers\UiaTypesHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

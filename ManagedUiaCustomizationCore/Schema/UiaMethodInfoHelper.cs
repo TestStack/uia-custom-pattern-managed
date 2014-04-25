@@ -32,8 +32,8 @@ namespace ManagedUiaCustomizationCore
         /// <summary>
         ///     You have to use this ctor if you need ISchemaMember.DispatchCallToProvider
         /// </summary>
-        public UiaMethodInfoHelper(MethodInfo providerMethodInfo, bool doSetFocus, IEnumerable<UiaParameterDescription> uiaParams)
-            : this(providerMethodInfo.Name, doSetFocus, uiaParams, providerMethodInfo)
+        public UiaMethodInfoHelper(MethodInfo providerMethodInfo, bool doSetFocus)
+            : this(providerMethodInfo.Name, doSetFocus, BuildParamsFromProviderMethodInfo(providerMethodInfo), providerMethodInfo)
         {
         }
 
@@ -115,7 +115,7 @@ namespace ManagedUiaCustomizationCore
             if (PatternMethodParamDescriptions.Count > 0 && IsOutType(PatternMethodParamDescriptions.Last().UiaType) && IsInType(param.UiaType))
                 throw new ArgumentException("In param can't go after an out one. Please, ensure the correct order");
             if (_providerMethodInfo != null
-                && param.Name != AttributeDrivenPatternSchema.RetParamUnspeakableName
+                && param.Name != UiaTypesHelper.RetParamUnspeakableName
                 && !_providerMethodInfoIndicies.ContainsKey(param.Name))
             {
                 throw new ArgumentException("Provided provider's method info does not have argument with this name");
@@ -167,7 +167,7 @@ namespace ManagedUiaCustomizationCore
             for (int i = 0; i < PatternMethodParamDescriptions.Count; i++)
             {
                 var desc = PatternMethodParamDescriptions[i];
-                if (desc.Name == AttributeDrivenPatternSchema.RetParamUnspeakableName)
+                if (desc.Name == UiaTypesHelper.RetParamUnspeakableName)
                 {
                     paramList[i] = result;
                     continue;
@@ -241,6 +241,31 @@ namespace ManagedUiaCustomizationCore
             }
 
             _built = true;
+        }
+
+        private static IEnumerable<UiaParameterDescription> BuildParamsFromProviderMethodInfo(MethodInfo mInfo)
+        {
+            // Accordingly to UIA docs, In params should go before any Out params
+
+            var inParams = from parameterInfo in mInfo.GetParameters()
+                           where !parameterInfo.IsOut
+                           let uiaType = UiaTypesHelper.TypeToAutomationType(parameterInfo.ParameterType)
+                           select new UiaParameterDescription(parameterInfo.Name, uiaType);
+
+            var outParams = from parameterInfo in mInfo.GetParameters()
+                            where parameterInfo.IsOut
+                            let uiaType = UiaTypesHelper.TypeToOutAutomationType(parameterInfo.ParameterType.GetElementType())
+                            select new UiaParameterDescription(parameterInfo.Name, uiaType);
+
+            var retParam = Enumerable.Empty<UiaParameterDescription>();
+            if (mInfo.ReturnType != typeof(void))
+            {
+                var uiaRetType = UiaTypesHelper.TypeToOutAutomationType(mInfo.ReturnType);
+                var retParamDescr = new UiaParameterDescription(UiaTypesHelper.RetParamUnspeakableName, uiaRetType);
+                retParam = new[] {retParamDescr};
+            }
+
+            return inParams.Concat(outParams).Concat(retParam);
         }
     }
 }

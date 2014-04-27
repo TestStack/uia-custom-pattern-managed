@@ -170,5 +170,78 @@ namespace UiaControlsTest
             schema.Handler.Dispatch(p, schema.Methods[0].Index, pParams, 0);
             p.Received().VoidParameterlessMethod();
         }
+
+        [Test]
+        public void ClientWrapper_CurrentPropertyCalled_MakesCorrectRequestToPatternInstance()
+        {
+            var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
+            schema.Register(makeAugmentationForWpfPeers: false);
+
+            var patternInstance = Substitute.For<IUIAutomationPatternInstance>();
+            var wrapper = GetClientWrapper(schema, patternInstance);
+
+            var propHelper = schema.Properties.First(p => p.Data.pProgrammaticName == Provider.BoolPropertyProperty.Name);
+            var verifier = ExpectCurrentPropertyCall(patternInstance, propHelper, returnValue: true);
+
+            bool val = wrapper.CurrentBoolProperty;
+            verifier();
+            Assert.IsTrue(val);
+        }
+
+        [Test]
+        public void ClientWrapper_CachedPropertyCalled_MakesCorrectRequestToPatternInstance()
+        {
+            var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
+            schema.Register(makeAugmentationForWpfPeers: false);
+
+            var patternInstance = Substitute.For<IUIAutomationPatternInstance>();
+            var wrapper = GetClientWrapper(schema, patternInstance);
+
+            var propHelper = schema.Properties.First(p => p.Data.pProgrammaticName == Provider.IntPropertyProperty.Name);
+            var verifier = ExpectCachedPropertyCall(patternInstance, propHelper, returnValue: 42);
+
+            var val = wrapper.CachedIntProperty;
+            verifier();
+            Assert.AreEqual(42, val);
+        }
+
+        private static Action ExpectCurrentPropertyCall<T>(IUIAutomationPatternInstance patternInstance, UiaPropertyInfoHelper propHelper, T returnValue)
+        {
+            return ExpectPropertyCall(patternInstance, propHelper, cached: false, returnValue: returnValue);
+        }
+
+        private static Action ExpectCachedPropertyCall<T>(IUIAutomationPatternInstance patternInstance, UiaPropertyInfoHelper propHelper, T returnValue)
+        {
+            return ExpectPropertyCall(patternInstance, propHelper, cached: true, returnValue: returnValue);
+        }
+
+        private static Action ExpectPropertyCall(IUIAutomationPatternInstance patternInstance, UiaPropertyInfoHelper propHelper, bool cached, object returnValue)
+        {
+            Action<IUIAutomationPatternInstance> substituteCall = instance => instance.GetProperty(propHelper.Index,
+                                                                                                   cached ? 1 : 0,
+                                                                                                   propHelper.UiaType,
+                                                                                                   Arg.Any<IntPtr>());
+            patternInstance.When(substituteCall)
+                           .Do(ci =>
+                               {
+                                   // imitate what the native UIA part does after server side returns result
+                                   var marshalled = (IntPtr)ci.Args()[3];
+                                   var paramHelper = new UiaParameterHelper(propHelper.UiaType, marshalled);
+                                   paramHelper.Value = returnValue;
+                               });
+
+            return () =>
+                   {
+                       substituteCall(patternInstance.Received());
+                       patternInstance.ClearReceivedCalls();
+                   };
+        }
+
+        private IAttrDrivenTestPattern GetClientWrapper(AttributeDrivenPatternSchema schema, IUIAutomationPatternInstance patternInstance)
+        {
+            object wrapperObj;
+            schema.Handler.CreateClientWrapper(patternInstance, out wrapperObj);
+            return (IAttrDrivenTestPattern)wrapperObj;
+        }
     }
 }

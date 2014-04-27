@@ -1,10 +1,12 @@
 ﻿using System;
+using Castle.DynamicProxy;
 using Interop.UIAutomationCore;
 
 namespace ManagedUiaCustomizationCore
 {
     public class AttributeDrivenPatternHandler : IUIAutomationPatternHandler
     {
+        private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
         private readonly CustomPatternSchemaBase _schema;
 
         public AttributeDrivenPatternHandler(CustomPatternSchemaBase schema)
@@ -14,8 +16,8 @@ namespace ManagedUiaCustomizationCore
 
         public void CreateClientWrapper(IUIAutomationPatternInstance pPatternInstance, out object pClientWrapper)
         {
-            // TODO: Create general-purpose intercepting proxy
-            throw new NotImplementedException();
+            var interceptor = new PatternClientInstanceInterceptor(_schema, pPatternInstance);
+            pClientWrapper = _proxyGenerator.CreateInterfaceProxyWithoutTarget(_schema.PatternClientInterface, interceptor);
         }
 
         public void Dispatch(object pTarget, uint index, UIAutomationParameter[] pParams, uint cParams)

@@ -72,7 +72,7 @@ namespace UiaControlsTest
         }
 
         [Test]
-        public void AssertGuidsAreReflectedCorrectly()
+        public void AttributeDrivenPatternSchema_AssertGuidsAreReflectedCorrectly()
         {
             var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
             Assert.AreEqual(new Guid(TestPatternProviderComGuid), schema.PatternProviderGuid);
@@ -81,14 +81,14 @@ namespace UiaControlsTest
         }
 
         [Test]
-        public void AssertRegistrationGoesSmoothly()
+        public void AttributeDrivenPatternSchema_AssertRegistrationGoesSmoothly()
         {
             var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
             schema.Register();
         }
 
         [Test]
-        public void PropertiesAndMethodsAreMappedCorrectly()
+        public void AttributeDrivenPatternSchema_PropertiesAndMethodsAreMappedCorrectly()
         {
             var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
 
@@ -132,7 +132,7 @@ namespace UiaControlsTest
         }
 
         [Test]
-        public void PatternHandlerDispatchesPropertiesCorrectly()
+        public void PatternHandler_DispatchesPropertiesCorrectly()
         {
             var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
             schema.Register();
@@ -159,7 +159,7 @@ namespace UiaControlsTest
         }
 
         [Test]
-        public void VoidParameterlessMethodCalledCorrectly()
+        public void PatternHandler_VoidParameterlessMethodCalled_DispatchedCorrectly()
         {
             var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
             schema.Register();

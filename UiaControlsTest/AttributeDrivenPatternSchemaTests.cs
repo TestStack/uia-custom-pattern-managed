@@ -205,6 +205,27 @@ namespace UiaControlsTest
             Assert.AreEqual(42, val);
         }
 
+        [Test]
+        public void ClientWrapper_BoolMethodWithIntAndOutStringParamsCalled_MakesCorrectRequestToPatternInstance()
+        {
+            var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
+            schema.Register(makeAugmentationForWpfPeers: false);
+
+            var patternInstance = Substitute.For<IUIAutomationPatternInstance>();
+            var wrapper = GetClientWrapper(schema, patternInstance);
+
+            var methodHelper = schema.Methods.First(m => m.Data.pProgrammaticName == Provider.BoolMethodWithInAndOutParams.Name);
+            var inArgs = new object[] {42, null, null};
+            var outArgs = new object[] {null, "abc", true};
+            var verifier = ExpectMethodCall(patternInstance, methodHelper, inArgs, outArgs);
+
+            string strResult;
+            var boolResult = wrapper.BoolMethodWithInAndOutParams(42, out strResult);
+            verifier();
+            Assert.AreEqual("abc", strResult);
+            Assert.AreEqual(true, boolResult);
+        }
+
         private static Action ExpectCurrentPropertyCall<T>(IUIAutomationPatternInstance patternInstance, UiaPropertyInfoHelper propHelper, T returnValue)
         {
             return ExpectPropertyCall(patternInstance, propHelper, cached: false, returnValue: returnValue);
@@ -217,10 +238,11 @@ namespace UiaControlsTest
 
         private static Action ExpectPropertyCall(IUIAutomationPatternInstance patternInstance, UiaPropertyInfoHelper propHelper, bool cached, object returnValue)
         {
-            Action<IUIAutomationPatternInstance> substituteCall = instance => instance.GetProperty(propHelper.Index,
-                                                                                                   cached ? 1 : 0,
-                                                                                                   propHelper.UiaType,
-                                                                                                   Arg.Any<IntPtr>());
+            Action<IUIAutomationPatternInstance> substituteCall
+                = instance => instance.GetProperty(propHelper.Index,
+                                                   cached ? 1 : 0,
+                                                   propHelper.UiaType,
+                                                   Arg.Any<IntPtr>());
             patternInstance.When(substituteCall)
                            .Do(ci =>
                                {
@@ -235,6 +257,49 @@ namespace UiaControlsTest
                        substituteCall(patternInstance.Received());
                        patternInstance.ClearReceivedCalls();
                    };
+        }
+
+        private static Action ExpectMethodCall(IUIAutomationPatternInstance patternInstance, UiaMethodInfoHelper methodHelper, object[] inArgs, object[] outArgs)
+        {
+            if (inArgs.Length != outArgs.Length)
+                throw new ArgumentException();
+
+
+            Action<IUIAutomationPatternInstance> substituteCall
+                = instance => instance.CallMethod(methodHelper.Index,
+                                                  Arg.Is<UIAutomationParameter[]>(pParams => DoParamsMatch(pParams, inArgs)),
+                                                  (uint)inArgs.Length);
+            patternInstance.When(substituteCall)
+                           .Do(ci =>
+                               {
+                                   // imitate what the native UIA part does after server side finishes the call
+                                   var marshalled = (UIAutomationParameter[])ci.Args()[1];
+                                   var paramList = new UiaParameterListHelper(marshalled);
+                                   for (int i = 0; i < marshalled.Length; i++)
+                                   {
+                                       if (UiaTypesHelper.IsOutType(marshalled[i].type))
+                                           paramList[i] = outArgs[i];
+                                   }
+                               });
+
+            return () =>
+                   {
+                       substituteCall(patternInstance.Received());
+                       patternInstance.ClearReceivedCalls();
+                   };
+        }
+
+        private static bool DoParamsMatch(UIAutomationParameter[] pParams, object[] inArgs)
+        {
+            if (pParams.Length != inArgs.Length) return false;
+            var paramList = new UiaParameterListHelper(pParams);
+            for (int i = 0; i < paramList.Count; i++)
+            {
+                if (UiaTypesHelper.IsInType(pParams[i].type))
+                    if (!inArgs[i].Equals(paramList[i]))
+                        return false;
+            }
+            return true;
         }
 
         private IAttrDrivenTestPattern GetClientWrapper(AttributeDrivenPatternSchema schema, IUIAutomationPatternInstance patternInstance)

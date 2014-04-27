@@ -42,10 +42,10 @@ namespace ManagedUiaCustomizationCore
             _programmaticName = programmaticName;
             _doSetFocus = doSetFocus;
             _providerMethodInfo = providerMethodInfo;
-            if (_providerMethodInfo != null)
+            if (ProviderMethodInfo != null)
             {
                 _providerMethodInfoIndicies = new Dictionary<string, int>();
-                var args = _providerMethodInfo.GetParameters();
+                var args = ProviderMethodInfo.GetParameters();
                 for (int i = 0; i < args.Length; i++)
                     _providerMethodInfoIndicies.Add(args[i].Name, i);
             }
@@ -112,9 +112,9 @@ namespace ManagedUiaCustomizationCore
 
         public void AddParameter(UiaParameterDescription param)
         {
-            if (PatternMethodParamDescriptions.Count > 0 && IsOutType(PatternMethodParamDescriptions.Last().UiaType) && IsInType(param.UiaType))
+            if (PatternMethodParamDescriptions.Count > 0 && UiaTypesHelper.IsOutType(PatternMethodParamDescriptions.Last().UiaType) && UiaTypesHelper.IsInType(param.UiaType))
                 throw new ArgumentException("In param can't go after an out one. Please, ensure the correct order");
-            if (_providerMethodInfo != null
+            if (ProviderMethodInfo != null
                 && param.Name != UiaTypesHelper.RetParamUnspeakableName
                 && !_providerMethodInfoIndicies.ContainsKey(param.Name))
             {
@@ -123,7 +123,7 @@ namespace ManagedUiaCustomizationCore
 
             UIAutomationType type = param.UiaType;
             var marshalledName = Marshal.StringToCoTaskMemUni(param.Name);
-            if (IsInType(type))
+            if (UiaTypesHelper.IsInType(type))
             {
                 _inParamNames.Add(marshalledName);
                 _inParamTypes.Add(type);
@@ -138,7 +138,7 @@ namespace ManagedUiaCustomizationCore
 
         public void DispatchCallToProvider(object provider, UiaParameterListHelper paramList)
         {
-            if (_providerMethodInfo == null)
+            if (ProviderMethodInfo == null)
                 throw new InvalidOperationException("You need to pass providerMethodInfo if you want to call ISchemaMember.DispatchCallToProvider");
             if (paramList.Count != PatternMethodParamDescriptions.Count)
             {
@@ -148,12 +148,12 @@ namespace ManagedUiaCustomizationCore
                 throw new ArgumentException(message, "paramList");
             }
 
-            var providerCallParameters = new object[_providerMethodInfo.GetParameters().Length];
+            var providerCallParameters = new object[ProviderMethodInfo.GetParameters().Length];
             // fill in params
             for (int i = 0; i < PatternMethodParamDescriptions.Count; i++)
             {
                 var desc = PatternMethodParamDescriptions[i];
-                if (IsInType(desc.UiaType))
+                if (UiaTypesHelper.IsInType(desc.UiaType))
                 {
                     var providerMethodParamIdx = _providerMethodInfoIndicies[desc.Name];
                     providerCallParameters[providerMethodParamIdx] = paramList[i];
@@ -161,7 +161,7 @@ namespace ManagedUiaCustomizationCore
             }
 
             // call provider
-            object result = _providerMethodInfo.Invoke(provider, providerCallParameters);
+            object result = ProviderMethodInfo.Invoke(provider, providerCallParameters);
 
             // write back out params
             for (int i = 0; i < PatternMethodParamDescriptions.Count; i++)
@@ -172,7 +172,7 @@ namespace ManagedUiaCustomizationCore
                     paramList[i] = result;
                     continue;
                 }
-                if (IsOutType(desc.UiaType))
+                if (UiaTypesHelper.IsOutType(desc.UiaType))
                 {
                     var providerMethodParamIdx = _providerMethodInfoIndicies[desc.Name];
                     paramList[i] = providerCallParameters[providerMethodParamIdx];
@@ -182,17 +182,23 @@ namespace ManagedUiaCustomizationCore
 
         public bool SupportsDispatch
         {
-            get { return _providerMethodInfo != null; }
+            get { return ProviderMethodInfo != null; }
         }
 
-        private static bool IsInType(UIAutomationType type)
+        public MethodInfo ProviderMethodInfo
         {
-            return !IsOutType(type);
+            get { return _providerMethodInfo; }
         }
 
-        private static bool IsOutType(UIAutomationType type)
+        public int GetProviderMethodArgumentIndex(string argumentName)
         {
-            return (type & UIAutomationType.UIAutomationType_Out) != 0;
+            if (_providerMethodInfo == null)
+                throw new InvalidOperationException("You need to pass providerMethodInfo if you want to use this method");
+
+            int res;
+            if (!_providerMethodInfoIndicies.TryGetValue(argumentName, out res))
+                res = -1;
+            return res;
         }
 
         /// <summary>

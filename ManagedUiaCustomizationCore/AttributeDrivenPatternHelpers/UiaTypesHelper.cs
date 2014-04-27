@@ -44,5 +44,15 @@ namespace ManagedUiaCustomizationCore
                 return res;
             throw new NotSupportedException("Provided type is not supported");
         }
+
+        public static bool IsInType(UIAutomationType type)
+        {
+            return !IsOutType(type);
+        }
+
+        public static bool IsOutType(UIAutomationType type)
+        {
+            return (type & UIAutomationType.UIAutomationType_Out) != 0;
+        }
     }
 }

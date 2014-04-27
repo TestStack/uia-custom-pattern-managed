@@ -9,7 +9,7 @@ namespace WpfAppWithAdvTextControl
         public AdvTextBoxAutomationPeer(AdvTextBox owner)
             : base(owner)
         {
-            CaretPositionSchema.Instance.Register(makeAugmentationForWpfPeers: true);
+            CaretPositionPattern.Initialize();
         }
 
         private new AdvTextBox Owner
@@ -24,7 +24,7 @@ namespace WpfAppWithAdvTextControl
 
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if ((int)patternInterface == CaretPositionSchema.Instance.PatternId)
+            if ((int)patternInterface == CaretPositionPattern.Pattern)
                 return this;
             return base.GetPattern(patternInterface);
         }

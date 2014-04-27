@@ -84,9 +84,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CaretPositionProviderClientInstance.cs" />
-    <Compile Include="CaretPositionProviderHandler.cs" />
-    <Compile Include="CaretPositionSchema.cs" />
+    <Compile Include="CaretPositionPattern.cs" />
     <Compile Include="ICaretPositionPattern.cs" />
     <Compile Include="ICaretPositionProvider.cs" />
     <Compile Include="MainWindow.xaml.cs">

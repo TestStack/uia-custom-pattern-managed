@@ -17,7 +17,6 @@ namespace UiaControlsTest
         {
             // Create the factory and register schemas
             _factory = new CUIAutomationClass();
-            CaretPositionSchema.Instance.Register(makeAugmentationForWpfPeers: true);
 
             // Start the app
             var curDir = Environment.CurrentDirectory;
@@ -41,8 +40,8 @@ namespace UiaControlsTest
         [Test]
         public void Smoke()
         {
-            var schema = CaretPositionSchema.Instance;
-            var cps = (ICaretPositionPattern)_customElement.GetCurrentPattern(schema.PatternId);
+            CaretPositionPattern.Initialize();
+            var cps = (ICaretPositionPattern)_customElement.GetCurrentPattern(CaretPositionPattern.Pattern);
             Assert.IsNotNull(cps);
 
             Assert.AreEqual(0, cps.CurrentSelectionStart);

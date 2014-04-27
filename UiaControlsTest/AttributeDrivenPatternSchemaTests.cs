@@ -16,11 +16,14 @@ namespace UiaControlsTest
         private const string TestPatternClientComGuid = "267D23B7-6B12-4679-ACF0-E8FA0FB3BDD7";
         private const string TestPatternGuid = "E69F099B-7519-4CE7-9D61-77146DCB1B4A";
         private const string TestPatternBoolPropertyGuid = "DD339FFB-E244-41A2-A8A2-787F722C582B";
+        private const string TestPatternIntPropertyGuid = "C6981328-E9B5-4EA1-AB21-A483D50D95BF";
 
         private static class Provider
         {
             private static string _dummyString;
             private static readonly IAttrDrivenTestProvider _dummyProvider = null;
+            public static readonly PropertyInfo BoolPropertyProperty = TypeMember<IAttrDrivenTestProvider>.PropertyInfo(p => p.BoolProperty);
+            public static readonly PropertyInfo IntPropertyProperty = TypeMember<IAttrDrivenTestProvider>.PropertyInfo(p => p.IntProperty);
             public static readonly MethodInfo VoidParameterlessMethod = ReflectionUtils.GetMethodInfo(() => _dummyProvider.VoidParameterlessMethod());
             public static readonly MethodInfo BoolParameterlessMethodWithDoSetFocus = ReflectionUtils.GetMethodInfo(() => _dummyProvider.BoolParameterlessMethodWithDoSetFocus());
             public static readonly MethodInfo IntMethodWithDoubleParam = ReflectionUtils.GetMethodInfo(() => _dummyProvider.IntMethodWithDoubleParam(0));
@@ -35,6 +38,9 @@ namespace UiaControlsTest
         {
             [PatternProperty(TestPatternBoolPropertyGuid)]
             bool BoolProperty { get; }
+
+            [PatternProperty(TestPatternIntPropertyGuid)]
+            int IntProperty { get; }
 
             [PatternMethod]
             void VoidParameterlessMethod();
@@ -56,6 +62,8 @@ namespace UiaControlsTest
         {
             bool CurrentBoolProperty { get; }
             bool CachedBoolProperty { get; }
+            int CurrentIntProperty { get; }
+            int CachedIntProperty { get; }
 
             void VoidParameterlessMethod();
             bool BoolParameterlessMethodWithDoSetFocus();
@@ -85,8 +93,9 @@ namespace UiaControlsTest
             var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
 
             var props = schema.Properties;
-            Assert.AreEqual(1, props.Length);
+            Assert.AreEqual(2, props.Length);
             AssertPropertyInfo("BoolProperty", UIAutomationType.UIAutomationType_Bool, TestPatternBoolPropertyGuid, props[0]);
+            AssertPropertyInfo("IntProperty", UIAutomationType.UIAutomationType_Int, TestPatternIntPropertyGuid, props[1]);
 
             Assert.AreEqual(4, schema.Methods.Length);
 

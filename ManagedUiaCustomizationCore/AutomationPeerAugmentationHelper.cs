@@ -3,16 +3,20 @@ using System.Collections;
 using System.Reflection;
 using System.Windows.Automation.Peers;
 using System.Windows.Threading;
+using Castle.DynamicProxy;
 
 namespace ManagedUiaCustomizationCore
 {
     public static class AutomationPeerAugmentationHelper
     {
+        private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator();
+
         public static void Register(CustomPatternSchemaBase schema)
         {
             // The only purpose of this method is to construct and correctly execute these lines of code:
             //
-            //   var wrapObject = new AutomationPeer.WrapObject(WrapObjectReplacer);
+            //   var wrapper = new Wrapper(schema.PatternProviderInterface);
+            //   var wrapObject = new AutomationPeer.WrapObject(wrapper.WrapObjectReplacer);
             //   AutomationPeer.s_patternInfo[schema.PatternId] 
             //      = new AutomationPeer.PatternInfo(schema.PatternId, 
             //                                       wrapObject, 
@@ -44,8 +48,9 @@ namespace ManagedUiaCustomizationCore
 
             // from AutomationPeer.cs: private delegate object WrapObject(AutomationPeer peer, object iface);
             var wrapObjectDelegateType = automationPeerType.GetNestedType("WrapObject", BindingFlags.NonPublic);
-            var wrapObjectReplacerMethodInfo = ReflectionUtils.GetMethodInfo(() => WrapObjectReplacer(null, null));
-            var wrapObject = Delegate.CreateDelegate(wrapObjectDelegateType, wrapObjectReplacerMethodInfo);
+            var wrapper = new Wrapper(schema.PatternProviderInterface);
+            var wrapObjectReplacerMethodInfo = ReflectionUtils.GetMethodInfo(() => wrapper.WrapObjectReplacer(null, null));
+            var wrapObject = Delegate.CreateDelegate(wrapObjectDelegateType, wrapper, wrapObjectReplacerMethodInfo);
 
             // from AutomationPeer.cs:  
             //private class PatternInfo
@@ -77,17 +82,46 @@ namespace ManagedUiaCustomizationCore
             }
         }
 
-        private static object WrapObjectReplacer(AutomationPeer peer, object iface)
+        // we have to capture providerInterfaceType; as lambda captures are ony compiler syntactic sugar - we
+        // have to recreate its magic here by hand
+        private class Wrapper
         {
-            // Real wrapper that this method should return is a decoration of iface and ensures three things:
-            // 1) call to iface (which is actually an implementation of pattern interface, usually same object as peer)
-            //    is made synchronously on the peer's dispatcher thread via peer.Dispatcher.Invoke(DispatcherPriority.Send, ...)
-            // 2) any exceptions thrown on dispatcher thread are catched and re-thrown on calling thread to UIA
-            // 3) if calls result object is not a primitivy type, but rather some other provider - it is wrapped before 
-            //    return in another wrapper (possible of different type), because UIA requires that providers could be
-            //    safely called from any thread
-            // For now for simplicity we will assume our new pattern implementation will handle these things itself :)
-            return iface;
+            private readonly Type _providerInterfaceType;
+
+            public Wrapper(Type providerInterfaceType)
+            {
+                _providerInterfaceType = providerInterfaceType;
+            }
+
+            public object WrapObjectReplacer(AutomationPeer peer, object iface)
+            {
+                var interceptor = new SendingToUIThreadInterceptor(peer);
+                return _proxyGenerator.CreateInterfaceProxyWithTarget(_providerInterfaceType, iface, interceptor);
+            }
+        }
+
+
+        private class SendingToUIThreadInterceptor : IInterceptor
+        {
+            private readonly Dispatcher _dispatcher;
+
+            public SendingToUIThreadInterceptor(AutomationPeer peer)
+            {
+                _dispatcher = peer.Dispatcher;
+            }
+
+            public void Intercept(IInvocation invocation)
+            {
+                if (_dispatcher.CheckAccess())
+                {
+                    invocation.Proceed();
+                }
+                else
+                {
+                    Action a = invocation.Proceed;
+                    _dispatcher.Invoke(a);
+                }
+            }
         }
     }
 }

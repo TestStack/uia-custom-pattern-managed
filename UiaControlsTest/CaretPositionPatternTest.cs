@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Windows.Automation;
 using NUnit.Framework;
 using UIAutomationClient;
 using WpfAppWithAdvTextControl;
+using TreeScope = UIAutomationClient.TreeScope;
 
 namespace UiaControlsTest
 {
@@ -44,8 +46,24 @@ namespace UiaControlsTest
             var cps = (ICaretPositionPattern)_customElement.GetCurrentPattern(CaretPositionPattern.Pattern);
             Assert.IsNotNull(cps);
 
+            // sanity check: intial selection is none, there's no text after all
             Assert.AreEqual(0, cps.CurrentSelectionStart);
             Assert.AreEqual(0, cps.CurrentSelectionLength);
+            
+            // enter "abcd" and select central part of it - "bc"
+            var value = (IUIAutomationValuePattern)_customElement.GetCurrentPattern(ValuePattern.Pattern.Id);
+            value.SetValue("abcd");
+            cps.SetSelectionStart(1);
+            cps.SetSelectionLength(2);
+            Assert.AreEqual(1, cps.CurrentSelectionStart);
+            Assert.AreEqual(2, cps.CurrentSelectionLength);
+
+            // validate that selected text retrieved from TextPattern changed as expected
+            var text = (IUIAutomationTextPattern)_customElement.GetCurrentPattern(TextPattern.Pattern.Id);
+            var selectionArray = text.GetSelection();
+            var selection = selectionArray.GetElement(0);
+            var selectedString = selection.GetText(-1);
+            Assert.AreEqual("bc", selectedString);
         }
     }
 }

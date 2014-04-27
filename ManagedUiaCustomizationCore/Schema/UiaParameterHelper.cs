@@ -36,6 +36,7 @@ namespace ManagedUiaCustomizationCore
             _clrType = ClrTypeFromUiaType(type);
             _marshalledData = marshalledData;
             _ownsData = false;
+            GC.SuppressFinalize(this);
 
             // It is a safe assumption that if we are initialized with incoming data,
             // we are on the provider side.  If this changes, we can make this an explicit parameter.

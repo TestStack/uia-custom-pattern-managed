@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows.Automation.Peers;
-using System.Windows.Threading;
+﻿using System.Windows.Automation.Peers;
 
 namespace WpfAppWithAdvTextControl
 {
@@ -31,22 +29,22 @@ namespace WpfAppWithAdvTextControl
 
         public int SelectionStart
         {
-            get { return (int)Dispatcher.Invoke(DispatcherPriority.Send, (Func<int>)(() => Owner.SelectionStart)); }
+            get { return Owner.SelectionStart; }
         }
 
         public int SelectionLength
         {
-            get { return (int)Dispatcher.Invoke(DispatcherPriority.Send, (Func<int>)(() => Owner.SelectionLength)); }
+            get { return Owner.SelectionLength; }
         }
 
         public void SetSelectionStart(int value)
         {
-            Dispatcher.Invoke(DispatcherPriority.Send, (Action)(() => Owner.SelectionStart = value));
+            Owner.SelectionStart = value;
         }
 
         public void SetSelectionLength(int value)
         {
-            Dispatcher.Invoke(DispatcherPriority.Send, (Action)(() => Owner.SelectionLength = value));
+            Owner.SelectionLength = value;
         }
     }
 }

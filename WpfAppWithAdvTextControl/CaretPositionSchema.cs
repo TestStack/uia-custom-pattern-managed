@@ -59,19 +59,19 @@ namespace WpfAppWithAdvTextControl
             get { return new Guid("B85FDDEA-D38F-44D6-AE42-0CA3CF0433F1"); }
         }
 
-        public override Guid PatternClientGuid
-        {
-            get { return typeof(ICaretPositionPattern).GUID; }
-        }
-
-        public override Guid PatternProviderGuid
-        {
-            get { return typeof(ICaretPositionProvider).GUID; }
-        }
-
         public override string PatternName
         {
             get { return "CaretPositionPattern"; }
+        }
+
+        public override Type PatternProviderInterface
+        {
+            get { return typeof(ICaretPositionProvider); }
+        }
+
+        public override Type PatternClientInterface
+        {
+            get { return typeof(ICaretPositionPattern); }
         }
 
         public override IUIAutomationPatternHandler Handler

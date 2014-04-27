@@ -45,17 +45,33 @@ namespace ManagedUiaCustomizationCore
         /// <summary>
         ///     The interface ID for the COM interface for this pattern on the client side.
         /// </summary>
-        public abstract Guid PatternClientGuid { get; }
+        public virtual Guid PatternClientGuid
+        {
+            get { return PatternClientInterface.GUID; }
+        }
 
         /// <summary>
         ///     The interface ID for the COM interface for this pattern on the provider side.
         /// </summary>
-        public abstract Guid PatternProviderGuid { get; }
+        public virtual Guid PatternProviderGuid
+        {
+            get { return PatternProviderInterface.GUID; }
+        }
 
         /// <summary>
         ///     The programmatic name for this pattern.
         /// </summary>
         public abstract string PatternName { get; }
+
+        /// <summary>
+        /// Type of the provider interface
+        /// </summary>
+        public abstract Type PatternProviderInterface { get; }
+
+        /// <summary>
+        /// Type of the client-side interface
+        /// </summary>
+        public abstract Type PatternClientInterface { get; }
 
         /// <summary>
         ///     An object that implements IUIAutomationPatternHandler to handle

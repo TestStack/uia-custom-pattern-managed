@@ -57,19 +57,19 @@ namespace UIAControls
             get { return new Guid("CDF2D932-6043-47ef-AB48-1CA756678B0C"); }
         }
 
-        public override Guid PatternClientGuid
-        {
-            get { return typeof (IColorPattern).GUID; }
-        }
-
-        public override Guid PatternProviderGuid
-        {
-            get { return typeof (IColorProvider).GUID; }
-        }
-
         public override string PatternName
         {
             get { return "ColorPattern"; }
+        }
+
+        public override Type PatternProviderInterface
+        {
+            get { return typeof(IColorProvider); }
+        }
+
+        public override Type PatternClientInterface
+        {
+            get { return typeof(IColorPattern); }
         }
 
         public override IUIAutomationPatternHandler Handler

@@ -7,9 +7,9 @@ namespace ManagedUiaCustomizationCore
 {
     public class AttributeDrivenPatternSchema : CustomPatternSchemaBase
     {
+        private readonly Type _patternProviderInterface;
+        private readonly Type _patternClientInterface;
         private readonly Guid _patternGuid;
-        private readonly Guid _patternClientGuid;
-        private readonly Guid _patternProviderGuid;
         private readonly string _patternName;
         private readonly UiaMethodInfoHelper[] _methods;
         private readonly UiaPropertyInfoHelper[] _properties;
@@ -21,20 +21,20 @@ namespace ManagedUiaCustomizationCore
                 throw new ArgumentException("Provided pattern provider type should be an interface", "patternProviderInterface");
             if (!patternClientInterface.IsInterface)
                 throw new ArgumentException("Provided pattern client type should be an interface", "patternClientInterface");
+            _patternProviderInterface = patternProviderInterface;
+            _patternClientInterface = patternClientInterface;
 
-            var patternClientName = patternClientInterface.Name;
+            var patternClientName = _patternClientInterface.Name;
             if (!patternClientName.EndsWith("Pattern") || !patternClientName.StartsWith("I"))
                 throw new ArgumentException("Pattern client interface named incorrectly, should be IXxxPattern", "patternClientInterface");
             var baseName = patternClientName.Substring(1, patternClientName.Length - "I".Length - "Pattern".Length);
-            if (patternProviderInterface.Name != string.Format("I{0}Provider", baseName))
+            if (_patternProviderInterface.Name != string.Format("I{0}Provider", baseName))
                 throw new ArgumentException(string.Format("Pattern provider interface named incorrectly, should be I{0}Provider", baseName));
             _patternName = string.Format("{0}Pattern", baseName);
 
-            var patternGuidAttr = patternProviderInterface.GetAttribute<PatternGuidAttribute>();
+            var patternGuidAttr = _patternProviderInterface.GetAttribute<PatternGuidAttribute>();
             if (patternGuidAttr == null) throw new ArgumentException("Provided type should be marked with PatternGuid attribute");
             _patternGuid = patternGuidAttr.Value;
-            _patternClientGuid = patternClientInterface.GUID;
-            _patternProviderGuid = patternProviderInterface.GUID;
 
             _methods = patternProviderInterface.GetMethodsMarkedWith<PatternMethodAttribute>().Select(GetMethodHelper).ToArray();
             _properties = patternProviderInterface.GetPropertiesMarkedWith<PatternPropertyAttribute>().Select(GetPropertyHelper).ToArray();
@@ -62,19 +62,19 @@ namespace ManagedUiaCustomizationCore
             get { return _patternName; }
         }
 
+        public override Type PatternProviderInterface
+        {
+            get { return _patternProviderInterface; }
+        }
+
+        public override Type PatternClientInterface
+        {
+            get { return _patternClientInterface; }
+        }
+
         public override Guid PatternGuid
         {
             get { return _patternGuid; }
-        }
-
-        public override Guid PatternClientGuid
-        {
-            get { return _patternClientGuid; }
-        }
-
-        public override Guid PatternProviderGuid
-        {
-            get { return _patternProviderGuid; }
         }
 
         public override UiaPropertyInfoHelper[] Properties

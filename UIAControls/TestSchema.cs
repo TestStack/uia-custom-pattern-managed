@@ -155,19 +155,19 @@ namespace UIAControls
             get { return new Guid("AD93BC6E-8BEC-4C29-9F4D-E820138FF43F"); }
         }
 
-        public override Guid PatternClientGuid
-        {
-            get { return typeof (ITestPattern).GUID; }
-        }
-
-        public override Guid PatternProviderGuid
-        {
-            get { return typeof (ITestProvider).GUID; }
-        }
-
         public override string PatternName
         {
             get { return "TestPattern"; }
+        }
+
+        public override Type PatternProviderInterface
+        {
+            get { return typeof(ITestProvider); }
+        }
+
+        public override Type PatternClientInterface
+        {
+            get { return typeof(ITestPattern); }
         }
 
         public override IUIAutomationPatternHandler Handler
@@ -175,7 +175,4 @@ namespace UIAControls
             get { return new TestProviderHandler(); }
         }
     };
-
-    // Pattern instance class: wrap up a IUIAutomationPatternInstance and implement the
-    // custom pattern interface on top of it.
 }

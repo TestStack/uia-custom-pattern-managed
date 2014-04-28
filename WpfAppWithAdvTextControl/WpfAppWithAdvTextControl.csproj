@@ -87,6 +87,9 @@
     <Compile Include="CaretPositionPattern.cs" />
     <Compile Include="ICaretPositionPattern.cs" />
     <Compile Include="ICaretPositionProvider.cs" />
+    <Compile Include="TestControl.cs" />
+    <Compile Include="TestControlAutomationPeer.cs" />
+    <Compile Include="TestOfMoreThanTwoPatternPropertiesPattern.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

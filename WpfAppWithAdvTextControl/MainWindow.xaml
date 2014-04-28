@@ -3,7 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wpfAppWithAdvTextControl="clr-namespace:WpfAppWithAdvTextControl"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <wpfAppWithAdvTextControl:AdvTextBox AutomationProperties.AutomationId="advTextBox1" />
-    </Grid>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+
+    <wpfAppWithAdvTextControl:AdvTextBox Grid.Row="0" AutomationProperties.AutomationId="advTextBox1" />
+    <wpfAppWithAdvTextControl:TestControl Grid.Row="1" AutomationProperties.AutomationId="testControl">Test control for other patterns</wpfAppWithAdvTextControl:TestControl>
+  </Grid>
 </Window>

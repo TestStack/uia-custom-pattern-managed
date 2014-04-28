@@ -13,6 +13,7 @@ namespace UiaControlsTest
         private TargetApp _app;
         private IUIAutomation _factory;
         private IUIAutomationElement _advancedTextBoxElement;
+        private IUIAutomationElement _testControlElement;
 
         [SetUp]
         public void MyTestInitialize()
@@ -27,9 +28,14 @@ namespace UiaControlsTest
 
             // Find the main control
             var appElement = _factory.ElementFromHandle(_app.MainWindow);
-            var condition = _factory.CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "advTextBox1");
-            _advancedTextBoxElement = appElement.FindFirst(TreeScope.TreeScope_Children, condition);
+            
+            var advTestBoxCondition = _factory.CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "advTextBox1");
+            _advancedTextBoxElement = appElement.FindFirst(TreeScope.TreeScope_Children, advTestBoxCondition);
             Assert.IsNotNull(_advancedTextBoxElement);
+
+            var testControlCondition = _factory.CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "testControl");
+            _testControlElement = appElement.FindFirst(TreeScope.TreeScope_Children, testControlCondition);
+            Assert.IsNotNull(_testControlElement);
         }
 
         [TearDown]
@@ -64,6 +70,18 @@ namespace UiaControlsTest
             var selection = selectionArray.GetElement(0);
             var selectedString = selection.GetText(-1);
             Assert.AreEqual("bc", selectedString);
+        }
+
+        [Test]
+        [Ignore("Dut to bug in UIA implementation on Win7 it is not possible to have more than 2 properties on a pattern. You may use the test to detect if the bug is present in your system")]
+        public void TestOfMoreThanTwoPatternProperties()
+        {
+            TestOfMoreThanTwoPatternPropertiesPattern.Initialize();
+            var pattern = (ITestOfMoreThanTwoPatternPropertiesPattern)_testControlElement.GetCurrentPattern(TestOfMoreThanTwoPatternPropertiesPattern.Pattern);
+
+            Assert.AreEqual(421, pattern.CurrentProperty1);
+            Assert.AreEqual(422, pattern.CurrentProperty2);
+            Assert.AreEqual(423, pattern.CurrentProperty3);
         }
     }
 }

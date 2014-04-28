@@ -97,7 +97,7 @@
     <Compile Include="ITestProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReadyStateProperty.cs" />
+    <Compile Include="ReadyStateSchema.cs" />
     <Compile Include="TestPatternProvider.cs" />
     <Compile Include="TestProviderClientInstance.cs" />
     <Compile Include="TestProviderHandler.cs" />

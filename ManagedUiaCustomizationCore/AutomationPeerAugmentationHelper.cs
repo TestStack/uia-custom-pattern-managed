@@ -30,9 +30,9 @@ namespace ManagedUiaCustomizationCore
 
             RegisterPattern(schema);
             foreach (var property in schema.Properties)
-            {
                 RegisterProperty(property);
-            }
+            foreach (var property in schema.StandaloneProperties)
+                RegisterProperty(property);
         }
 
         private static void RegisterPattern(CustomPatternSchemaBase schema)

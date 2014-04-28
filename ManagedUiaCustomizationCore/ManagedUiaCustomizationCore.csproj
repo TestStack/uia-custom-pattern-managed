@@ -83,6 +83,7 @@
     <Compile Include="AttributeDrivenPatternHelpers\PatternGuidAttribute.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\PatternMethodAttribute.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\PatternPropertyAttribute.cs" />
+    <Compile Include="AttributeDrivenPatternHelpers\StandalonePropertyAttribute.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\TypeMember.cs" />
     <Compile Include="AttributeDrivenPatternSchema.cs" />
     <Compile Include="AutomationPeerAugmentationHelper.cs" />

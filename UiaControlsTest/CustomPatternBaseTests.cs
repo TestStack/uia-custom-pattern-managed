@@ -1,7 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Automation;
-using System.Windows.Threading;
 using ManagedUiaCustomizationCore;
 using NUnit.Framework;
 
@@ -19,6 +17,7 @@ namespace UiaControlsTest
             Assert.IsNotNull(CustomPatternBaseTestPattern.Pattern);
             Assert.IsNotNull(CustomPatternBaseTestPattern.SomeIntProperty);
             Assert.IsNotNull(CustomPatternBaseTestPattern.SomeStringProperty);
+            Assert.IsNotNull(CustomPatternBaseTestPattern.StandaloneIntProperty);
         }
 
         #region Pattern definition
@@ -65,6 +64,9 @@ namespace UiaControlsTest
             public static AutomationPattern Pattern;
             public static AutomationProperty SomeIntProperty;
             public static AutomationProperty SomeStringProperty;
+
+            [StandaloneProperty("B26C3D40-215A-478B-9C4D-6D91DFDAC3FF", typeof(int))]
+            public static AutomationProperty StandaloneIntProperty;
         }
 
         #endregion

@@ -28,6 +28,17 @@ namespace ManagedUiaCustomizationCore
         public abstract UiaPropertyInfoHelper[] Properties { get; }
 
         /// <summary>
+        /// It is just a convenient shortcut. Because UIA on Win7 has a bug which doesn't allow
+        /// to register more than two custom properties for given custom pattern, some properties
+        /// that ideally should belong to pattern would be registered standalone. This is the list
+        /// of such properties.
+        /// </summary>
+        public virtual UiaPropertyInfoHelper[] StandaloneProperties
+        {
+            get { return null; }
+        }
+
+        /// <summary>
         /// The list of methods for this pattern.
         /// </summary>
         public abstract UiaMethodInfoHelper[] Methods { get; }
@@ -159,7 +170,21 @@ namespace ManagedUiaCustomizationCore
                 Events[i].EventId = eventIds[i];
             }
 
+            if (StandaloneProperties != null)
+                RegisterStandaloneProperties(registrar);
+
             _registered = true;
+        }
+
+        private void RegisterStandaloneProperties(IUIAutomationRegistrar registrar)
+        {
+            foreach (var propertyInfoHelper in StandaloneProperties)
+            {
+                int id;
+                var propInfo = propertyInfoHelper.Data;
+                registrar.RegisterProperty(ref propInfo, out id);
+                propertyInfoHelper.PropertyId = id;
+            }
         }
 
         public ISchemaMember GetMemberByIndex(uint index)

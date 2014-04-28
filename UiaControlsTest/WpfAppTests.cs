@@ -30,7 +30,7 @@ namespace UiaControlsTest
 
             // Find the main control
             var appElement = _nFactory.ElementFromHandle(_app.MainWindow);
-            
+
             var advTestBoxCondition = _nFactory.CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "advTextBox1");
             _nAdvancedTextBoxElement = appElement.FindFirst(NTreeScope.TreeScope_Children, advTestBoxCondition);
             Assert.IsNotNull(_nAdvancedTextBoxElement);
@@ -60,7 +60,7 @@ namespace UiaControlsTest
             // sanity check: intial selection is none, there's no text after all
             Assert.AreEqual(0, cps.CurrentSelectionStart);
             Assert.AreEqual(0, cps.CurrentSelectionLength);
-            
+
             // enter "abcd" and select central part of it - "bc"
             NSetTextAndSelection("abcd", 1, 2);
             Assert.AreEqual(1, cps.CurrentSelectionStart);
@@ -68,6 +68,31 @@ namespace UiaControlsTest
 
             // validate that selected text retrieved from TextPattern changed as expected
             var text = (IUIAutomationTextPattern)_nAdvancedTextBoxElement.GetCurrentPattern(TextPattern.Pattern.Id);
+            var selectionArray = text.GetSelection();
+            var selection = selectionArray.GetElement(0);
+            var selectedString = selection.GetText(-1);
+            Assert.AreEqual("bc", selectedString);
+        }
+
+        [Test]
+        [Ignore("Fails because UIA COM wrapper doesn't expect custom patterns and properties and should be changed a bit asap")]
+        public void Wpf_CaretPositionPatternSmokeTest()
+        {
+            CaretPositionPattern.Initialize();
+            var cps = (ICaretPositionPattern)_wAdvancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern);
+            Assert.IsNotNull(cps);
+
+            // sanity check: intial selection is none, there's no text after all
+            Assert.AreEqual(0, cps.CurrentSelectionStart);
+            Assert.AreEqual(0, cps.CurrentSelectionLength);
+
+            // enter "abcd" and select central part of it - "bc"
+            WSetTextAndSelection("abcd", 1, 2);
+            Assert.AreEqual(1, cps.CurrentSelectionStart);
+            Assert.AreEqual(2, cps.CurrentSelectionLength);
+
+            // validate that selected text retrieved from TextPattern changed as expected
+            var text = (IUIAutomationTextPattern)_wAdvancedTextBoxElement.GetCurrentPattern(TextPattern.Pattern);
             var selectionArray = text.GetSelection();
             var selection = selectionArray.GetElement(0);
             var selectedString = selection.GetText(-1);
@@ -87,6 +112,15 @@ namespace UiaControlsTest
         {
             var cps = (ICaretPositionPattern)_nAdvancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern.Id);
             var value = (IUIAutomationValuePattern)_nAdvancedTextBoxElement.GetCurrentPattern(ValuePattern.Pattern.Id);
+            value.SetValue(text);
+            cps.SetSelectionStart(selectionStart);
+            cps.SetSelectionLength(selectionLength);
+        }
+
+        private void WSetTextAndSelection(string text, int selectionStart, int selectionLength)
+        {
+            var cps = (ICaretPositionPattern)_wAdvancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern);
+            var value = (IUIAutomationValuePattern)_wAdvancedTextBoxElement.GetCurrentPattern(ValuePattern.Pattern);
             value.SetValue(text);
             cps.SetSelectionStart(selectionStart);
             cps.SetSelectionLength(selectionLength);

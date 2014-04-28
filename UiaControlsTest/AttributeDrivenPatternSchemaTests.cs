@@ -267,13 +267,14 @@ namespace UiaControlsTest
 
             Action<IUIAutomationPatternInstance> substituteCall
                 = instance => instance.CallMethod(methodHelper.Index,
-                                                  Arg.Is<UIAutomationParameter[]>(pParams => DoParamsMatch(pParams, inArgs)),
+                                                  Arg.Any<UIAutomationParameter[]>(),
                                                   (uint)inArgs.Length);
             patternInstance.When(substituteCall)
                            .Do(ci =>
                                {
                                    // imitate what the native UIA part does after server side finishes the call
                                    var marshalled = (UIAutomationParameter[])ci.Args()[1];
+                                   Assert.IsTrue(DoParamsMatch(marshalled, inArgs));
                                    var paramList = new UiaParameterListHelper(marshalled);
                                    for (int i = 0; i < marshalled.Length; i++)
                                    {

@@ -98,7 +98,7 @@ namespace ManagedUiaCustomizationCore
         /// <summary>
         /// Helper method to register this pattern.
         /// </summary>
-        public void Register(bool makeAugmentationForWpfPeers = false)
+        public void Register()
         {
             if (_registered) return;
 
@@ -158,9 +158,6 @@ namespace ManagedUiaCustomizationCore
             {
                 Events[i].EventId = eventIds[i];
             }
-
-            if (makeAugmentationForWpfPeers)
-                AutomationPeerAugmentationHelper.Register(this);
 
             _registered = true;
         }

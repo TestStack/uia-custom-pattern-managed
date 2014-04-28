@@ -175,7 +175,7 @@ namespace UiaControlsTest
         public void ClientWrapper_CurrentPropertyCalled_MakesCorrectRequestToPatternInstance()
         {
             var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
-            schema.Register(makeAugmentationForWpfPeers: false);
+            schema.Register();
 
             var patternInstance = Substitute.For<IUIAutomationPatternInstance>();
             var wrapper = GetClientWrapper(schema, patternInstance);
@@ -192,7 +192,7 @@ namespace UiaControlsTest
         public void ClientWrapper_CachedPropertyCalled_MakesCorrectRequestToPatternInstance()
         {
             var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
-            schema.Register(makeAugmentationForWpfPeers: false);
+            schema.Register();
 
             var patternInstance = Substitute.For<IUIAutomationPatternInstance>();
             var wrapper = GetClientWrapper(schema, patternInstance);
@@ -209,7 +209,7 @@ namespace UiaControlsTest
         public void ClientWrapper_BoolMethodWithIntAndOutStringParamsCalled_MakesCorrectRequestToPatternInstance()
         {
             var schema = new AttributeDrivenPatternSchema(typeof(IAttrDrivenTestProvider), typeof(IAttrDrivenTestPattern));
-            schema.Register(makeAugmentationForWpfPeers: false);
+            schema.Register();
 
             var patternInstance = Substitute.For<IUIAutomationPatternInstance>();
             var wrapper = GetClientWrapper(schema, patternInstance);

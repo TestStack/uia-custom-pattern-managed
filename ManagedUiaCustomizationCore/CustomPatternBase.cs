@@ -13,7 +13,9 @@ namespace ManagedUiaCustomizationCore
             : base(typeof(TProviderInterface), typeof(TPatternClientInterface))
         {
             _usedInWpf = usedInWpf;
-            Register(makeAugmentationForWpfPeers: usedInWpf);
+            Register();
+            if (_usedInWpf)
+                AutomationPeerAugmentationHelper.Register(this);
             FillRegistrationInfo();
         }
 

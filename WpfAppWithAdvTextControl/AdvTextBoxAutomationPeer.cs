@@ -22,7 +22,7 @@ namespace WpfAppWithAdvTextControl
 
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if ((int)patternInterface == CaretPositionPattern.Pattern)
+            if ((int)patternInterface == CaretPositionPattern.Pattern.Id)
                 return this;
             return base.GetPattern(patternInterface);
         }

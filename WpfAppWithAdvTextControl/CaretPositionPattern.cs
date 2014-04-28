@@ -1,4 +1,5 @@
-﻿using ManagedUiaCustomizationCore;
+﻿using System.Windows.Automation;
+using ManagedUiaCustomizationCore;
 
 namespace WpfAppWithAdvTextControl
 {
@@ -18,8 +19,8 @@ namespace WpfAppWithAdvTextControl
         public static CaretPositionPattern PatternSchema;
 
         // these will be set via reflection on Initialize() call
-        public static int Pattern;
-        public static int SelectionStartProperty;
-        public static int SelectionLengthProperty;
+        public static AutomationPattern Pattern;
+        public static AutomationProperty SelectionStartProperty;
+        public static AutomationProperty SelectionLengthProperty;
     }
 }

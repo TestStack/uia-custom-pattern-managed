@@ -49,7 +49,7 @@ namespace UiaControlsTest
         public void CaretPositionPatternSmokeTest()
         {
             CaretPositionPattern.Initialize();
-            var cps = (ICaretPositionPattern)_advancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern);
+            var cps = (ICaretPositionPattern)_advancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern.Id);
             Assert.IsNotNull(cps);
 
             // sanity check: intial selection is none, there's no text after all

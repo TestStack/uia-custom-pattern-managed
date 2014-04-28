@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Reflection;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Threading;
 using Castle.DynamicProxy;
@@ -13,22 +14,6 @@ namespace ManagedUiaCustomizationCore
 
         public static void Register(CustomPatternSchemaBase schema)
         {
-            // The only purpose of this method is to construct and correctly execute these lines of code:
-            //
-            //   var wrapper = new Wrapper(schema.PatternProviderInterface);
-            //   var wrapObject = new AutomationPeer.WrapObject(wrapper.WrapObjectReplacer);
-            //   AutomationPeer.s_patternInfo[schema.PatternId] 
-            //      = new AutomationPeer.PatternInfo(schema.PatternId, 
-            //                                       wrapObject, 
-            //                                       (PatternInterface)schema.PatternId);
-            //
-            //   The problem here is that AutomationPeer.WrapObject, AutomationPeer.s_patternInfo and 
-            // AutomationPeer.PatternInfo are not public, so we need some hardcore reflection.
-            //   Now, to be very clear, casting patternId to PatternInterface is not totally correct, 
-            // but customly registered patterns get IDs near 50000 and max PatternInterface value is 
-            // something about 20, so they won't intersect ever. On the other hand, after several hours
-            // studying AutomationPeer sources it seems unfeasible to get what we need in other way 
-            // because AutomationPeer wasn't written with extensibility in mind.
             //
             // TODO: If we want to support standalone properties - we have to make very similar trick for AutomationPeer.s_propertyInfo.
             //
@@ -43,7 +28,33 @@ namespace ManagedUiaCustomizationCore
             //
             // TODO: Add support for raising custom UIA events
 
-            var automationPeerType = typeof (AutomationPeer);
+            RegisterPattern(schema);
+            foreach (var property in schema.Properties)
+            {
+                RegisterProperty(property);
+            }
+        }
+
+        private static void RegisterPattern(CustomPatternSchemaBase schema)
+        {
+            var automationPeerType = typeof(AutomationPeer);
+            // The only purpose of this method is to construct and correctly execute these lines of code:
+            //
+            //   var wrapper = new Wrapper(schema.PatternProviderInterface);
+            //   var wrapObject = new AutomationPeer.WrapObject(wrapper.WrapObjectReplacer);
+            //   AutomationPeer.s_patternInfo[schema.PatternId] 
+            //      = new AutomationPeer.PatternInfo(schema.PatternId, 
+            //                                       wrapObject, 
+            //                                       (PatternInterface)schema.PatternId);
+            //   AutomationPattern.Register(schema.PatternGuid, schema.PatternName);
+            //
+            //   The problem here is that AutomationPeer.WrapObject, AutomationPeer.s_patternInfo, AutomationPattern.Register
+            // and AutomationPeer.PatternInfo are not public, so we need some hardcore reflection.
+            //   Now, to be very clear, casting patternId to PatternInterface is not totally correct, 
+            // but customly registered patterns get IDs near 50000 and max PatternInterface value is 
+            // something about 20, so they won't intersect ever. On the other hand, after several hours
+            // studying AutomationPeer sources it seems unfeasible to get what we need in other way 
+            // because AutomationPeer wasn't written with extensibility in mind.
             var patternInfoHashtableField = automationPeerType.GetField("s_patternInfo", BindingFlags.NonPublic | BindingFlags.Static);
 
             // from AutomationPeer.cs: private delegate object WrapObject(AutomationPeer peer, object iface);
@@ -51,7 +62,7 @@ namespace ManagedUiaCustomizationCore
             var wrapper = new Wrapper(schema.PatternProviderInterface);
             var wrapObjectReplacerMethodInfo = ReflectionUtils.GetMethodInfo(() => wrapper.WrapObjectReplacer(null, null));
             var wrapObject = Delegate.CreateDelegate(wrapObjectDelegateType, wrapper, wrapObjectReplacerMethodInfo);
-
+            
             // from AutomationPeer.cs:  
             //private class PatternInfo
             //{
@@ -70,16 +81,29 @@ namespace ManagedUiaCustomizationCore
             var patternInfoTypeCtor = patternInfoType.GetConstructor(
                 BindingFlags.NonPublic | BindingFlags.Instance,
                 binder: null,
-                types: new[] {typeof (int), wrapObjectDelegateType, typeof (PatternInterface)},
+                types: new[] {typeof(int), wrapObjectDelegateType, typeof(PatternInterface)},
                 modifiers: null);
             var patternInfo = patternInfoTypeCtor.Invoke(new object[] {schema.PatternId, wrapObject, (PatternInterface)schema.PatternId});
+
+            var automationPatternType = typeof(AutomationPattern);
+            var registerMethod = automationPatternType.GetMethod("Register", BindingFlags.NonPublic | BindingFlags.Static);
 
             using (Dispatcher.CurrentDispatcher.DisableProcessing())
             {
                 var patternInfoHashtable = (Hashtable)patternInfoHashtableField.GetValue(null);
                 if (patternInfoHashtable.Contains(schema.PatternId)) return;
                 patternInfoHashtable[schema.PatternId] = patternInfo;
+                registerMethod.Invoke(null, new object[] {schema.PatternGuid, schema.PatternName});
             }
+        }
+
+        private static void RegisterProperty(UiaPropertyInfoHelper property)
+        {
+            var automationPropertyType = typeof(AutomationProperty);
+            var registerMethod = automationPropertyType.GetMethod("Register", BindingFlags.NonPublic | BindingFlags.Static);
+
+            using (Dispatcher.CurrentDispatcher.DisableProcessing())
+                registerMethod.Invoke(null, new object[] { property.Guid, property.Data.pProgrammaticName});
         }
 
         // we have to capture providerInterfaceType; as lambda captures are ony compiler syntactic sugar - we

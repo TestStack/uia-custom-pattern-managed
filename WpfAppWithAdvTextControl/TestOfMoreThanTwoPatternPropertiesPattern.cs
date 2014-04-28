@@ -35,6 +35,11 @@ namespace WpfAppWithAdvTextControl
 
     public class TestOfMoreThanTwoPatternPropertiesPattern : CustomPatternBase<ITestOfMoreThanTwoPatternPropertiesProvider, ITestOfMoreThanTwoPatternPropertiesPattern>
     {
+        private TestOfMoreThanTwoPatternPropertiesPattern() 
+            : base(usedInWpf: true)
+        {
+        }
+
         public static void Initialize()
         {
             if (PatternSchema != null) return;

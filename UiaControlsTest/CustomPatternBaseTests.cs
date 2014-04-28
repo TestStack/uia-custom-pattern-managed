@@ -11,22 +11,6 @@ namespace UiaControlsTest
     [TestFixture]
     public class CustomPatternBaseTests
     {
-        private SynchronizationContext _savedContext;
-
-        [SetUp]
-        public void Setup()
-        {
-            // wpf auto-detection relies on current context, so let's emulate we're under WPF to run WPF augmentation
-            _savedContext = SynchronizationContext.Current;
-            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext());
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            SynchronizationContext.SetSynchronizationContext(_savedContext);
-        }
-
         [Test]
         public void AfterInitializationRegistrationInfoFilledCorrectly()
         {
@@ -65,6 +49,11 @@ namespace UiaControlsTest
 
         public class CustomPatternBaseTestPattern : CustomPatternBase<ICustomPatternBaseTestProvider, ICustomPatternBaseTestPattern>
         {
+            private CustomPatternBaseTestPattern() 
+                : base(usedInWpf: true)
+            {
+            }
+
             public static void Initialize()
             {
                 if (PatternSchema != null) return;

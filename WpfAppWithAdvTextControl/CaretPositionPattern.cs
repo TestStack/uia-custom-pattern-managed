@@ -4,6 +4,11 @@ namespace WpfAppWithAdvTextControl
 {
     public class CaretPositionPattern : CustomPatternBase<ICaretPositionProvider, ICaretPositionPattern>
     {
+        private CaretPositionPattern() 
+            : base(usedInWpf: true)
+        {
+        }
+
         public static void Initialize()
         {
             if (PatternSchema != null) return;

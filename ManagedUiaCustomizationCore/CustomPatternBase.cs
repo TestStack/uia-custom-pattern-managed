@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Windows.Automation;
-using System.Windows.Threading;
 
 namespace ManagedUiaCustomizationCore
 {
     public abstract class CustomPatternBase<TProviderInterface, TPatternClientInterface> : AttributeDrivenPatternSchema
     {
-        protected CustomPatternBase() 
+        private readonly bool _usedInWpf;
+
+        protected CustomPatternBase(bool usedInWpf)
             : base(typeof(TProviderInterface), typeof(TPatternClientInterface))
         {
-            // try to auto-detect WPF
-            bool areWeOnWpf = SynchronizationContext.Current is DispatcherSynchronizationContext;
-            Register(makeAugmentationForWpfPeers: areWeOnWpf);
+            _usedInWpf = usedInWpf;
+            Register(makeAugmentationForWpfPeers: usedInWpf);
             FillRegistrationInfo();
         }
 
@@ -27,14 +26,18 @@ namespace ManagedUiaCustomizationCore
             var pri = fields.FirstOrDefault(f => f.Name == "Pattern");
             if (pri == null)
                 throw new ArgumentException("Field Pattern not found on the type");
-            
+
             if (pri.FieldType == typeof(int))
                 pri.SetValue(null, PatternId);
             else if (pri.FieldType == typeof(AutomationPattern))
+            {
+                if (!_usedInWpf)
+                    throw new ArgumentException("You can't use AutomationPattern registration info because you passed usedInWpf: false in constructor");
                 pri.SetValue(null, AutomationPattern.LookupById(PatternId));
+            }
             else
                 throw new ArgumentException("Field Pattern should be either of type int of AutomationPattern");
-            
+
             foreach (var prop in Properties)
             {
                 var propFieldName = prop.Data.pProgrammaticName + "Property";
@@ -44,7 +47,11 @@ namespace ManagedUiaCustomizationCore
                 if (field.FieldType == typeof(int))
                     field.SetValue(null, prop.PropertyId);
                 else if (field.FieldType == typeof(AutomationProperty))
+                {
+                    if (!_usedInWpf)
+                        throw new ArgumentException("You can't use AutomationPattern registration info because you passed usedInWpf: false in constructor");
                     field.SetValue(null, AutomationProperty.LookupById(prop.PropertyId));
+                }
                 else
                     throw new ArgumentException("Fields for properties should be either of type int of AutomationProperty");
             }

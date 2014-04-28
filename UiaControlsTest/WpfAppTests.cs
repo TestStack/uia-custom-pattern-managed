@@ -3,7 +3,8 @@ using System.Windows.Automation;
 using NUnit.Framework;
 using UIAutomationClient;
 using WpfAppWithAdvTextControl;
-using TreeScope = UIAutomationClient.TreeScope;
+using NTreeScope = UIAutomationClient.TreeScope;
+using WTreeScope = System.Windows.Automation.TreeScope;
 
 namespace UiaControlsTest
 {
@@ -11,15 +12,16 @@ namespace UiaControlsTest
     public class WpfAppTests
     {
         private TargetApp _app;
-        private IUIAutomation _factory;
-        private IUIAutomationElement _advancedTextBoxElement;
-        private IUIAutomationElement _testControlElement;
+        private IUIAutomation _nFactory;
+        private IUIAutomationElement _nAdvancedTextBoxElement;
+        private IUIAutomationElement _nTestControlElement;
+        private AutomationElement _wAdvancedTextBoxElement;
 
         [SetUp]
         public void MyTestInitialize()
         {
             // Create the factory and register schemas
-            _factory = new CUIAutomationClass();
+            _nFactory = new CUIAutomationClass();
 
             // Start the app
             var curDir = Environment.CurrentDirectory;
@@ -27,15 +29,18 @@ namespace UiaControlsTest
             _app.Start();
 
             // Find the main control
-            var appElement = _factory.ElementFromHandle(_app.MainWindow);
+            var appElement = _nFactory.ElementFromHandle(_app.MainWindow);
             
-            var advTestBoxCondition = _factory.CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "advTextBox1");
-            _advancedTextBoxElement = appElement.FindFirst(TreeScope.TreeScope_Children, advTestBoxCondition);
-            Assert.IsNotNull(_advancedTextBoxElement);
+            var advTestBoxCondition = _nFactory.CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "advTextBox1");
+            _nAdvancedTextBoxElement = appElement.FindFirst(NTreeScope.TreeScope_Children, advTestBoxCondition);
+            Assert.IsNotNull(_nAdvancedTextBoxElement);
 
-            var testControlCondition = _factory.CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "testControl");
-            _testControlElement = appElement.FindFirst(TreeScope.TreeScope_Children, testControlCondition);
-            Assert.IsNotNull(_testControlElement);
+            var testControlCondition = _nFactory.CreatePropertyCondition(UIA_PropertyIds.UIA_AutomationIdPropertyId, "testControl");
+            _nTestControlElement = appElement.FindFirst(NTreeScope.TreeScope_Children, testControlCondition);
+            Assert.IsNotNull(_nTestControlElement);
+
+            var window = AutomationElement.RootElement.FindFirst(WTreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, "MainWindow"));
+            _wAdvancedTextBoxElement = window.FindFirst(WTreeScope.Descendants, new PropertyCondition(AutomationElement.AutomationIdProperty, "advTextBox1"));
         }
 
         [TearDown]
@@ -46,10 +51,10 @@ namespace UiaControlsTest
         }
 
         [Test]
-        public void CaretPositionPatternSmokeTest()
+        public void Native_CaretPositionPatternSmokeTest()
         {
             CaretPositionPattern.Initialize();
-            var cps = (ICaretPositionPattern)_advancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern.Id);
+            var cps = (ICaretPositionPattern)_nAdvancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern.Id);
             Assert.IsNotNull(cps);
 
             // sanity check: intial selection is none, there's no text after all
@@ -57,15 +62,12 @@ namespace UiaControlsTest
             Assert.AreEqual(0, cps.CurrentSelectionLength);
             
             // enter "abcd" and select central part of it - "bc"
-            var value = (IUIAutomationValuePattern)_advancedTextBoxElement.GetCurrentPattern(ValuePattern.Pattern.Id);
-            value.SetValue("abcd");
-            cps.SetSelectionStart(1);
-            cps.SetSelectionLength(2);
+            NSetTextAndSelection("abcd", 1, 2);
             Assert.AreEqual(1, cps.CurrentSelectionStart);
             Assert.AreEqual(2, cps.CurrentSelectionLength);
 
             // validate that selected text retrieved from TextPattern changed as expected
-            var text = (IUIAutomationTextPattern)_advancedTextBoxElement.GetCurrentPattern(TextPattern.Pattern.Id);
+            var text = (IUIAutomationTextPattern)_nAdvancedTextBoxElement.GetCurrentPattern(TextPattern.Pattern.Id);
             var selectionArray = text.GetSelection();
             var selection = selectionArray.GetElement(0);
             var selectedString = selection.GetText(-1);
@@ -73,11 +75,29 @@ namespace UiaControlsTest
         }
 
         [Test]
+        public void Native_GettingPropertyValueByIdWithoutPatternInterfaceWorks()
+        {
+            CaretPositionPattern.Initialize();
+            NSetTextAndSelection("abcd", 1, 2);
+            var nSelStart = _nAdvancedTextBoxElement.GetCurrentPropertyValue(CaretPositionPattern.SelectionStartProperty.Id);
+            Assert.AreEqual(1, nSelStart);
+        }
+
+        private void NSetTextAndSelection(string text, int selectionStart, int selectionLength)
+        {
+            var cps = (ICaretPositionPattern)_nAdvancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern.Id);
+            var value = (IUIAutomationValuePattern)_nAdvancedTextBoxElement.GetCurrentPattern(ValuePattern.Pattern.Id);
+            value.SetValue(text);
+            cps.SetSelectionStart(selectionStart);
+            cps.SetSelectionLength(selectionLength);
+        }
+
+        [Test]
         [Ignore("Dut to bug in UIA implementation on Win7 it is not possible to have more than 2 properties on a pattern. You may use the test to detect if the bug is present in your system")]
-        public void TestOfMoreThanTwoPatternProperties()
+        public void Native_TestOfMoreThanTwoPatternProperties()
         {
             TestOfMoreThanTwoPatternPropertiesPattern.Initialize();
-            var pattern = (ITestOfMoreThanTwoPatternPropertiesPattern)_testControlElement.GetCurrentPattern(TestOfMoreThanTwoPatternPropertiesPattern.Pattern);
+            var pattern = (ITestOfMoreThanTwoPatternPropertiesPattern)_nTestControlElement.GetCurrentPattern(TestOfMoreThanTwoPatternPropertiesPattern.Pattern);
 
             Assert.AreEqual(421, pattern.CurrentProperty1);
             Assert.AreEqual(422, pattern.CurrentProperty2);

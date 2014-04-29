@@ -128,6 +128,7 @@ namespace UiaControlsTest
 
         [Test]
         [Ignore("Dut to bug in UIA implementation on Win7 it is not possible to have more than 2 properties on a pattern. You may use the test to detect if the bug is present in your system")]
+        // On Win 8.1 issue was fixed it seems
         public void Native_TestOfMoreThanTwoPatternProperties()
         {
             TestOfMoreThanTwoPatternPropertiesPattern.Initialize();

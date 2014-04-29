@@ -75,7 +75,6 @@ namespace UiaControlsTest
         }
 
         [Test]
-        [Ignore("Fails because UIA COM wrapper doesn't expect custom patterns and properties and should be changed a bit asap")]
         public void Wpf_CaretPositionPatternSmokeTest()
         {
             CaretPositionPattern.Initialize();
@@ -92,9 +91,9 @@ namespace UiaControlsTest
             Assert.AreEqual(2, cps.CurrentSelectionLength);
 
             // validate that selected text retrieved from TextPattern changed as expected
-            var text = (IUIAutomationTextPattern)_wAdvancedTextBoxElement.GetCurrentPattern(TextPattern.Pattern);
+            var text = (TextPattern)_wAdvancedTextBoxElement.GetCurrentPattern(TextPattern.Pattern);
             var selectionArray = text.GetSelection();
-            var selection = selectionArray.GetElement(0);
+            var selection = selectionArray[0];
             var selectedString = selection.GetText(-1);
             Assert.AreEqual("bc", selectedString);
         }
@@ -120,7 +119,7 @@ namespace UiaControlsTest
         private void WSetTextAndSelection(string text, int selectionStart, int selectionLength)
         {
             var cps = (ICaretPositionPattern)_wAdvancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern);
-            var value = (IUIAutomationValuePattern)_wAdvancedTextBoxElement.GetCurrentPattern(ValuePattern.Pattern);
+            var value = (ValuePattern)_wAdvancedTextBoxElement.GetCurrentPattern(ValuePattern.Pattern);
             value.SetValue(text);
             cps.SetSelectionStart(selectionStart);
             cps.SetSelectionLength(selectionLength);

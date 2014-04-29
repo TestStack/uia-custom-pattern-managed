@@ -54,8 +54,11 @@ namespace ManagedUiaCustomizationCore
 
             foreach (var prop in Properties)
                 SetPropertyRegistrationInfo(prop);
-            foreach (var prop in StandaloneProperties)
+            if (StandaloneProperties != null)
+            {
+                foreach (var prop in StandaloneProperties)
                 SetPropertyRegistrationInfo(prop);
+            }
         }
 
         private void SetPatternRegistrationInfo()

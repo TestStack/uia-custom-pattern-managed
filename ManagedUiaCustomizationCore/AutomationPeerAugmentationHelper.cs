@@ -14,9 +14,6 @@ namespace ManagedUiaCustomizationCore
 
         public static void Register(CustomPatternSchemaBase schema)
         {
-            //
-            // TODO: If we want to support standalone properties - we have to make very similar trick for AutomationPeer.s_propertyInfo.
-            //
             //   For events AutomationPeers goes other way and list of events it can raise through 
             // AutomationPeer.RaiseAutomationEvent() is very strictly hardcoded with switch()
             // operator in the EventMap internal class. But it is possible to get IRawElementProviderSimple
@@ -31,8 +28,11 @@ namespace ManagedUiaCustomizationCore
             RegisterPattern(schema);
             foreach (var property in schema.Properties)
                 RegisterProperty(property);
-            foreach (var property in schema.StandaloneProperties)
+            if (schema.StandaloneProperties != null)
+            {
+                foreach (var property in schema.StandaloneProperties)
                 RegisterProperty(property);
+            }
         }
 
         private static void RegisterPattern(CustomPatternSchemaBase schema)
@@ -123,7 +123,6 @@ namespace ManagedUiaCustomizationCore
                 return _proxyGenerator.CreateInterfaceProxyWithTarget(_providerInterfaceType, iface, interceptor);
             }
         }
-
 
         private class SendingToUIThreadInterceptor : IInterceptor
         {

@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagedUiaCustomizationCore
 		{5766F7EE-37C6-41FF-8144-BB9532339D7D} = {5766F7EE-37C6-41FF-8144-BB9532339D7D}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAComWrapper", "UiaComWrapper\UIAComWrapper\UIAComWrapper.csproj", "{1DD63894-DBB9-40EF-BFF2-55624CB285AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -80,6 +82,12 @@ Global
 		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|x64.Build.0 = Release|x64
 		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|X86.ActiveCfg = Release|x86
 		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|X86.Build.0 = Release|x86
+		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Debug|x64.Build.0 = Debug|Any CPU
+		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Debug|X86.ActiveCfg = Debug|Any CPU
+		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Debug|X86.Build.0 = Debug|Any CPU
+		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Release|x64.ActiveCfg = Release|Any CPU
+		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Release|X86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

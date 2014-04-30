@@ -16,6 +16,7 @@ namespace UiaControlsTest
         private IUIAutomationElement _nAdvancedTextBoxElement;
         private IUIAutomationElement _nTestControlElement;
         private AutomationElement _wAdvancedTextBoxElement;
+        private AutomationElement _wTestControlElement;
 
         [SetUp]
         public void MyTestInitialize()
@@ -41,6 +42,8 @@ namespace UiaControlsTest
 
             var window = AutomationElement.RootElement.FindFirst(WTreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, "MainWindow"));
             _wAdvancedTextBoxElement = window.FindFirst(WTreeScope.Descendants, new PropertyCondition(AutomationElement.AutomationIdProperty, "advTextBox1"));
+            _wTestControlElement = window.FindFirst(WTreeScope.Descendants, new PropertyCondition(AutomationElement.AutomationIdProperty, "testControl"));
+
         }
 
         [TearDown]
@@ -107,6 +110,15 @@ namespace UiaControlsTest
             Assert.AreEqual(1, nSelStart);
         }
 
+        [Test]
+        public void Wpf_GettingPropertyValueByIdWithoutPatternInterfaceWorks()
+        {
+            CaretPositionPattern.Initialize();
+            WSetTextAndSelection("abcd", 1, 2);
+            var selStart = _wAdvancedTextBoxElement.GetCurrentPropertyValue(CaretPositionPattern.SelectionStartProperty);
+            Assert.AreEqual(1, selStart);
+        }
+
         private void NSetTextAndSelection(string text, int selectionStart, int selectionLength)
         {
             var cps = (ICaretPositionPattern)_nAdvancedTextBoxElement.GetCurrentPattern(CaretPositionPattern.Pattern.Id);
@@ -136,6 +148,14 @@ namespace UiaControlsTest
             Assert.AreEqual(421, pattern.CurrentProperty1);
             Assert.AreEqual(422, pattern.CurrentProperty2);
             Assert.AreEqual(423, pattern.CurrentProperty3);
+        }
+
+        [Test]
+        public void Wpf_StandaloneProperty_RetrievedCorrectly()
+        {
+            TestOfMoreThanTwoPatternPropertiesPattern.Initialize();
+            var val = _wTestControlElement.GetCurrentPropertyValue(TestOfMoreThanTwoPatternPropertiesPattern.Standalone1Property);
+            Assert.AreEqual(42, val);
         }
     }
 }

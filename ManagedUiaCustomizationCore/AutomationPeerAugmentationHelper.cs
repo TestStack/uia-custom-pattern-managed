@@ -30,8 +30,11 @@ namespace ManagedUiaCustomizationCore
                 RegisterProperty(property);
             if (schema.StandaloneProperties != null)
             {
-                foreach (var property in schema.StandaloneProperties)
-                RegisterProperty(property);
+                foreach (var uiaPropertyInfoHelper in schema.StandaloneProperties)
+                {
+                    var automationProperty = RegisterProperty(uiaPropertyInfoHelper);
+                    RegisterStandalonePropertyGetter(automationProperty);
+                }
             }
         }
 
@@ -97,13 +100,45 @@ namespace ManagedUiaCustomizationCore
             }
         }
 
-        private static void RegisterProperty(UiaPropertyInfoHelper property)
+        private static void RegisterStandalonePropertyGetter(AutomationProperty automationProperty)
+        {
+            // With WPF Automation peers, retrieving UIA property value goes through these steps:
+            //  1. UIA request comes at ElementProxy which linked with AutomationPeer and wraps it from multithreading, COM etc
+            //  2. ElementProxy passes request to UI thread and directs it to AutomationPeer.GetPropertyValue(int propertyId)
+            //  3. AutomationPeer consults its hashtable of getters and tries to find there getter for required property. These 
+            //     getters are basically Func<AutomationPeer, object>
+            //  4. If getter is found - it is called like getter(this) from AutomationPeer, otherwise null returned
+            //
+            // Similarly to RegisterPattern() method, we need to add new item to 
+            // private static Hashtable AutomationPeer.s_propertyInfo, in order to let 3rd step from above pass correctly
+            // Like this line
+            //   AutomationPeer.s_propertyInfo[property.PropertyId] = new AutomationPeer.GetProperty(getter);
+            // where GetProperty defined in AutomationPeer as:
+            //   private delegate object GetProperty(AutomationPeer peer);
+            //
+            // Our getter will try to cast AutomationPeer to IStandalonePropertyProvider and if successful - get result from it.
+            // Otherwise returns null.
+            var automationPeerType = typeof(AutomationPeer);
+            var propertyInfoHashtableField = automationPeerType.GetField("s_propertyInfo", BindingFlags.NonPublic | BindingFlags.Static);
+            var getterDelegateType = automationPeerType.GetNestedType("GetProperty", BindingFlags.NonPublic);
+            var getterObject = new StandalonePropertyGetter(automationProperty);
+            var getterMethodInfo = ReflectionUtils.GetMethodInfo(() => getterObject.Getter(null));
+            var getter = Delegate.CreateDelegate(getterDelegateType, getterObject, getterMethodInfo);
+
+            using (Dispatcher.CurrentDispatcher.DisableProcessing())
+            {
+                var propertyHashtable = (Hashtable)propertyInfoHashtableField.GetValue(null);
+                propertyHashtable[automationProperty.Id] = getter;
+            }
+        }
+
+        private static AutomationProperty RegisterProperty(UiaPropertyInfoHelper property)
         {
             var automationPropertyType = typeof(AutomationProperty);
             var registerMethod = automationPropertyType.GetMethod("Register", BindingFlags.NonPublic | BindingFlags.Static);
 
             using (Dispatcher.CurrentDispatcher.DisableProcessing())
-                registerMethod.Invoke(null, new object[] { property.Guid, property.Data.pProgrammaticName});
+                return (AutomationProperty)registerMethod.Invoke(null, new object[] { property.Guid, property.Data.pProgrammaticName });
         }
 
         // we have to capture providerInterfaceType; as lambda captures are ony compiler syntactic sugar - we
@@ -121,6 +156,23 @@ namespace ManagedUiaCustomizationCore
             {
                 var interceptor = new SendingToUIThreadInterceptor(peer);
                 return _proxyGenerator.CreateInterfaceProxyWithTarget(_providerInterfaceType, iface, interceptor);
+            }
+        }
+
+        private class StandalonePropertyGetter
+        {
+            private readonly AutomationProperty _property;
+
+            public StandalonePropertyGetter(AutomationProperty property)
+            {
+                _property = property;
+            }
+
+            public object Getter(AutomationPeer peer)
+            {
+                var propertyProvider = peer as IStandalonePropertyProvider;
+                if (propertyProvider == null) return null;
+                return propertyProvider.GetPropertyValue(_property);
             }
         }
 

@@ -83,6 +83,7 @@
     <Compile Include="AttributeDrivenPatternSchema.cs" />
     <Compile Include="AutomationPeerAugmentationHelper.cs" />
     <Compile Include="CustomPatternBase.cs" />
+    <Compile Include="IStandalonePropertyProvider.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Schema\CustomClientInstanceBase.cs" />
     <Compile Include="Schema\ISchemaMember.cs" />

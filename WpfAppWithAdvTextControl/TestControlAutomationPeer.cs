@@ -1,8 +1,10 @@
-﻿using System.Windows.Automation.Peers;
+﻿using System.Windows.Automation;
+using System.Windows.Automation.Peers;
+using ManagedUiaCustomizationCore;
 
 namespace WpfAppWithAdvTextControl
 {
-    public class TestControlAutomationPeer : FrameworkElementAutomationPeer, ITestOfMoreThanTwoPatternPropertiesProvider
+    public class TestControlAutomationPeer : FrameworkElementAutomationPeer, ITestOfMoreThanTwoPatternPropertiesProvider, IStandalonePropertyProvider
     {
         public TestControlAutomationPeer(TestControl testControl)
             : base(testControl)
@@ -35,6 +37,13 @@ namespace WpfAppWithAdvTextControl
         public int Property3
         {
             get { return 423; }
+        }
+
+        public object GetPropertyValue(AutomationProperty property)
+        {
+            if (TestOfMoreThanTwoPatternPropertiesPattern.Standalone1Property.Equals(property))
+                return 42;
+            return null;
         }
     }
 }

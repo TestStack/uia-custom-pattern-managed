@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Windows.Automation;
 using ManagedUiaCustomizationCore;
 
 namespace WpfAppWithAdvTextControl
@@ -51,5 +52,8 @@ namespace WpfAppWithAdvTextControl
         public static int Property1Property;
         public static int Property2Property;
         public static int Property3Property;
+
+        [StandaloneProperty("36683304-3B8A-4035-A88C-B7384C7F057F", typeof(int))]
+        public static AutomationProperty Standalone1Property;
     }
 }

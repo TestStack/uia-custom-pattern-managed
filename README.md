@@ -27,7 +27,7 @@ There are three pieces required to implement and consume custom UIA pattern:
 
 For simplicity we will define custom pattern in the same assembly where custom control placed and assume that automation code has access to it. It is not necessary in general, but convenient. 
 
-First, we need to define **server-side provider interface**. We'll expose current caret position and length of selection as properties and a method to set these if need be (`WpfAppWithAdvTextControl\ICaretPositionProvider.cs`):
+First, we need to define **server-side provider interface**. We'll expose current caret position and length of selection as properties and a method to set these if need be ([here](https://github.com/ivan-danilov/uia-custom-pattern-managed/blob/master/WpfAppWithAdvTextControl/ICaretPositionProvider.cs)):
 ```csharp
 [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 [ComImport]
@@ -55,7 +55,7 @@ UIA properties support only getters, so no setters here. Instead of setters we h
 
 Also, UIA supports only five types for custom patterns and properties: `bool`, `int`, `double`, `string` and AutomationElement.
 
-The second step is to write **client-side pattern interface**. It is a mechanical transformation of provider interface: named the same except `Pattern` instead of `Provider` in the end; methods are translated as they are, and for each property `Abc` in the provider interface we add two properties of the same type, named `CachedAbc` and `CurrentAbc`. Plus, generate new GUID, but only for pattern interface itself, other attributes removed. In case of our caret position pattern it becomes (`WpfAppWithAdvTextControl\ICaretPositionPattern.cs`):
+The second step is to write **client-side pattern interface**. It is a mechanical transformation of provider interface: named the same except `Pattern` instead of `Provider` in the end; methods are translated as they are, and for each property `Abc` in the provider interface we add two properties of the same type, named `CachedAbc` and `CurrentAbc`. Plus, generate new GUID, but only for pattern interface itself, other attributes removed. In case of our caret position pattern it becomes ([here](https://github.com/ivan-danilov/uia-custom-pattern-managed/blob/master/WpfAppWithAdvTextControl/ICaretPositionPattern.cs)):
 
 ```csharp
 [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -74,7 +74,7 @@ public interface ICaretPositionPattern
 }
 ```
 
-The final part is the **registration info container for the pattern** and registration itself. It is another mechanical transformation of the provider mostly (`WpfAppWithAdvTextControl\CaretPositionPattern.cs`): 
+The final part is the **registration info container for the pattern** and registration itself. It is another mechanical transformation of the provider mostly ([here](https://github.com/ivan-danilov/uia-custom-pattern-managed/blob/master/WpfAppWithAdvTextControl/CaretPositionPattern.cs)): 
 
 ```csharp
 public class CaretPositionPattern : CustomPatternBase<ICaretPositionProvider, ICaretPositionPattern>
@@ -105,7 +105,7 @@ Basically that is all we need to declare new pattern correctly.
 
 ### Providing and consuming new pattern ###
 
-Let's describe the process of exposing new pattern from your custom control. Here we'll extend standard `TextBox` control, so we will inherit our new control from it (`WpfAppWithAdvTextControl\AdvTextBox.cs`):
+Let's describe the process of exposing new pattern from your custom control. Here we'll extend standard `TextBox` control, so we will inherit our new control from it ([here](https://github.com/ivan-danilov/uia-custom-pattern-managed/blob/master/WpfAppWithAdvTextControl/AdvTextBox.cs)):
 
 ```csharp
 public class AdvTextBox : TextBox
@@ -117,7 +117,7 @@ public class AdvTextBox : TextBox
 }
 ``` 
 
-It is important step: for work with UIA WPF uses notion of AutomationPeers, thus to expose some new functionality custom WPF control, we have to define our own `AutomationPeer` descendant type and add something there. Like this (`WpfAppWithAdvTextControl\AdvTextBoxAutomationPeer.cs`):
+It is important step: for work with UIA WPF uses notion of AutomationPeers, thus to expose some new functionality custom WPF control, we have to define our own `AutomationPeer` descendant type and add something there. Like this ([here](https://github.com/ivan-danilov/uia-custom-pattern-managed/blob/master/WpfAppWithAdvTextControl/AdvTextBoxAutomationPeer.cs)):
 
 ```csharp
 public class AdvTextBoxAutomationPeer : TextBoxAutomationPeer, ICaretPositionProvider

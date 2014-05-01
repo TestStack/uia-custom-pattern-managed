@@ -85,6 +85,56 @@ namespace CustomizeUiaInterop
                                   [in] valuetype Interop.UIAutomationCore.UIAutomationParameter[] marshal([+3]) pParams,
                                   [in] uint32 cParams) runtime managed internalcall");
 
+                updated = updated.Replace(
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationPropertyInfo
+       extends [mscorlib]System.ValueType
+{
+  .pack 4",
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationPropertyInfo
+       extends [mscorlib]System.ValueType
+{
+  .pack 0");
+
+                updated = updated.Replace(
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationEventInfo
+       extends [mscorlib]System.ValueType
+{
+  .pack 4",
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationEventInfo
+       extends [mscorlib]System.ValueType
+{
+  .pack 0");
+
+                updated = updated.Replace(
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationPatternInfo
+       extends [mscorlib]System.ValueType
+{
+  .pack 4",
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationPatternInfo
+       extends [mscorlib]System.ValueType
+{
+  .pack 0");
+
+                updated = updated.Replace(
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationParameter
+       extends [mscorlib]System.ValueType
+{
+  .pack 4",
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationParameter
+       extends [mscorlib]System.ValueType
+{
+  .pack 0");
+
+                updated = updated.Replace(
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationMethodInfo
+       extends [mscorlib]System.ValueType
+{
+  .pack 4",
+@".class public sequential ansi sealed beforefieldinit Interop.UIAutomationCore.UIAutomationMethodInfo
+       extends [mscorlib]System.ValueType
+{
+  .pack 0");
+
                 // Write all the text
                 File.WriteAllText(outputFilePath, updated);
             }

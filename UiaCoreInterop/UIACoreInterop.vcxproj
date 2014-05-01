@@ -43,12 +43,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='Win32'">
     <NetPlatformTarget>x86</NetPlatformTarget>
-    <TlbImpMachine>X86</TlbImpMachine>
     <MidlEnv>win32</MidlEnv>
   </PropertyGroup>  
   <PropertyGroup Condition="'$(Platform)'=='x64'">
     <NetPlatformTarget>x64</NetPlatformTarget>
-    <TlbImpMachine>X64</TlbImpMachine>
     <MidlEnv>x64</MidlEnv>
   </PropertyGroup>  
   <ItemGroup>
@@ -59,7 +57,7 @@
     </CustomBuild>
     <CustomBuild Include="$(IntDir)UIAutomationCore.tlb">
       <Message>Importing TLB</Message>
-      <Command>tlbimp /machine:$(TlbImpMachine) /silent /out:$(IntDir)Raw\Interop.UIAutomationCore.dll /namespace:Interop.UIAutomationCore $(IntDir)UIAutomationCore.tlb</Command>
+      <Command>tlbimp /machine:Agnostic /silent /out:$(IntDir)Raw\Interop.UIAutomationCore.dll /namespace:Interop.UIAutomationCore $(IntDir)UIAutomationCore.tlb</Command>
       <AdditionalInputs>$(IntDir)UIAutomationCore.tlb;%(AdditionalInputs)</AdditionalInputs>
       <Outputs>$(IntDir)Raw\Interop.UIAutomationCore.dll;%(Outputs)</Outputs>
     </CustomBuild>

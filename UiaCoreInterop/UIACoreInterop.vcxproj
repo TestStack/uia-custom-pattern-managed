@@ -5,17 +5,9 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -41,18 +33,10 @@
     <IntDir>$(Configuration)\</IntDir>
     <WindowsSdkDir>c:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\</WindowsSdkDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='Win32'">
-    <NetPlatformTarget>x86</NetPlatformTarget>
-    <MidlEnv>win32</MidlEnv>
-  </PropertyGroup>  
-  <PropertyGroup Condition="'$(Platform)'=='x64'">
-    <NetPlatformTarget>x64</NetPlatformTarget>
-    <MidlEnv>x64</MidlEnv>
-  </PropertyGroup>  
   <ItemGroup>
     <CustomBuild Include="$(WindowsSdkDir)\include\UIAutomationCore.idl">
       <Message>Running midl</Message>
-      <Command>midl /nologo /char signed /env $(MidlEnv) /tlb "$(IntDir)UIAutomationCore.tlb" /h "$(IntDir)UIAutomationCore_h.h" "$(WindowsSdkDir)\include\UIAutomationCore.idl"</Command>
+      <Command>midl /nologo /char signed /tlb "$(IntDir)UIAutomationCore.tlb" /h "$(IntDir)UIAutomationCore_h.h" "$(WindowsSdkDir)\include\UIAutomationCore.idl"</Command>
       <Outputs>$(IntDir)UIAutomationCore.tlb;%(Outputs)</Outputs>
     </CustomBuild>
     <CustomBuild Include="$(IntDir)UIAutomationCore.tlb">
@@ -68,7 +52,7 @@
     </CustomBuild>
     <CustomBuild Include="$(IntDir)UIAutomationCore.il">
       <Message>Customizing UIA IL</Message>
-      <Command>$(SolutionDir)\CustomizeUiaInterop\bin\$(NetPlatformTarget)\$(Configuration)\CustomizeUiaInterop $(IntDir)UIAutomationCore.il $(IntDir)Custom.UIAutomationCore.il</Command>
+      <Command>$(SolutionDir)\CustomizeUiaInterop\bin\$(Configuration)\CustomizeUiaInterop $(IntDir)UIAutomationCore.il $(IntDir)Custom.UIAutomationCore.il</Command>
       <AdditionalInputs>$(IntDir)UIAutomationCore.il;%(AdditionalInputs)</AdditionalInputs>
       <Outputs>$(IntDir)Custom.UIAutomationCore.il;%(Outputs)</Outputs>
     </CustomBuild>

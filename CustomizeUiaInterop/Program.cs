@@ -70,7 +70,7 @@ namespace CustomizeUiaInterop
                                     [in] uint32 cParams) runtime managed internalcall",
 @"  .method public hidebysig newslot abstract virtual 
           instance void  CallMethod([in] uint32 index,
-                                    [in] [in] valuetype Interop.UIAutomationCore.UIAutomationParameter[] marshal([+2]) pParams,
+                                    [in] valuetype Interop.UIAutomationCore.UIAutomationParameter[] marshal([+2]) pParams,
                                     [in] uint32 cParams) runtime managed internalcall");
 
                 updated = updated.Replace(

@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Diagnostics;
@@ -16,6 +18,7 @@ namespace UiaControlsTest
         private readonly string _args;
         private IntPtr _hwnd;
         private bool _closed;
+        private bool _ownProcess;
 
         private static bool _debug;
 
@@ -34,6 +37,12 @@ namespace UiaControlsTest
 
         public void Start()
         {
+            if (TryOpenExisting())
+            {
+                _ownProcess = false;
+                WaitForWindow();
+                return;
+            }
             if (_debug)
             {
                 Console.WriteLine("Debug mode:");
@@ -57,6 +66,7 @@ namespace UiaControlsTest
                         var id = Int32.Parse(str);
 
                         _p = Process.GetProcessById(id);
+                        _ownProcess = false;
                         break;
                     }
                     catch (FormatException)
@@ -72,10 +82,28 @@ namespace UiaControlsTest
             else
             {
                 _p = Process.Start(_cmdLine, _args);
+                _ownProcess = true;
             }
 
             // _p.WaitForInputIdle(); - doesn't work for non-GUI apps - Instead, wait for the window to appear, then use this.
 
+            WaitForWindow();
+        }
+
+        public bool TryOpenExisting()
+        {
+            var processName = Path.GetFileNameWithoutExtension(_cmdLine);
+            var proc = Process.GetProcessesByName(processName).FirstOrDefault();
+            if (proc != null)
+            {
+                _p = proc;
+                return true;
+            }
+            return false;
+        }
+
+        private void WaitForWindow()
+        {
             _hwnd = IntPtr.Zero;
 
             var pid = _p.Id;
@@ -207,7 +235,7 @@ namespace UiaControlsTest
 
         public void Close()
         {
-            if (_closed)
+            if (_closed || !_ownProcess)
                 return;
 
             if (_debug)

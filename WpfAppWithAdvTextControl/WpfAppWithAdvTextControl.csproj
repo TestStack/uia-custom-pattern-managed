@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -32,6 +32,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.UIAutomationClient">
+      <HintPath>..\UiaComWrapper\Libs\Interop.UIAutomationClient.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Interop.UIAutomationCore">
       <HintPath>..\UIACoreInterop\Debug\Interop.UIAutomationCore.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -64,6 +68,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AutomationElementRetievingPattern.cs" />
     <Compile Include="CaretPositionPattern.cs" />
     <Compile Include="ICaretPositionPattern.cs" />
     <Compile Include="ICaretPositionProvider.cs" />

@@ -122,8 +122,21 @@ namespace ManagedUiaCustomizationCore
                         var interfaceType = (_onClientSide) ?
                             typeof (IUIAutomationElement) :
                             typeof (IRawElementProviderSimple);
-                        var elementAsIntPtr = Marshal.GetComInterfaceForObject(value, interfaceType);
-                        Marshal.WriteIntPtr(_marshalledData, elementAsIntPtr);
+
+                        // Now we have one of interop types in the interfaceType. The problem is,
+                        // due to multiple interop assemblies (e.g. for IRawElementProviderSimple:
+                        // WPF uses its own type from UIAutomationProvider, UIAComWrapper uses its 
+                        // own type from Interop.AutomationClient, this code mostly uses one from
+                        // Interop.AutomationCore) we can't just cast managed object from one type
+                        // to another. While they represent types with same GUID, they're still
+                        // different .NET types. Thus we have to get RCW for the managed object
+                        // and ask it query through COM's IUnknown.
+                        var refiid = interfaceType.GUID;
+                        var iUnknown = Marshal.GetIUnknownForObject(value);
+                        IntPtr resultIntPtr;
+                        Marshal.QueryInterface(iUnknown, ref refiid, out resultIntPtr);
+                        Marshal.Release(iUnknown);
+                        Marshal.WriteIntPtr(_marshalledData, resultIntPtr);
                         break;
                     default:
                         Marshal.StructureToPtr(value, _marshalledData, true);

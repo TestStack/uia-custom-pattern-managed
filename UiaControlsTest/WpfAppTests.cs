@@ -157,5 +157,17 @@ namespace UiaControlsTest
             var val = _wTestControlElement.GetCurrentPropertyValue(TestOfMoreThanTwoPatternPropertiesPattern.Standalone1Property);
             Assert.AreEqual(42, val);
         }
+
+        [Test]
+        public void Native_GetElementPropertyAndMethodWorks()
+        {
+            AutomationElementRetievingPattern.Initialize();
+            var p = (IAutomationElementRetievingPattern)_nTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern.Id);
+            var nElementFromProperty = p.CurrentElement1;
+            Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromProperty) != 0);
+
+            var nElementFromMethodRetVal = p.GetCurrentElement();
+            Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromMethodRetVal) != 0);
+        }
     }
 }

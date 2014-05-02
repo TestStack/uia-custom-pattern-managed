@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Interop.UIAutomationCore;
-using UIAutomationClient;
 
 namespace ManagedUiaCustomizationCore
 {
@@ -16,7 +15,14 @@ namespace ManagedUiaCustomizationCore
                   {typeof (bool), UIAutomationType.UIAutomationType_Bool},
                   {typeof (string), UIAutomationType.UIAutomationType_String},
                   {typeof (double), UIAutomationType.UIAutomationType_Double},
-                  {typeof (IUIAutomationElement), UIAutomationType.UIAutomationType_Element},
+
+                  // We want to support at least UIAComWrapper which uses Interop.AutomationClient,
+                  // this code which uses Interop.UIAutomationCore and WPF's UIAutomationProvider.
+                  // Actually it'd be better to ask type through IUnknown if it implements interface
+                  // with required IID, but for now such simplified mapping would be enough.
+                  {typeof (IRawElementProviderSimple), UIAutomationType.UIAutomationType_Element},
+                  {typeof (UIAutomationClient.IRawElementProviderSimple), UIAutomationType.UIAutomationType_Element},
+                  {typeof (System.Windows.Automation.Provider.IRawElementProviderSimple), UIAutomationType.UIAutomationType_Element},
               };
 
         private static readonly Dictionary<Type, UIAutomationType> _outTypeMapping
@@ -26,7 +32,9 @@ namespace ManagedUiaCustomizationCore
                   {typeof (bool), UIAutomationType.UIAutomationType_OutBool},
                   {typeof (string), UIAutomationType.UIAutomationType_OutString},
                   {typeof (double), UIAutomationType.UIAutomationType_OutDouble},
-                  {typeof (IUIAutomationElement), UIAutomationType.UIAutomationType_OutElement},
+                  {typeof (IRawElementProviderSimple), UIAutomationType.UIAutomationType_OutElement},
+                  {typeof (UIAutomationClient.IRawElementProviderSimple), UIAutomationType.UIAutomationType_OutElement},
+                  {typeof (System.Windows.Automation.Provider.IRawElementProviderSimple), UIAutomationType.UIAutomationType_OutElement},
               };
 
         public static UIAutomationType TypeToAutomationType(Type propertyType)

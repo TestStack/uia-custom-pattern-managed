@@ -1,15 +1,20 @@
 ﻿using System.Windows.Automation;
 using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using ManagedUiaCustomizationCore;
 
 namespace WpfAppWithAdvTextControl
 {
-    public class TestControlAutomationPeer : FrameworkElementAutomationPeer, ITestOfMoreThanTwoPatternPropertiesProvider, IStandalonePropertyProvider
+    public class TestControlAutomationPeer : FrameworkElementAutomationPeer,
+                                             ITestOfMoreThanTwoPatternPropertiesProvider,
+                                             IStandalonePropertyProvider,
+                                             IAutomationElementRetievingProvider
     {
         public TestControlAutomationPeer(TestControl testControl)
             : base(testControl)
         {
             TestOfMoreThanTwoPatternPropertiesPattern.Initialize();
+            AutomationElementRetievingPattern.Initialize();
         }
 
         protected override string GetClassNameCore()
@@ -19,7 +24,9 @@ namespace WpfAppWithAdvTextControl
 
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if ((int)patternInterface == TestOfMoreThanTwoPatternPropertiesPattern.Pattern)
+            var patternId = (int)patternInterface;
+            if (patternId == TestOfMoreThanTwoPatternPropertiesPattern.Pattern ||
+                patternId == AutomationElementRetievingPattern.Pattern.Id)
                 return this;
             return base.GetPattern(patternInterface);
         }
@@ -44,6 +51,21 @@ namespace WpfAppWithAdvTextControl
             if (TestOfMoreThanTwoPatternPropertiesPattern.Standalone1Property.Equals(property))
                 return 42;
             return null;
+        }
+
+        public IRawElementProviderSimple Element1
+        {
+            get { return ProviderFromPeer(this); }
+        }
+
+        public IRawElementProviderSimple Element2
+        {
+            get { return ProviderFromPeer(this); }
+        }
+
+        public IRawElementProviderSimple GetCurrentElement()
+        {
+            return ProviderFromPeer(this);
         }
     }
 }

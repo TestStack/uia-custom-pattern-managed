@@ -60,7 +60,10 @@ namespace ManagedUiaCustomizationCore
 
             if (UiaTypesHelper.IsElementOnServerSide(serverParamType))
             {
-                return UiaTypesHelper.IsElementOnClientSide(clientParamType);
+                if (clientParamType.IsByRef)
+                    clientParamType = clientParamType.GetElementType();
+                return UiaTypesHelper.IsElementOnClientSide(clientParamType)
+                       || clientParamType == typeof(AutomationElement);
             }
 
             return serverParamType == clientParamType;
@@ -112,15 +115,20 @@ namespace ManagedUiaCustomizationCore
             // 3. Fill Out params back to invocation from paramList
             for (int i = (int)methodHelper.Data.cInParameters; i < methodHelper.Data.cInParameters + methodHelper.Data.cOutParameters; i++)
             {
+                object value = paramList[i];
                 var desc = methodHelper.PatternMethodParamDescriptions[i];
                 if (desc.Name == UiaTypesHelper.RetParamUnspeakableName)
                 {
-                    invocation.ReturnValue = paramList[i];
+                    if (invocation.Method.ReturnType == typeof(AutomationElement))
+                        value = AutomationElement.Wrap((IUIAutomationElement)value);
+                    invocation.ReturnValue = value;
                 }
                 else
                 {
                     var idx = methodHelper.GetProviderMethodArgumentIndex(desc.Name);
-                    invocation.Arguments[idx] = paramList[i];
+                    if (invocation.Method.GetParameters()[idx].ParameterType.GetElementType() == typeof(AutomationElement))
+                        value = AutomationElement.Wrap((IUIAutomationElement)value);
+                    invocation.Arguments[idx] = value;
                 }
             }
         }

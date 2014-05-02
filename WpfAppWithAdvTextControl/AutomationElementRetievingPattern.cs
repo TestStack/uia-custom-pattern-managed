@@ -23,6 +23,12 @@ namespace WpfAppWithAdvTextControl
 
         [PatternMethod]
         void GetCurrentElementWithOutParam(out IRawElementProviderSimple value);
+
+        [PatternMethod]
+        IRawElementProviderSimple GetCurrentElement2();
+
+        [PatternMethod]
+        void GetCurrentElementWithOutParam2(out IRawElementProviderSimple value);
     }
 
     public interface IAutomationElementRetievingPattern
@@ -35,6 +41,9 @@ namespace WpfAppWithAdvTextControl
 
         IUIAutomationElement GetCurrentElement();
         void GetCurrentElementWithOutParam(out IUIAutomationElement value);
+
+        AutomationElement GetCurrentElement2();
+        void GetCurrentElementWithOutParam2(out AutomationElement value);
     }
 
     public class AutomationElementRetievingPattern : CustomPatternBase<IAutomationElementRetievingProvider, IAutomationElementRetievingPattern>

@@ -198,5 +198,26 @@ namespace UiaControlsTest
             var wElementFromProperty = p.CurrentElement2;
             Assert.IsTrue(_wTestControlElement.Equals(wElementFromProperty));
         }
+
+        [Test]
+        public void Wpf_GetElementThroughMethodReturnValue_Works()
+        {
+            AutomationElementRetievingPattern.Initialize();
+            var p = (IAutomationElementRetievingPattern)_wTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern);
+
+            var wElementFromProperty = p.GetCurrentElement2();
+            Assert.IsTrue(_wTestControlElement.Equals(wElementFromProperty));
+        }
+
+        [Test]
+        public void Wpf_GetElementThroughMethodOutParam_Works()
+        {
+            AutomationElementRetievingPattern.Initialize();
+            var p = (IAutomationElementRetievingPattern)_wTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern);
+
+            AutomationElement wElementFromProperty;
+            p.GetCurrentElementWithOutParam2(out wElementFromProperty);
+            Assert.IsTrue(_wTestControlElement.Equals(wElementFromProperty));
+        }
     }
 }

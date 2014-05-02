@@ -177,5 +177,16 @@ namespace UiaControlsTest
             var nElementFromMethodRetVal = p.GetCurrentElement();
             Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromMethodRetVal) != 0);
         }
+
+        [Test]
+        public void Native_GetElementPropertyViaOutParam_Works()
+        {
+            AutomationElementRetievingPattern.Initialize();
+            var p = (IAutomationElementRetievingPattern)_nTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern.Id);
+
+            IUIAutomationElement nElementFromMethodOutParam;
+            p.GetCurrentElementWithOutParam(out nElementFromMethodOutParam);
+            Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromMethodOutParam) != 0);
+        }
     }
 }

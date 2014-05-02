@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Interop.UIAutomationCore;
+using UIAutomationClient;
+using IRawElementProviderSimple = Interop.UIAutomationCore.IRawElementProviderSimple;
 
 namespace ManagedUiaCustomizationCore
 {
@@ -34,7 +36,18 @@ namespace ManagedUiaCustomizationCore
 
         public static bool IsElementOnServerSide(Type type)
         {
+            // strip ref/out modifier if needed, because it doesn't have GUID of underlying element type
+            if (type.IsByRef) 
+                type = type.GetElementType();
             return type.GUID == typeof(IRawElementProviderSimple).GUID;
+        }
+
+        public static bool IsElementOnClientSide(Type type)
+        {
+            // strip ref/out modifier if needed, because it doesn't have GUID of underlying element type
+            if (type.IsByRef)
+                type = type.GetElementType();
+            return type.GUID == typeof(IUIAutomationElement).GUID;
         }
 
         public static bool IsInType(UIAutomationType type)

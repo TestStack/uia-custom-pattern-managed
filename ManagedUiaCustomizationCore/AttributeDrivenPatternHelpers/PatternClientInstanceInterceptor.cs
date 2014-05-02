@@ -26,11 +26,42 @@ namespace ManagedUiaCustomizationCore
             {
                 var providerInfo = methodInfoHelper.ProviderMethodInfo;
                 if (providerInfo == null) continue;
-                Type[] paramTypes = providerInfo.GetParameters().Select(param => param.ParameterType).ToArray();
-                var patternMethod = schema.PatternClientInterface.GetMethod(providerInfo.Name, paramTypes);
+
+                var patternMethod = GetMatchingPatternMethod(schema.PatternClientInterface, providerInfo);
                 if (patternMethod != null)
                     _methodInfoToHelper[patternMethod] = methodInfoHelper;
             }
+        }
+
+        private MethodInfo GetMatchingPatternMethod(Type patternInterface, MethodInfo providerMethodInfo)
+        {
+            return patternInterface.GetMethods()
+                                   .Where(m => m.Name == providerMethodInfo.Name)
+                                   .FirstOrDefault(mi => MethodsMatch(providerMethodInfo, mi));
+        }
+
+        private bool MethodsMatch(MethodInfo providerMethod, MethodInfo patternMethod)
+        {
+            var providerParamTypes = providerMethod.GetParameters().Select(param => param.ParameterType).ToArray();
+            var patternParamTypes = patternMethod.GetParameters().Select(param => param.ParameterType).ToArray();
+            
+            if (patternParamTypes.Length != providerParamTypes.Length) 
+                return false;
+            return Enumerable.Range(0, patternParamTypes.Length)
+                             .All(idx => ParametersMatch(providerParamTypes[idx], patternParamTypes[idx]));
+        }
+
+        private bool ParametersMatch(Type serverParamType, Type clientParamType)
+        {
+            if (serverParamType.IsByRef != clientParamType.IsByRef)
+                return false;
+
+            if (UiaTypesHelper.IsElementOnServerSide(serverParamType))
+            {
+                return UiaTypesHelper.IsElementOnClientSide(clientParamType);
+            }
+
+            return serverParamType == clientParamType;
         }
 
         public void Intercept(IInvocation invocation)

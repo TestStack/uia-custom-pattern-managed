@@ -67,5 +67,10 @@ namespace WpfAppWithAdvTextControl
         {
             return ProviderFromPeer(this);
         }
+
+        public void GetCurrentElementWithOutParam(out IRawElementProviderSimple value)
+        {
+            value = ProviderFromPeer(this);
+        }
     }
 }

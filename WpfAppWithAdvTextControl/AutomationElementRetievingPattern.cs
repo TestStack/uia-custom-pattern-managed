@@ -30,8 +30,8 @@ namespace WpfAppWithAdvTextControl
         IUIAutomationElement CurrentElement1 { get; }
         IUIAutomationElement CachedElement1 { get; }
 
-        IUIAutomationElement CurrentElement2 { get; }
-        IUIAutomationElement CachedElement2 { get; }
+        AutomationElement CurrentElement2 { get; }
+        AutomationElement CachedElement2 { get; }
 
         IUIAutomationElement GetCurrentElement();
         void GetCurrentElementWithOutParam(out IUIAutomationElement value);

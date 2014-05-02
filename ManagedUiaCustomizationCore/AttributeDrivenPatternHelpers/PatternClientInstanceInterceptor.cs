@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Automation;
 using Castle.DynamicProxy;
 using Interop.UIAutomationCore;
+using UIAutomationClient;
 
 namespace ManagedUiaCustomizationCore
 {
@@ -83,7 +85,10 @@ namespace ManagedUiaCustomizationCore
             // it is call for CurrentXxx property
             var param = new UiaParameterHelper(propHelper.UiaType);
             _patternInstance.GetProperty(propHelper.Index, cached ? 1 : 0, propHelper.UiaType, param.Data);
-            invocation.ReturnValue = param.Value;
+            object value = param.Value;
+            if (invocation.Method.ReturnType == typeof(AutomationElement))
+                value = AutomationElement.Wrap((IUIAutomationElement)value);
+            invocation.ReturnValue = value;
         }
 
         private void CallMethod(IInvocation invocation, UiaMethodInfoHelper methodHelper)

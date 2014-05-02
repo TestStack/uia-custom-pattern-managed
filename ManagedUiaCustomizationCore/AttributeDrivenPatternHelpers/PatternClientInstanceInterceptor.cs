@@ -87,7 +87,7 @@ namespace ManagedUiaCustomizationCore
         {
             // it is call for CurrentXxx property
             var param = new UiaParameterHelper(propHelper.UiaType);
-            _patternInstance.GetProperty(propHelper.Index, cached ? 1 : 0, propHelper.UiaType, param.Data);
+            NativeMethods.WrapUiaComCall(() => _patternInstance.GetProperty(propHelper.Index, cached ? 1 : 0, propHelper.UiaType, param.Data));
             object value = param.Value;
             if (invocation.Method.ReturnType == typeof(AutomationElement))
                 value = AutomationElement.Wrap((IUIAutomationElement)value);
@@ -110,7 +110,7 @@ namespace ManagedUiaCustomizationCore
             }
 
             // 2. Call patternInstance method
-            _patternInstance.CallMethod(methodHelper.Index, paramList.Data, paramList.Count);
+            NativeMethods.WrapUiaComCall(() => _patternInstance.CallMethod(methodHelper.Index, paramList.Data, paramList.Count));
             
             // 3. Fill Out params back to invocation from paramList
             for (int i = (int)methodHelper.Data.cInParameters; i < methodHelper.Data.cInParameters + methodHelper.Data.cOutParameters; i++)

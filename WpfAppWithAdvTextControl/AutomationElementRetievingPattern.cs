@@ -13,37 +13,37 @@ namespace WpfAppWithAdvTextControl
     public interface IAutomationElementRetievingProvider
     {
         [PatternProperty("2C87DC26-B842-4E0D-ADD8-2DEFB8F7F360")]
-        IRawElementProviderSimple Element1 { get; }
+        IRawElementProviderSimple NativeElement { get; }
 
         [PatternProperty("B5C46FFC-C638-4520-9CCF-6D73FA9A6DF7")]
-        IRawElementProviderSimple Element2 { get; }
+        IRawElementProviderSimple WrappedElement { get; }
 
         [PatternMethod]
-        IRawElementProviderSimple GetCurrentElement();
+        IRawElementProviderSimple NativeGetCurrentElement();
 
         [PatternMethod]
-        void GetCurrentElementWithOutParam(out IRawElementProviderSimple value);
+        void NativeGetCurrentElementWithOutParam(out IRawElementProviderSimple value);
 
         [PatternMethod]
-        IRawElementProviderSimple GetCurrentElement2();
+        IRawElementProviderSimple WrappedGetCurrentElement();
 
         [PatternMethod]
-        void GetCurrentElementWithOutParam2(out IRawElementProviderSimple value);
+        void WrappedGetCurrentElementWithOutParam(out IRawElementProviderSimple value);
     }
 
     public interface IAutomationElementRetievingPattern
     {
-        IUIAutomationElement CurrentElement1 { get; }
-        IUIAutomationElement CachedElement1 { get; }
+        IUIAutomationElement CurrentNativeElement { get; }
+        IUIAutomationElement CachedNativeElement { get; }
 
-        AutomationElement CurrentElement2 { get; }
-        AutomationElement CachedElement2 { get; }
+        AutomationElement CurrentWrappedElement { get; }
+        AutomationElement CachedWrappedElement { get; }
 
-        IUIAutomationElement GetCurrentElement();
-        void GetCurrentElementWithOutParam(out IUIAutomationElement value);
+        IUIAutomationElement NativeGetCurrentElement();
+        void NativeGetCurrentElementWithOutParam(out IUIAutomationElement value);
 
-        AutomationElement GetCurrentElement2();
-        void GetCurrentElementWithOutParam2(out AutomationElement value);
+        AutomationElement WrappedGetCurrentElement();
+        void WrappedGetCurrentElementWithOutParam(out AutomationElement value);
     }
 
     public class AutomationElementRetievingPattern : CustomPatternBase<IAutomationElementRetievingProvider, IAutomationElementRetievingPattern>
@@ -61,7 +61,7 @@ namespace WpfAppWithAdvTextControl
 
         public static AutomationElementRetievingPattern PatternSchema;
         public static AutomationPattern Pattern;
-        public static AutomationProperty Element1Property;
-        public static AutomationProperty Element2Property;
+        public static AutomationProperty NativeElementProperty;
+        public static AutomationProperty WrappedElementProperty;
     }
 }

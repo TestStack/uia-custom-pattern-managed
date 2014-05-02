@@ -164,7 +164,7 @@ namespace UiaControlsTest
             AutomationElementRetievingPattern.Initialize();
             var p = (IAutomationElementRetievingPattern)_nTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern.Id);
             
-            var nElementFromProperty = p.CurrentElement1;
+            var nElementFromProperty = p.CurrentNativeElement;
             Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromProperty) != 0);
         }
 
@@ -174,7 +174,7 @@ namespace UiaControlsTest
             AutomationElementRetievingPattern.Initialize();
             var p = (IAutomationElementRetievingPattern)_nTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern.Id);
 
-            var nElementFromMethodRetVal = p.GetCurrentElement();
+            var nElementFromMethodRetVal = p.NativeGetCurrentElement();
             Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromMethodRetVal) != 0);
         }
 
@@ -185,7 +185,7 @@ namespace UiaControlsTest
             var p = (IAutomationElementRetievingPattern)_nTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern.Id);
 
             IUIAutomationElement nElementFromMethodOutParam;
-            p.GetCurrentElementWithOutParam(out nElementFromMethodOutParam);
+            p.NativeGetCurrentElementWithOutParam(out nElementFromMethodOutParam);
             Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromMethodOutParam) != 0);
         }
 
@@ -195,7 +195,7 @@ namespace UiaControlsTest
             AutomationElementRetievingPattern.Initialize();
             var p = (IAutomationElementRetievingPattern)_wTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern);
 
-            var wElementFromProperty = p.CurrentElement2;
+            var wElementFromProperty = p.CurrentWrappedElement;
             Assert.IsTrue(_wTestControlElement.Equals(wElementFromProperty));
         }
 
@@ -205,7 +205,7 @@ namespace UiaControlsTest
             AutomationElementRetievingPattern.Initialize();
             var p = (IAutomationElementRetievingPattern)_wTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern);
 
-            var wElementFromProperty = p.GetCurrentElement2();
+            var wElementFromProperty = p.WrappedGetCurrentElement();
             Assert.IsTrue(_wTestControlElement.Equals(wElementFromProperty));
         }
 
@@ -216,7 +216,7 @@ namespace UiaControlsTest
             var p = (IAutomationElementRetievingPattern)_wTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern);
 
             AutomationElement wElementFromProperty;
-            p.GetCurrentElementWithOutParam2(out wElementFromProperty);
+            p.WrappedGetCurrentElementWithOutParam(out wElementFromProperty);
             Assert.IsTrue(_wTestControlElement.Equals(wElementFromProperty));
         }
     }

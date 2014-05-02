@@ -53,32 +53,32 @@ namespace WpfAppWithAdvTextControl
             return null;
         }
 
-        public IRawElementProviderSimple Element1
+        public IRawElementProviderSimple NativeElement
         {
             get { return ProviderFromPeer(this); }
         }
 
-        public IRawElementProviderSimple Element2
+        public IRawElementProviderSimple WrappedElement
         {
             get { return ProviderFromPeer(this); }
         }
 
-        public IRawElementProviderSimple GetCurrentElement()
+        public IRawElementProviderSimple NativeGetCurrentElement()
         {
             return ProviderFromPeer(this);
         }
 
-        public void GetCurrentElementWithOutParam(out IRawElementProviderSimple value)
+        public void NativeGetCurrentElementWithOutParam(out IRawElementProviderSimple value)
         {
             value = ProviderFromPeer(this);
         }
 
-        public IRawElementProviderSimple GetCurrentElement2()
+        public IRawElementProviderSimple WrappedGetCurrentElement()
         {
             return ProviderFromPeer(this);
         }
 
-        public void GetCurrentElementWithOutParam2(out IRawElementProviderSimple value)
+        public void WrappedGetCurrentElementWithOutParam(out IRawElementProviderSimple value)
         {
             value = ProviderFromPeer(this);
         }

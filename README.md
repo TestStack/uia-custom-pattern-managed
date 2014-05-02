@@ -53,7 +53,7 @@ public interface ICaretPositionProvider
 
 UIA properties support only getters, so no setters here. Instead of setters we have methods.
 
-Also, UIA supports only five types for custom patterns and properties: `bool`, `int`, `double`, `string` and AutomationElement.
+Also, UIA supports only five types for custom patterns and properties: `bool`, `int`, `double`, `string` and AutomationElement (see [AutomationElements section](#AutomationElements)).
 
 The second step is to write **client-side pattern interface**. It is a mechanical transformation of provider interface: named the same except `Pattern` instead of `Provider` in the end; methods are translated as they are, and for each property `Abc` in the provider interface we add two properties of the same type, named `CachedAbc` and `CurrentAbc`. Plus, generate new GUID, but only for pattern interface itself, other attributes removed. In case of our caret position pattern it becomes ([here](https://github.com/ivan-danilov/uia-custom-pattern-managed/blob/master/WpfAppWithAdvTextControl/ICaretPositionPattern.cs)):
 
@@ -197,11 +197,28 @@ In order to **register** standalone property, you have to add to your custom pat
 public static AutomationProperty Standalone1Property;
 ```
 
-To provide value for such property in raw UIA, you go the usual route: just return required value when your `IRawElementProviderSimple.GetPropertyValue` method is called. In the WPF you have to implement `IStandalonePropertyProvider` interface on your `AutomationPeer`. It has single method `object GetPropertyValue(AutomationProperty property)` with obvious semantics. Note that you also have to call `Initialize()` method in order to obtain valid reference to the `AutomationProperty` instance.  
+To provide value for such property in raw UIA, you go the usual route: just return required value when your `IRawElementProviderSimple.GetPropertyValue` method is called. In the WPF you have to implement `IStandalonePropertyProvider` interface on your `AutomationPeer`. It has single method `object GetPropertyValue(AutomationProperty property)` with obvious semantics. Note that you also have to call `Initialize()` method in order to obtain valid reference to the `AutomationProperty` instance.
 
-## Working with `IUIAutomationElement`, `AutomationElement` and `IRawElementProviderSimple` types ##
+Note that standalone properties support only for basic types (`bool`, `int`, `double` and `string`) and do not support returning automation elements. 
 
-To be implemented and described here afterwards :)
+## <a name="AutomationElements"></a>Working with `IUIAutomationElement`, `AutomationElement` and `IRawElementProviderSimple` types ##
+
+Now, if you need to return automation element from your code, there's a bit of complexity comparing to simple types. Automation elements are represented differently on server and client side. Moreover, UIAComWrapper which White uses, wraps client-side representation with its own class, effectively hiding part of native COM complexity.
+
+So, which types are involved?
+
+**On server side** it is `IRawElementProviderSimple`. Remember, server side is where your custom control resides. How do you get instance of this interface?
+
+If you're writing for WinForms - you have probably implemented it yourself, so it is easy.
+
+WPF is slightly more friendly here: you don't have to implement this interface yourself - `AutomationPeer` handles managing and creation of the one automatically. You may obtain instance for your descendant of `AutomationPeer` by calling `protected IRawElementProviderSimple AutomationPeer.ProviderFromPeer(AutomationPeer peer)` method. Pass your peer there or other one if you need, e.g. while implementing some kind of container control pattern. Note though, that you cannot provide some random peer there from another window, because WPF will validate that calling peer (`this` one) and peer, passed as an argument, are connected (from the point of view of UIA tree) - and return `null` if they're not.
+
+So, to summarize: in order to return automation element type, you need to declare Provider interface so that either a) type of some pattern property (standalone properties does not support automation elements); b) return type of some method; or c) `out` parameter of some method - is `IRawElementProviderSimple`. Plus implement it on your custom control, automation peer, wherever.
+
+**On client side** corresponding type may be either `IUIAutomationElement` - which will be most suitable if you're working with raw UIA in COM version, or `AutomationElement` from UIAComWrapper library. ManagedUiaCustomizationCore library will convert native COM `IUIAutomationElement` result to `AutomationElement` when necessary. You may even mix the two approaches (though I cannot imagine situation when this could be required).
+
+You may find **example** of declaring automation element properties/methods [here](https://github.com/ivan-danilov/uia-custom-pattern-managed/blob/master/WpfAppWithAdvTextControl/AutomationElementRetievingPattern.cs), providing them [here](https://github.com/ivan-danilov/uia-custom-pattern-managed/blob/master/WpfAppWithAdvTextControl/TestControlAutomationPeer.cs) and consuming from test code [here](https://github.com/ivan-danilov/uia-custom-pattern-managed/blob/master/UiaControlsTest/WpfAppTests.cs).
+
 
 ## Acknowledgments ##
 

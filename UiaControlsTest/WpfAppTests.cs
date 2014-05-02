@@ -179,7 +179,7 @@ namespace UiaControlsTest
         }
 
         [Test]
-        public void Native_GetElementPropertyViaOutParam_Works()
+        public void Native_GetElementViaOutParam_Works()
         {
             AutomationElementRetievingPattern.Initialize();
             var p = (IAutomationElementRetievingPattern)_nTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern.Id);

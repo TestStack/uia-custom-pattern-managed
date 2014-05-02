@@ -94,7 +94,7 @@ namespace ManagedUiaCustomizationCore
         private void CallMethod(IInvocation invocation, UiaMethodInfoHelper methodHelper)
         {
             if (!methodHelper.SupportsDispatch)
-                throw new InvalidOperationException("");
+                throw new InvalidOperationException("Called method {0} doesn't support automatic metadata-driven dispatch. You have to modify schema in order to use this feature so that corresponding UiaMethodInfoHelper supports dispatch.");
             var paramList = new UiaParameterListHelper(methodHelper);
             
             // 1. Fill In params to paramList from invocation arguments

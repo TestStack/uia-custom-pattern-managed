@@ -17,7 +17,7 @@ namespace ManagedUiaCustomizationCore
         public PatternClientInstanceInterceptor(CustomPatternSchemaBase schema, IUIAutomationPatternInstance patternInstance)
         {
             _patternInstance = patternInstance;
-            _currentPropGetterNameToHelper = schema.Properties.ToDictionary(helper => string.Format((string)"get_Current{0}", (object)helper.Data.pProgrammaticName));
+            _currentPropGetterNameToHelper = schema.Properties.ToDictionary(helper => string.Format("get_Current{0}", helper.Data.pProgrammaticName));
             _cachedPropGetterNameToHelper = schema.Properties.ToDictionary(helper => string.Format("get_Cached{0}", helper.Data.pProgrammaticName));
 
             // helpers are aware about provider methods, we have to map them from client-side pattern methods

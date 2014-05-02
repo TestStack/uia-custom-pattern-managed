@@ -159,12 +159,20 @@ namespace UiaControlsTest
         }
 
         [Test]
-        public void Native_GetElementPropertyAndMethodWorks()
+        public void Native_GetElementThroughProperty_Works()
         {
             AutomationElementRetievingPattern.Initialize();
             var p = (IAutomationElementRetievingPattern)_nTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern.Id);
+            
             var nElementFromProperty = p.CurrentElement1;
             Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromProperty) != 0);
+        }
+
+        [Test]
+        public void Native_GetElementThroughMethodReturnValue_Works()
+        {
+            AutomationElementRetievingPattern.Initialize();
+            var p = (IAutomationElementRetievingPattern)_nTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern.Id);
 
             var nElementFromMethodRetVal = p.GetCurrentElement();
             Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromMethodRetVal) != 0);

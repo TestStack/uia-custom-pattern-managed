@@ -41,9 +41,9 @@ namespace UiaControlsTest
         public interface ICustomPatternBaseTestPattern
         {
             int CurrentSomeInt { get; }
-            string CurrentSomestring { get; }
+            string CurrentSomeString { get; }
             int CachedSomeInt { get; }
-            string CachedSomestring { get; }
+            string CachedSomeString { get; }
         }
 
         public class CustomPatternBaseTestPattern : CustomPatternBase<ICustomPatternBaseTestProvider, ICustomPatternBaseTestPattern>

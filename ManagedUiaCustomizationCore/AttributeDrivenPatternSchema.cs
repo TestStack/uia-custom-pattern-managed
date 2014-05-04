@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Interop.UIAutomationCore;
@@ -38,7 +39,16 @@ namespace ManagedUiaCustomizationCore
 
             _methods = patternProviderInterface.GetMethodsMarkedWith<PatternMethodAttribute>().Select(GetMethodHelper).ToArray();
             _properties = patternProviderInterface.GetPropertiesMarkedWith<PatternPropertyAttribute>().Select(GetPropertyHelper).ToArray();
+            ValidateClientInterface();
             _handler = new AttributeDrivenPatternHandler(this);
+        }
+
+        private void ValidateClientInterface()
+        {
+            var mErrors = GetMethodErrorsMsg();
+            var pErrors = GetPropertyErrosMsg();
+            if (!string.IsNullOrEmpty(mErrors) || !string.IsNullOrEmpty(pErrors))
+                throw new Exception(mErrors + pErrors);
         }
 
         private UiaPropertyInfoHelper GetPropertyHelper(PropertyInfo pInfo)
@@ -96,6 +106,44 @@ namespace ManagedUiaCustomizationCore
         public override IUIAutomationPatternHandler Handler
         {
             get { return _handler; }
+        }
+
+        private string GetPropertyErrosMsg()
+        {
+            var propsWithErrors = new List<string>();
+            foreach (PropertyInfo providerPropInfo in _patternProviderInterface.GetProperties())
+            {
+                string providerPropName = providerPropInfo.Name;
+                var currentPropName = "Current" + providerPropName;
+                var cachedPropName = "Cached" + providerPropName;
+                var currentPropInfo = _patternClientInterface.GetProperty(currentPropName);
+                var cachedPropInfo = _patternClientInterface.GetProperty(cachedPropName);
+                if (currentPropInfo == null || cachedPropInfo == null)
+                    propsWithErrors.Add(string.Format("{0} -- doesn't have one or both matching properties in client-side pattern interface", providerPropName));
+                else if (currentPropInfo.PropertyType != cachedPropInfo.PropertyType)
+                    propsWithErrors.Add(string.Format("{0} -- Current{0} and Cached{0} properties from client-side pattern interface have different types", providerPropName));
+                else if (!ProviderPatternMatcher.ParametersMatch(providerPropInfo.PropertyType, currentPropInfo.PropertyType)) 
+                    propsWithErrors.Add(string.Format("{0} -- types of provider and client interfaces' properties don't match", providerPropName));
+            }
+            if (propsWithErrors.Count > 0)
+                return string.Format("These properties from provider interface have issues:\n{0}",
+                                     string.Join("\n", propsWithErrors));
+            return null;
+        }
+
+        private string GetMethodErrorsMsg()
+        {
+            var methodsWithErrors = (from methodInfoHelper in _methods
+                                     select methodInfoHelper.ProviderMethodInfo
+                                     into providerMethodInfo
+                                     where ProviderPatternMatcher.GetMatchingPatternMethod(_patternClientInterface, providerMethodInfo) == null
+                                     select providerMethodInfo.Name)
+                .ToList();
+
+            if (methodsWithErrors.Count > 0)
+                return string.Format("These methods from provider interface do not have matching methods in client-side pattern interface:\n{0}",
+                                     string.Join(", ", methodsWithErrors));
+            return string.Empty;
         }
     }
 }

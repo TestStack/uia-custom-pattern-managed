@@ -22,10 +22,16 @@ namespace WpfAppWithAdvTextControl
         IRawElementProviderSimple NativeGetCurrentElement();
 
         [PatternMethod]
+        IRawElementProviderSimple NativeGetNullElement();
+
+        [PatternMethod]
         void NativeGetCurrentElementWithOutParam(out IRawElementProviderSimple value);
 
         [PatternMethod]
         IRawElementProviderSimple WrappedGetCurrentElement();
+
+        [PatternMethod]
+        IRawElementProviderSimple WrappedGetNullElement();
 
         [PatternMethod]
         void WrappedGetCurrentElementWithOutParam(out IRawElementProviderSimple value);
@@ -40,9 +46,11 @@ namespace WpfAppWithAdvTextControl
         AutomationElement CachedWrappedElement { get; }
 
         IUIAutomationElement NativeGetCurrentElement();
+        IUIAutomationElement NativeGetNullElement();
         void NativeGetCurrentElementWithOutParam(out IUIAutomationElement value);
 
         AutomationElement WrappedGetCurrentElement();
+        AutomationElement WrappedGetNullElement();
         void WrappedGetCurrentElementWithOutParam(out AutomationElement value);
     }
 

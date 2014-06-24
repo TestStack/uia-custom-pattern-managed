@@ -55,5 +55,8 @@ namespace WpfAppWithAdvTextControl
 
         [StandaloneProperty("36683304-3B8A-4035-A88C-B7384C7F057F", typeof(int))]
         public static AutomationProperty Standalone1Property;
+
+        [StandaloneProperty("BC40E43E-9CBD-4D94-BF2C-C98727A6BCE1", typeof(string))]
+        public static AutomationProperty NullStringStandaloneProperty;
     }
 }

@@ -87,7 +87,7 @@ namespace ManagedUiaCustomizationCore
                     case UIAutomationType.UIAutomationType_Element:
                         // Elements need to be copied as COM pointers
                         var elementAsIntPtr = Marshal.ReadIntPtr(_marshalledData);
-                        return Marshal.GetObjectForIUnknown(elementAsIntPtr);
+                        return elementAsIntPtr != IntPtr.Zero ? Marshal.GetObjectForIUnknown(elementAsIntPtr) : null;
                     default:
                         return Marshal.PtrToStructure(_marshalledData, GetClrType());
                 }
@@ -98,7 +98,8 @@ namespace ManagedUiaCustomizationCore
                 var basicType = _uiaType & ~UIAutomationType.UIAutomationType_Out;
 
                 // Sanity check
-                if (value.GetType() != GetClrType() &&
+                if (value != null && 
+                    value.GetType() != GetClrType() &&
                     basicType != UIAutomationType.UIAutomationType_Bool &&
                     basicType != UIAutomationType.UIAutomationType_Element)
                 {
@@ -118,7 +119,13 @@ namespace ManagedUiaCustomizationCore
                         Marshal.StructureToPtr(boolAsInt, _marshalledData, true);
                         break;
                     case UIAutomationType.UIAutomationType_Element:
-                        // Elements are stroed as COM pointers
+                        if (value == null)
+                        {
+                            Marshal.WriteIntPtr(_marshalledData, IntPtr.Zero);
+                            break;
+                        }
+
+                        // Elements are stored as COM pointers
                         var interfaceType = (_onClientSide) ?
                             typeof (IUIAutomationElement) :
                             typeof (IRawElementProviderSimple);

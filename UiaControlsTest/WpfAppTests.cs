@@ -159,6 +159,14 @@ namespace UiaControlsTest
         }
 
         [Test]
+        public void Wpf_NullStringStandaloneProperty_RetrievedAsEmptyString()
+        {
+            TestOfMoreThanTwoPatternPropertiesPattern.Initialize();
+            var val = (string)_wTestControlElement.GetCurrentPropertyValue(TestOfMoreThanTwoPatternPropertiesPattern.NullStringStandaloneProperty);
+            Assert.IsEmpty(val);
+        }
+
+        [Test]
         public void Native_GetElementThroughProperty_Works()
         {
             AutomationElementRetievingPattern.Initialize();
@@ -176,6 +184,16 @@ namespace UiaControlsTest
 
             var nElementFromMethodRetVal = p.NativeGetCurrentElement();
             Assert.IsTrue(_nFactory.CompareElements(_nTestControlElement, nElementFromMethodRetVal) != 0);
+        }
+
+        [Test]
+        public void Native_GetNullElementThroughMethodReturnValue_Works()
+        {
+            AutomationElementRetievingPattern.Initialize();
+            var p = (IAutomationElementRetievingPattern)_nTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern.Id);
+
+            var nNullElementFromMethodRetVal = p.NativeGetNullElement();
+            Assert.IsNull(nNullElementFromMethodRetVal);
         }
 
         [Test]
@@ -207,6 +225,16 @@ namespace UiaControlsTest
 
             var wElementFromProperty = p.WrappedGetCurrentElement();
             Assert.IsTrue(_wTestControlElement.Equals(wElementFromProperty));
+        }
+
+        [Test]
+        public void Wpf_GetNullElementThroughMethodReturnValue_Works()
+        {
+            AutomationElementRetievingPattern.Initialize();
+            var p = (IAutomationElementRetievingPattern)_wTestControlElement.GetCurrentPattern(AutomationElementRetievingPattern.Pattern);
+
+            var wNullElementFromProperty = p.WrappedGetNullElement();
+            Assert.IsNull(wNullElementFromProperty);
         }
 
         [Test]

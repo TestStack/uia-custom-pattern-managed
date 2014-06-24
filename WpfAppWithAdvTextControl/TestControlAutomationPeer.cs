@@ -50,6 +50,8 @@ namespace WpfAppWithAdvTextControl
         {
             if (TestOfMoreThanTwoPatternPropertiesPattern.Standalone1Property.Equals(property))
                 return 42;
+            if (TestOfMoreThanTwoPatternPropertiesPattern.NullStringStandaloneProperty.Equals(property))
+                return null;
             return null;
         }
 
@@ -68,6 +70,11 @@ namespace WpfAppWithAdvTextControl
             return ProviderFromPeer(this);
         }
 
+        public IRawElementProviderSimple NativeGetNullElement()
+        {
+            return null;
+        }
+
         public void NativeGetCurrentElementWithOutParam(out IRawElementProviderSimple value)
         {
             value = ProviderFromPeer(this);
@@ -76,6 +83,11 @@ namespace WpfAppWithAdvTextControl
         public IRawElementProviderSimple WrappedGetCurrentElement()
         {
             return ProviderFromPeer(this);
+        }
+
+        public IRawElementProviderSimple WrappedGetNullElement()
+        {
+            return null;
         }
 
         public void WrappedGetCurrentElementWithOutParam(out IRawElementProviderSimple value)

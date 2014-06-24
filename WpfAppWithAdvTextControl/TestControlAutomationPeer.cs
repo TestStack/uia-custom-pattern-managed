@@ -46,6 +46,11 @@ namespace WpfAppWithAdvTextControl
             get { return 423; }
         }
 
+        public TestEnum GetEnum()
+        {
+            return TestEnum.EnumValue42;
+        }
+
         public object GetPropertyValue(AutomationProperty property)
         {
             if (TestOfMoreThanTwoPatternPropertiesPattern.Standalone1Property.Equals(property))

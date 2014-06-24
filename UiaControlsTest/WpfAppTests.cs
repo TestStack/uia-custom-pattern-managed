@@ -151,6 +151,15 @@ namespace UiaControlsTest
         }
 
         [Test]
+        public void Native_EnumTypedProperty_RetrievedCorrectly()
+        {
+            TestOfMoreThanTwoPatternPropertiesPattern.Initialize();
+            var pattern = (ITestOfMoreThanTwoPatternPropertiesPattern)_nTestControlElement.GetCurrentPattern(TestOfMoreThanTwoPatternPropertiesPattern.Pattern);
+            
+            Assert.AreEqual(TestEnum.EnumValue42, pattern.GetEnum());
+        }
+
+        [Test]
         public void Wpf_StandaloneProperty_RetrievedCorrectly()
         {
             TestOfMoreThanTwoPatternPropertiesPattern.Initialize();

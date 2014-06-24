@@ -99,12 +99,20 @@ namespace ManagedUiaCustomizationCore
                 var basicType = _uiaType & ~UIAutomationType.UIAutomationType_Out;
 
                 // Sanity check
-                if (value != null && 
-                    value.GetType() != GetClrType() &&
-                    basicType != UIAutomationType.UIAutomationType_Bool &&
-                    basicType != UIAutomationType.UIAutomationType_Element)
+                if (value != null)
                 {
-                    throw new ArgumentException("Value is the wrong type for this parameter");
+                    Type valueType = value.GetType();
+                    if (valueType.IsEnum)
+                    {
+                        if (basicType != UIAutomationType.UIAutomationType_Int)
+                            throw new ArgumentException("Enum values should be passed as int");
+                    }
+                    else if (valueType != GetClrType() &&
+                             basicType != UIAutomationType.UIAutomationType_Bool &&
+                             basicType != UIAutomationType.UIAutomationType_Element)
+                    {
+                        throw new ArgumentException("Value is the wrong type for this parameter");
+                    }
                 }
 
                 switch (basicType)
@@ -147,7 +155,10 @@ namespace ManagedUiaCustomizationCore
                         Marshal.WriteIntPtr(_marshalledData, resultIntPtr);
                         break;
                     default:
-                        Marshal.StructureToPtr(value, _marshalledData, true);
+                        if (value != null && value.GetType().IsEnum)
+                            Marshal.StructureToPtr((int)value, _marshalledData, true);
+                        else
+                            Marshal.StructureToPtr(value, _marshalledData, true);
                         break;
                 }
             }

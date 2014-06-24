@@ -4,6 +4,13 @@ using ManagedUiaCustomizationCore;
 
 namespace WpfAppWithAdvTextControl
 {
+    public enum TestEnum
+    {
+        EnumValue0 = 0,
+        EnumValue42 = 42,
+        EnumValue513 = 513,
+    }
+
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComVisible(true)]
     [Guid("D645A984-99C8-4918-8E16-9C16B67EE9AE")]
@@ -18,8 +25,10 @@ namespace WpfAppWithAdvTextControl
 
         [PatternProperty("A6DD9558-B635-4C41-AE2F-93D57F68F107")]
         int Property3 { get; }
-    }
 
+        [PatternMethod]
+        TestEnum GetEnum();
+    }
 
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     [ComVisible(true)]
@@ -32,6 +41,8 @@ namespace WpfAppWithAdvTextControl
         int CachedProperty1 { get; }
         int CachedProperty2 { get; }
         int CachedProperty3 { get; }
+
+        TestEnum GetEnum();
     }
 
     public class TestOfMoreThanTwoPatternPropertiesPattern : CustomPatternBase<ITestOfMoreThanTwoPatternPropertiesProvider, ITestOfMoreThanTwoPatternPropertiesPattern>

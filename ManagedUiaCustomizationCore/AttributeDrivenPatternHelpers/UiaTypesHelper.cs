@@ -23,6 +23,8 @@ namespace ManagedUiaCustomizationCore
         {
             if (IsElementOnServerSide(type))
                 return UIAutomationType.UIAutomationType_Element;
+            if (type.IsEnum && type.GetEnumUnderlyingType() == typeof(int))
+                type = typeof(int);
             UIAutomationType res;
             if (_typeMapping.TryGetValue(type, out res))
                 return res;

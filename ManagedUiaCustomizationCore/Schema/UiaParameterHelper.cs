@@ -59,7 +59,8 @@ namespace ManagedUiaCustomizationCore
                 else if (basicType == UIAutomationType.UIAutomationType_Element)
                 {
                     var elementAsIntPtr = Marshal.ReadIntPtr(_marshalledData);
-                    Marshal.Release(elementAsIntPtr);
+                    if (elementAsIntPtr != IntPtr.Zero)
+                        Marshal.Release(elementAsIntPtr);
                 }
 
                 Marshal.FreeCoTaskMem(_marshalledData);

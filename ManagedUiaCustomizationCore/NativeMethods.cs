@@ -33,6 +33,14 @@ namespace ManagedUiaCustomizationCore
                     throw newEx;
                 throw;
             }
+            catch (Exception e)
+            {
+                throw new UiaCallFailedException("Automation call failure", e);
+            }
+            catch
+            {
+                throw new UiaCallFailedException("Automation call failure");
+            }
         }
 
         #region Taken from UIAComWrapper - exception wrapping

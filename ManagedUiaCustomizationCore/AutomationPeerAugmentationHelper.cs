@@ -159,6 +159,42 @@ namespace ManagedUiaCustomizationCore
             }
         }
 
+        private static void GuardUiaServerInvocation(Action invocation, Dispatcher dispatcher)
+        {
+            if (dispatcher == null)
+                throw new ElementNotAvailableException();
+            Exception remoteException = null;
+            bool completed = false;
+            dispatcher.Invoke(DispatcherPriority.Send, TimeSpan.FromMinutes(3.0), (Action)(() =>
+            {
+                try
+                {
+                    invocation();
+                }
+                catch (Exception e)
+                {
+                    remoteException = e;
+                }
+                catch
+                {
+                    remoteException = null;
+                }
+                finally
+                {
+                    completed = true;
+                }
+            }));
+            if (completed)
+            {
+                if (remoteException != null)
+                    throw remoteException;
+            }
+            else if (dispatcher.HasShutdownStarted)
+                throw new InvalidOperationException("AutomationDispatcherShutdown");
+            else
+                throw new TimeoutException("AutomationTimeout");
+        }
+
         private class StandalonePropertyGetter
         {
             private readonly AutomationProperty _property;
@@ -172,7 +208,9 @@ namespace ManagedUiaCustomizationCore
             {
                 var propertyProvider = peer as IStandalonePropertyProvider;
                 if (propertyProvider == null) return null;
-                return propertyProvider.GetPropertyValue(_property);
+                object result = null;
+                GuardUiaServerInvocation(() => result = propertyProvider.GetPropertyValue(_property), peer.Dispatcher);
+                return result;
             }
         }
 
@@ -187,15 +225,7 @@ namespace ManagedUiaCustomizationCore
 
             public void Intercept(IInvocation invocation)
             {
-                if (_dispatcher.CheckAccess())
-                {
-                    invocation.Proceed();
-                }
-                else
-                {
-                    Action a = invocation.Proceed;
-                    _dispatcher.Invoke(a);
-                }
+                GuardUiaServerInvocation(invocation.Proceed, _dispatcher);
             }
         }
     }

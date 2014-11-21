@@ -81,6 +81,7 @@
     <Compile Include="Schema\UiaPatternInfoHelper.cs" />
     <Compile Include="Schema\UiaPropertyInfoHelper.cs" />
     <Compile Include="AttributeDrivenPatternHelpers\UiaTypesHelper.cs" />
+    <Compile Include="UiaCallFailedException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -161,7 +161,17 @@ namespace ManagedUiaCustomizationCore
             }
 
             // call provider
-            object result = ProviderMethodInfo.Invoke(provider, providerCallParameters);
+            object result = null;
+            try
+            {
+                result = ProviderMethodInfo.Invoke(provider, providerCallParameters);
+            }
+            catch (TargetInvocationException e)
+            {
+                if (e.InnerException != null)
+                    throw e.InnerException;
+                throw;
+            }
 
             // write back out params
             for (int i = 0; i < PatternMethodParamDescriptions.Count; i++)

@@ -20,11 +20,13 @@ namespace ManagedUiaCustomizationCore
         [DllImport("UIAutomationCore.dll", EntryPoint = "UiaRaiseAutomationPropertyChangedEvent", CharSet = CharSet.Unicode)]
         public static extern int UiaRaiseAutomationPropertyChangedEvent(IRawElementProviderSimple el, int propertyId, object oldValue, object newValue);
 
-        public static void WrapUiaComCall(Action call)
+        public static void WrapUiaComCall(Func<int> preservesigCall)
         {
             try
             {
-                call();
+                var hr = preservesigCall();
+                if (hr != 0)
+                    throw Marshal.GetExceptionForHR(hr);
             }
             catch (COMException e)
             {

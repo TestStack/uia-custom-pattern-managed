@@ -68,9 +68,21 @@ namespace CustomizeUiaInterop
                                     [in] valuetype Interop.UIAutomationCore.UIAutomationParameter& pParams,
                                     [in] uint32 cParams) runtime managed internalcall",
 @"  .method public hidebysig newslot abstract virtual 
-          instance void  CallMethod([in] uint32 index,
+          instance int32 CallMethod([in] uint32 index,
                                     [in] valuetype Interop.UIAutomationCore.UIAutomationParameter[] marshal([+2]) pParams,
-                                    [in] uint32 cParams) runtime managed internalcall");
+                                    [in] uint32 cParams) runtime managed internalcall preservesig");
+
+                updated = updated.Replace(
+@"  .method public hidebysig newslot abstract virtual 
+          instance void  GetProperty([in] uint32 index,
+                                     [in] int32 cached,
+                                     [in] valuetype Interop.UIAutomationCore.UIAutomationType 'type',
+                                     [out] native int pPtr) runtime managed internalcall",
+@"  .method public hidebysig newslot abstract virtual 
+          instance int32 GetProperty([in] uint32 index,
+                                     [in] int32 cached,
+                                     [in] valuetype Interop.UIAutomationCore.UIAutomationType 'type',
+                                     [out] native int pPtr) runtime managed internalcall preservesig");
 
                 updated = updated.Replace(
 @"  .method public hidebysig newslot abstract virtual 

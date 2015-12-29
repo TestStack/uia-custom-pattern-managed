@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -35,7 +35,7 @@
     <Reference Include="Interop.UIAutomationClient, Version=12.0.20617.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>..\UiaComWrapper\Libs\Interop.UIAutomationClient.dll</HintPath>
+      <HintPath>..\packages\UIAComWrapper.1.1.0.14\lib\net40\Interop.UIAutomationClient.dll</HintPath>
     </Reference>
     <Reference Include="Interop.UIAutomationCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -50,6 +50,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="UIAComWrapper, Version=1.1.0.14, Culture=neutral, PublicKeyToken=78cbcf77433a85e5, processorArchitecture=MSIL">
+      <HintPath>..\packages\UIAComWrapper.1.1.0.14\lib\net40\UIAComWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -64,10 +68,6 @@
     <ProjectReference Include="..\ManagedUiaCustomizationCore\ManagedUiaCustomizationCore.csproj">
       <Project>{21db168c-e0ef-4e07-b24a-1e5bb64d2a17}</Project>
       <Name>ManagedUiaCustomizationCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UiaComWrapper\UIAComWrapper\UIAComWrapper.csproj">
-      <Project>{1dd63894-dbb9-40ef-bff2-55624cb285af}</Project>
-      <Name>UIAComWrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\UIAControls\UIAControls.csproj">
       <Project>{3663F841-CE46-42F6-82A3-FF60E17C0593}</Project>

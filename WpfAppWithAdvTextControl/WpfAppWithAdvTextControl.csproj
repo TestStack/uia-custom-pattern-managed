@@ -33,9 +33,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Interop.UIAutomationClient">
-      <HintPath>..\UiaComWrapper\Libs\Interop.UIAutomationClient.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+    <Reference Include="Interop.UIAutomationClient, Version=12.0.20617.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\UIAComWrapper.1.1.0.14\lib\net40\Interop.UIAutomationClient.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Interop.UIAutomationCore">
       <HintPath>..\UIACoreInterop\Debug\Interop.UIAutomationCore.dll</HintPath>
@@ -49,6 +49,10 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml" />
+    <Reference Include="UIAComWrapper, Version=1.1.0.14, Culture=neutral, PublicKeyToken=78cbcf77433a85e5, processorArchitecture=MSIL">
+      <HintPath>..\packages\UIAComWrapper.1.1.0.14\lib\net40\UIAComWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -99,6 +103,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -112,10 +117,6 @@
     <ProjectReference Include="..\ManagedUiaCustomizationCore\ManagedUiaCustomizationCore.csproj">
       <Project>{21db168c-e0ef-4e07-b24a-1e5bb64d2a17}</Project>
       <Name>ManagedUiaCustomizationCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UiaComWrapper\UIAComWrapper\UIAComWrapper.csproj">
-      <Project>{1DD63894-DBB9-40EF-BFF2-55624CB285AF}</Project>
-      <Name>UIAComWrapper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

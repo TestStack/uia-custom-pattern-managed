@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAControls", "UIAControls\UIAControls.csproj", "{3663F841-CE46-42F6-82A3-FF60E17C0593}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagedUiaCustomizationCore
 	ProjectSection(ProjectDependencies) = postProject
 		{5766F7EE-37C6-41FF-8144-BB9532339D7D} = {5766F7EE-37C6-41FF-8144-BB9532339D7D}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAComWrapper", "UiaComWrapper\UIAComWrapper\UIAComWrapper.csproj", "{1DD63894-DBB9-40EF-BFF2-55624CB285AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,10 +54,6 @@ Global
 		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21DB168C-E0EF-4E07-B24A-1E5BB64D2A17}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DD63894-DBB9-40EF-BFF2-55624CB285AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

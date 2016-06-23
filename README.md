@@ -1,3 +1,11 @@
+# Changes
+
+## v0.1.0
+
+- created NuGet package for the library along with auto-deployment/tagging script
+- added source indexing with GitLink. Makes issue debugging much easier as stepping into UIAComWrapper code in VS automatically downloads proper source code from GitHub.
+- updated Castle.Core required version to 3.3.0 to be compatible with other TestStack packages
+
 # Creating custom UIA patterns and properties with C# #
 
 UIA (User Interface Automation) is a Microsoft technology for application automation (e.g. for automated testing). It is written in native code as COM library. There's managed wrapper of UIA v2 by Microsoft and open-source wrapper for UIA v3, but both these libs cover only consuming predefined patterns and properties, making it near-to-impossible to register new pattern without diving deep into COM interop and UIA documentation.   

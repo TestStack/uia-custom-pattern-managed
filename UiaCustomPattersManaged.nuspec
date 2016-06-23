@@ -22,5 +22,6 @@
     <file src=".\UIACoreInterop\Build\Interop.UIAutomationCore.dll" target="lib\net40" />
     <file src=".\ManagedUiaCustomizationCore\bin\Release\ManagedUiaCustomizationCore.dll" target="lib\net40" />
     <file src=".\ManagedUiaCustomizationCore\bin\Release\ManagedUiaCustomizationCore.pdb" target="lib\net40" />
+    <file src="install.ps1" target="tools" />
   </files>
 </package>

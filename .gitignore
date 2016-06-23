@@ -13,3 +13,4 @@ packages/
 Release/
 *.VC.opendb
 *.VC.db
+UiaCoreInterop/Build/

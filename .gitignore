@@ -12,3 +12,4 @@ UiaCoreInterop/UIAutomationCore_i.c
 packages/
 Release/
 *.VC.opendb
+*.VC.db

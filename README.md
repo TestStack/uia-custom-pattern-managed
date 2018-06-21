@@ -1,5 +1,9 @@
 # Changes
 
+## v0.1.1
+
+- added ability to avoid dispatching UIA calls to UI thread on server side: `PatternMethodAttribute.DoNotDispatchToUIThread`
+
 ## v0.1.0
 
 - created NuGet package for the library along with auto-deployment/tagging script

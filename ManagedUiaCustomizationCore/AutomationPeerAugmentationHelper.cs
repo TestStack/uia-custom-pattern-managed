@@ -225,7 +225,11 @@ namespace ManagedUiaCustomizationCore
 
             public void Intercept(IInvocation invocation)
             {
-                GuardUiaServerInvocation(invocation.Proceed, _dispatcher);
+                var attr = invocation.Method.GetAttribute<PatternMethodAttribute>();
+                if (attr != null && attr.DoNotDispatchToUIThread)
+                    invocation.Proceed();
+                else
+                    GuardUiaServerInvocation(invocation.Proceed, _dispatcher);
             }
         }
     }

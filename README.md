@@ -1,5 +1,9 @@
 # Changes
 
+## v0.1.2
+
+- updated Castle.Core dependency to 4.3.1
+
 ## v0.1.1
 
 - added ability to avoid dispatching UIA calls to UI thread on server side: `PatternMethodAttribute.DoNotDispatchToUIThread`

@@ -1,6 +1,5 @@
 @echo off
 
-set WindowsSdkDir=c:\Program Files (x86)\Windows Kits\8.1\
 set netfxtools=c:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\x64\
 set ResultDir=.\UIACoreInterop\Build\
 set framework=c:\Windows\Microsoft.NET\Framework64\v4.0.30319\
@@ -8,6 +7,7 @@ set VS=%VS140COMNTOOLS%
 
 echo Settings VS variables: %VS%vsvars32.bat
 call %VS%vsvars32.bat
+set WindowsSdkDir=c:\Program Files (x86)\Windows Kits\8.1\
 
 mkdir %ResultDir%
 

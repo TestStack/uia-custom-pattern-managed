@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>TestStack.Interop.UIAutomationCore</id>
+    <version>$version$</version>
+    <title>TestStack.Interop.UIAutomationCore</title>
+    <summary>Interop.UIAutomationCore.dll exposes UIAutomationCore functionality for use by managed code.</summary>
+    <description>This exposes UIAutomation functionality that is defined in UIAutomationCore.idl</description>
+    <authors>Ivan Danilov</authors>
+    <owners>Ivan Danilov</owners>
+    <projectUrl>https://github.com/TestStack/uia-custom-pattern-managed</projectUrl>
+    <license type="expression">MIT</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>UIAutomation Testing UIA WPF Win32 Automation</tags>
+  </metadata>
+  <files>
+    <file src=".\UIACoreInterop\Build\Interop.UIAutomationCore.dll" target="lib\net40" />
+  </files>
+</package>

@@ -23,6 +23,10 @@ if errorlevel 1 goto somethingbad
 GitLink . -u https://github.com/TestStack/uia-custom-pattern-managed -c Release -include ManagedUiaCustomizationCore
 if errorlevel 1 goto somethingbad
 
+echo nuget pack Interop.UIAutomationCore.nuspec -version "%GitVersion_NuGetVersion%"
+nuget pack Interop.UIAutomationCore.nuspec -version "%GitVersion_NuGetVersion%" -verbosity detailed -basepath .
+if errorlevel 1 goto somethingbad
+
 echo nuget pack UiaCustomPattersManaged.nuspec -version "%GitVersion_NuGetVersion%"
 nuget pack UiaCustomPattersManaged.nuspec -version "%GitVersion_NuGetVersion%" -verbosity detailed -basepath .
 if errorlevel 1 goto somethingbad
@@ -35,7 +39,7 @@ if errorlevel 1 goto somethingbad
 
 echo Finished successfully
 echo(---------------------
-echo Remember to publish created nupkg file and update Changes section in Readme.md
+echo Remember to publish created nupkg files and update Changes section in Readme.md
 goto end
 
 :somethingbad
